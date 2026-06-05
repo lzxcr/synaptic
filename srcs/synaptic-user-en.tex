@@ -1,0 +1,158 @@
+% !TEX program = lualatex
+\documentclass[a4paper,11pt]{scrartcl}
+
+\usepackage[
+  lang          = en,
+  color         = carbon,
+  style         = modern,
+  extra-math    = true,
+  toc           = true,
+  toc-layout    = inline,
+  fine-breaking = false
+]{synaptic}
+
+\DeclareMathOperator{\GL}{GL}
+\declarecustomtheorem{example}{Example}
+\declarecustomtheorem{remark}{Remark}
+
+\fpheader{Synaptic User Guide}
+\subheader{Feature Showcase}
+\preprint{SYNAPTIC-USER}
+\title{The \texttt{synaptic} Package\\ User Guide and Feature Showcase}
+\author{Template Development Team}
+\affiliation{CTAN Community}
+\emailAdd{synaptic@example.com}
+\keywords{synaptic, user guide, LaTeX, feature showcase}
+\arxivnumber{2605.54321}
+\dedicated{To the elegance of structured typesetting.}
+
+\begin{abstract}
+  This document serves as a hands-on demonstration of \texttt{synaptic}, a modern
+  academic typesetting framework built on \texttt{expl3} and KOMA-Script.
+  All major features -- language switching, colour themes, theorem environments,
+  extra math alphabets, table of contents layouts, and micro-typographic fine-tuning --
+  are used here as live examples. Compilation requires LuaLaTeX.
+\end{abstract}
+
+\begin{document}
+
+\maketitle
+
+\section{Quick Start}
+
+Load the package with your desired options. This document uses
+\cmd{color=carbon}, \cmd{toc-layout=inline}, and \cmd{extra-math=true}:
+
+\begin{verbatim}
+\usepackage[
+  lang=en, color=carbon, style=modern,
+  extra-math=true, toc=true,
+  toc-layout=inline, fine-breaking=false
+]{synaptic}
+\end{verbatim}
+
+\section{Title Page Customization}
+
+The following commands set metadata on the title page:
+
+\begin{verbatim}
+\title{...}
+\author[mark]{...}
+\affiliation[mark]{...}
+\emailAdd{...}
+\keywords{...}
+\fpheader{...}
+\subheader{...}
+\preprint{...}
+\arxivnumber{...}
+\dedicated{...}
+\end{verbatim}
+
+The abstract is entered as an environment, supporting multiple paragraphs.
+
+\section{Theorem Environments}
+
+\texttt{synaptic} provides \texttt{theorem}, \texttt{lemma}, \texttt{proposition},
+and \texttt{definition} by default. Their names are automatically localised when
+\texttt{lang=zh} is used.
+
+You can extend the set with \cmd{declarecustomtheorem}:
+
+\begin{verbatim}
+\declarecustomtheorem{example}{Example}
+\declarecustomtheorem{remark}{Remark}
+\end{verbatim}
+
+\begin{definition}[Linear Space]
+  Let $V$ be a vector space over a field $\symbb{F}$. If $\dim V = n$, then $V \cong \symbb{F}^n$.
+\end{definition}
+
+\begin{theorem}[Dimension Formula]\label{thm:dim}
+  For any linear transformation $T: V \rightarrow W$,
+  \begin{equation}
+    \dim \ker T + \dim \operatorname{im} T = \dim V .
+  \end{equation}
+\end{theorem}
+
+\begin{lemma}
+  If $T$ is invertible, then $\dim V = \dim W$.
+\end{lemma}
+
+\begin{proof}
+  Immediate from Theorem~\ref{thm:dim}.
+\end{proof}
+
+\begin{example}[Matrix Representation]
+  In a chosen basis, $T$ corresponds to a matrix $A \in \GL_n(\symbb{R})$.
+\end{example}
+
+\begin{remark}
+  Custom environments share the same counter as \texttt{theorem}.
+\end{remark}
+
+\section{Extra Math Alphabets}
+
+When \cmd{extra-math=true}, the following shortcuts are available:
+
+\begin{itemize}
+  \item \cmd{symbb\{Q\}} → $\symbbQ$ (blackboard bold)
+  \item \cmd{symcal\{C\}} → $\symcalC$ (calligraphic)
+  \item \cmd{symfrak\{g\}} → $\symfrakg$ (Fraktur)
+\end{itemize}
+
+They integrate seamlessly with \texttt{unicode-math}.
+
+\section{Table of Contents and Layouts}
+
+The \cmd{toc-layout} option controls where the table of contents appears:
+\begin{itemize}
+  \item \texttt{top} -- after the title page (default)
+  \item \texttt{inline} -- inside the title page (as demonstrated here)
+  \item \texttt{page} -- on a separate page
+\end{itemize}
+
+The \cmd{style} option provides two page geometries:
+\begin{itemize}
+  \item \texttt{modern} -- standard margins for comfortable reading
+  \item \texttt{minimal} -- compact layout for short notes
+\end{itemize}
+
+\section{Fine-Breaking and Micro-typography}
+
+When \cmd{fine-breaking=true}, the package adjusts \verb|\emergencystretch|,
+\verb|\tolerance|, and penalties to avoid widows and overfull boxes.
+Here it is turned off (\texttt{fine-breaking=false}) to show the difference.
+
+\section{Colour Themes}
+
+Three preset colour themes are available:
+\begin{itemize}
+  \item \texttt{ocean} -- deep blue (default)
+  \item \texttt{teal} -- teal green
+  \item \texttt{carbon} -- dark grey (used in this document)
+\end{itemize}
+
+\acknowledgments
+Thanks to all beta testers and early adopters of \texttt{synaptic}.
+
+\end{document}

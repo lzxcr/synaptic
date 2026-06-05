@@ -1,0 +1,130 @@
+% !TEX program = lualatex
+\documentclass[a4paper,11pt]{scrartcl}
+
+\usepackage[
+  lang          = en,
+  color         = ocean,
+  style         = minimal,
+  extra-math    = true,
+  toc           = true,
+  toc-layout    = page,
+  fine-breaking = true
+]{synaptic}
+
+\DeclareMathOperator{\End}{End}
+\declarecustomtheorem{notation}{Notation}
+\declarecustomtheorem{caution}{Caution}
+
+\fpheader{Synaptic Technical Manual}
+\subheader{Internals and Customisation}
+\preprint{SYNAPTIC-TECH}
+\title{\texttt{synaptic}: Technical Manual\\ Internals and Customisation}
+\author{Template Development Team}
+\affiliation{CTAN Community}
+\emailAdd{synaptic@example.com}
+\keywords{synaptic, technical manual, internals, customisation}
+\arxivnumber{2605.54321}
+\dedicated{To all those who craft beautiful documents with \TeX.}
+
+\begin{abstract}
+  This document explains the internal architecture of \texttt{synaptic} and provides
+  recipes for extending its functionality: overriding labels and styles, adding theorem
+  environments, and creating custom colour themes. It is intended for package developers
+  and power users.
+\end{abstract}
+
+\begin{document}
+
+\maketitle
+
+\section{Architecture Overview}
+
+\texttt{synaptic} is written entirely in \texttt{expl3}. All internal macros carry the
+prefix \verb|\__synaptic_| or \verb|\g__synaptic_|. Key-value options are parsed via
+\texttt{l3keys2e} and stored in global variables early during package loading.
+
+The main data structures are:
+
+\begin{itemize}
+  \item \verb|\g__synaptic_labels_prop| -- label texts
+  \item \verb|\g__synaptic_styles_prop| -- style macros
+  \item \verb|\g__synaptic_meta_prop| -- title-page metadata
+  \item \verb|\g__synaptic_authors_seq|, \verb|\g__synaptic_affils_seq|, \verb|\g__synaptic_emails_seq|
+\end{itemize}
+
+All are populated via \cmd{prop\_gput:Nnn} or \cmd{seq\_gput\_right:Nn}, ensuring easy extension.
+
+\section{Customising Labels and Styles}
+
+Users can override any label or style in the preamble:
+
+\begin{verbatim}
+\synaptic_register_label:nn { abstract } { Summary }
+\synaptic_register_style:nn { thmhead }
+  { \normalfont\bfseries\color{blue} }
+\end{verbatim}
+
+Supported label keys: \texttt{abstract}, \texttt{keywords}, \texttt{arxiv},
+\texttt{default\_header}, \texttt{acknowledgments}, \texttt{proof}, \texttt{thm},
+\texttt{lemma}, \texttt{prop}, \texttt{def}, \texttt{email}.
+
+Style keys: \texttt{thmhead}, \texttt{thmnote}, \texttt{label}, \texttt{thmbody}.
+
+\begin{caution}
+  Customizations should be placed before \cmd{maketitle} to take effect.
+\end{caution}
+
+\section{Theorem Environment Internals}
+
+The predefined style \texttt{syn\_thm\_modern\_style} is declared with \cmd{declaretheoremstyle}.
+All theorem environments are derived from it and share a sibling relationship to \texttt{theorem}.
+
+\begin{verbatim}
+\declaretheorem[
+  style = syn_thm_modern_style,
+  name  = \synaptic_get_label:n { lemma },
+  sibling = theorem
+]{lemma}
+\end{verbatim}
+
+The user-level wrapper \cmd{declarecustomtheorem} simplifies this process.
+
+\begin{notation}
+  In this document we used \texttt{notation} and \texttt{caution} as custom environments.
+\end{notation}
+
+\section{Font Loading and Fallbacks}
+
+The package checks for font availability with \cmd{IfFontExistsTF} and provides explicit
+fallbacks (e.g., Latin Modern). In Chinese mode, \texttt{ctex} is loaded with \texttt{scheme=plain}
+to avoid clashes with \texttt{amsthm}. No unknown options are passed to \texttt{ctex},
+preventing option leakage.
+
+\section{Colour Theme Internals}
+
+All colours derive from \texttt{syncolor}. Derived colours are computed via \cmd{colorlet}:
+\begin{verbatim}
+\colorlet{syncolor-light}{syncolor!40}
+\colorlet{syncolor-rule}{gray!40}
+\end{verbatim}
+To create a completely new theme, redefine \texttt{syncolor} and its variants in the preamble.
+
+\section{Fine-Breaking Implementation}
+
+When \texttt{fine-breaking=true}, the package sets:
+
+\begin{verbatim}
+\emergencystretch=4em
+\tolerance=4000
+\widowpenalty=10000
+\clubpenalty=10000
+\raggedbottom
+\end{verbatim}
+
+These parameters reduce overfull boxes and widow/orphan lines without drastically
+altering the overall look.
+
+\acknowledgments
+We welcome feedback and contributions through CTAN.
+
+\end{document}

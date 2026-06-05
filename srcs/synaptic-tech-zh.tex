@@ -1,0 +1,122 @@
+% !TEX program = lualatex
+\documentclass[a4paper,11pt]{scrartcl}
+
+\usepackage[
+  lang          = zh,
+  color         = ocean,
+  style         = minimal,
+  extra-math    = false,
+  toc           = true,
+  toc-layout    = page,
+  fine-breaking = true
+]{synaptic}
+
+\DeclareMathOperator{\End}{End}
+\declarecustomtheorem{notation}{记号}
+\declarecustomtheorem{caution}{注意}
+
+\fpheader{Synaptic 技术手册}
+\subheader{内部架构与扩展}
+\preprint{SYNAPTIC-TECH}
+\title{\texttt{synaptic} 技术手册 \\ 内部架构与自定义扩展}
+\author{模板开发团队}
+\affiliation{CTAN 社区}
+\emailAdd{synaptic@example.com}
+\keywords{synaptic, 技术手册, 内部实现, 自定义}
+\arxivnumber{2605.54321}
+\dedicated{献给所有热爱 \TeX{} 排版艺术的探索者。}
+
+\begin{abstract}
+  本文档面向包开发者和高级用户，详细说明 \texttt{synaptic} 的内部数据结构、
+  标签与样式自定义接口、定理环境扩展以及字体加载与回退机制。
+  同时通过实例展示如何在不修改核心文件的情况下完全定制外观。
+\end{abstract}
+
+\begin{document}
+
+\maketitle
+
+\section{架构概览}
+
+\texttt{synaptic} 全部以 \texttt{expl3} 编写，内部函数前缀为 \verb|\__synaptic_| 或
+\verb|\g__synaptic_|。键值选项通过 \texttt{l3keys2e} 处理并在早期执行。
+
+核心数据容器：
+
+\begin{itemize}
+  \item \verb|\g__synaptic_labels_prop| — 标签文本（如“摘要”“定理”等）
+  \item \verb|\g__synaptic_styles_prop| — 样式代码（如定理头字体）
+  \item \verb|\g__synaptic_meta_prop| — 标题页元数据
+  \item \verb|\g__synaptic_authors_seq|、\verb|\g__synaptic_affils_seq|、\verb|\g__synaptic_emails_seq| — 作者、单位、邮箱列表
+\end{itemize}
+
+这些容器均通过 \cmd{prop\_gput:Nnn} 和 \cmd{seq\_gput\_right:Nn} 填充，保证了扩展性。
+
+\section{标签与样式的自定义}
+
+用户可在导言区使用以下命令覆盖任何标签或样式：
+
+\begin{verbatim}
+\synaptic_register_label:nn { abstract } { 摘要 }
+\synaptic_register_style:nn { thmhead }
+  { \normalfont\bfseries\color{blue} }
+\end{verbatim}
+
+支持的标签键：\texttt{abstract}、\texttt{keywords}、\texttt{arxiv}、\texttt{default\_header}、
+\texttt{acknowledgments}、\texttt{proof}、\texttt{thm}、\texttt{lemma}、\texttt{prop}、\texttt{def}、\texttt{email}。
+
+样式键：\texttt{thmhead}（定理头）、\texttt{thmnote}（定理注释）、\texttt{label}（标题页标签字体）、\texttt{thmbody}（定理正文）。
+
+\begin{caution}
+  自定义标签或样式应在 \cmd{maketitle} 之前完成，以确保标题页和定理环境使用正确的名称和字体。
+\end{caution}
+
+\section{定理环境的底层构造}
+
+预定义的定理样式名为 \texttt{syn\_thm\_modern\_style}，它使用 \cmd{declaretheoremstyle} 定义。
+所有定理均通过 \cmd{declaretheorem} 基于该样式创建，且默认与 \texttt{theorem} 计数器兄弟关联。
+
+\begin{verbatim}
+\declaretheorem[
+  style = syn_thm_modern_style,
+  name  = \synaptic_get_label:n { lemma },
+  sibling = theorem
+]{lemma}
+\end{verbatim}
+
+\cmd{declarecustomtheorem} 宏是对上述过程的封装，便于用户快速添加新环境。
+
+\begin{notation}
+  本文档中我们自定义了 \texttt{notation} 和 \texttt{caution} 环境，以展示扩展的简洁性。
+\end{notation}
+
+\section{字体加载与回退逻辑}
+
+包使用 \cmd{IfFontExistsTF} 检测字体是否存在，并提供显式回退。
+例如，主罗马字体优先选择 \texttt{XCharter}，若缺失则回退至 \texttt{Latin Modern Roman}，并给出警告。
+中文模式通过 \cmd{ctex} 加载，选项 \texttt{scheme=plain} 可避免与 \texttt{amsthm} 冲突。
+
+\section{颜色方案的内部实现}
+
+所有颜色均继承自 \texttt{syncolor}，其派生颜色通过 \cmd{colorlet} 计算，例如：
+\begin{verbatim}
+\colorlet{syncolor-light}{syncolor!40}
+\colorlet{syncolor-rule}{gray!40}
+\end{verbatim}
+若要完全自定义颜色，只需在文档前导区重新定义 \texttt{syncolor} 及其派生色。
+
+\section{精细断行的实现}
+
+当 \texttt{fine-breaking=true} 时，包会设置：
+\begin{verbatim}
+\emergencystretch=4em
+\tolerance=4000
+\widowpenalty=10000
+\clubpenalty=10000
+\end{verbatim}
+并启用 \cmd{raggedbottom}。这些参数在不破坏整体对齐的前提下有效减少了断行问题。
+
+\acknowledgments
+本文档由 \texttt{synaptic} 团队编写，欢迎通过 CTAN 提交改进建议。
+
+\end{document}

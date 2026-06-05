@@ -1,0 +1,156 @@
+% !TEX program = lualatex
+\documentclass[a4paper,11pt]{scrartcl}
+
+\usepackage[
+  lang          = zh,
+  color         = teal,
+  style         = modern,
+  extra-math    = true,
+  toc           = true,
+  toc-layout    = top,
+  fine-breaking = true
+]{synaptic}
+
+\DeclareMathOperator{\GL}{GL}
+\declarecustomtheorem{example}{示例}
+\declarecustomtheorem{remark}{注释}
+
+\fpheader{Synaptic 用户手册}
+\subheader{用户手册}
+\preprint{SYNAPTIC-USER}
+\title{\texttt{synaptic} 用户手册 \\ 中文排版与功能演示}
+\author{模板开发团队}
+\affiliation{CTAN 社区}
+\emailAdd{synaptic@example.com}
+\keywords{synaptic, 用户手册, 中文演示, \LaTeX}
+\arxivnumber{2605.54321}
+\dedicated{谨以此文献给数学排版的结构之美。}
+
+\begin{abstract}
+  \texttt{synaptic} 是一个基于 \texttt{expl3} 与 KOMA-Script 的现代学术排版框架。
+  本文档以演示为主，全面展示语言切换、颜色主题、定理环境、数学字体扩展、目录布局以及精细断行等功能。
+  所有代码均可直接使用，仅需 LuaLaTeX 编译。
+\end{abstract}
+
+\begin{document}
+
+\maketitle
+
+\section{快速上手}
+
+安装 \texttt{synaptic.sty} 后，在文档导言区通过键值对启用所需特性。例如本手册使用了
+\cmd{color=teal}、\cmd{extra-math=true} 等，您可任意组合。
+
+\begin{verbatim}
+\usepackage[
+  lang=zh, color=ocean, style=modern,
+  extra-math=true, toc=true,
+  toc-layout=top, fine-breaking=true
+]{synaptic}
+\end{verbatim}
+
+\section{标题页元素}
+
+标题页支持多种元数据，通过专用命令设置：
+
+\begin{verbatim}
+\title{标题}
+\author[标记]{姓名}
+\affiliation[标记]{单位}
+\emailAdd{邮箱}
+\keywords{关键词}
+\fpheader{页眉}
+\subheader{副标题}
+\preprint{预印本编号}
+\arxivnumber{arXiv ID}
+\dedicated{献词}
+\end{verbatim}
+
+摘要使用 \texttt{abstract} 环境，可包含多段落。例如本文摘要。
+
+\section{定理与自定义环境}
+
+\texttt{synaptic} 预定义了 \texttt{theorem}、\texttt{lemma}、\texttt{proposition}、\texttt{definition} 四种定理。
+它们的标题根据语言选项自动切换（中文模式下为“定理”“引理”等）。
+
+您还可以通过 \cmd{declarecustomtheorem} 添加更多环境：
+
+\begin{verbatim}
+\declarecustomtheorem{example}{示例}
+\declarecustomtheorem{remark}{注释}
+\end{verbatim}
+
+这会产生与原有定理统一编号和样式的新区块。
+
+\begin{definition}[线性空间]
+  设 $V$ 是域 $\symbb{F}$ 上的向量空间。若其维数为 $n$，则存在同构 $V \cong \symbb{F}^n$。
+\end{definition}
+
+\begin{theorem}[维数公式]\label{thm:dim}
+  对于任意线性变换 $T: V \rightarrow W$，有
+  \begin{equation}
+    \dim \ker T + \dim \operatorname{im} T = \dim V .
+  \end{equation}
+\end{theorem}
+
+\begin{lemma}
+  若 $T$ 可逆，则 $\dim V = \dim W$。
+\end{lemma}
+
+\begin{proof}
+  由定理~\ref{thm:dim} 直接推得。
+\end{proof}
+
+\begin{example}[矩阵表示]
+  选定基后，$T$ 可表示为矩阵 $A \in \GL_n(\symbb{R})$。
+\end{example}
+
+\begin{remark}
+  上例展示了 \cmd{declarecustomtheorem} 的使用，编号自动递增且与定理族共用计数器。
+\end{remark}
+
+\section{数学字体扩展}
+
+启用 \cmd{extra-math=true} 后，您可直接使用以下命令：
+
+\begin{itemize}
+  \item \cmd{symbb\{Q\}} → $\symbbQ$ （黑板体）
+  \item \cmd{symcal\{C\}} → $\symcalC$ （花体）
+  \item \cmd{symfrak\{g\}} → $\symfrakg$ （哥特体）
+\end{itemize}
+
+它们与 \texttt{unicode-math} 的现代支持无缝衔接。
+
+\section{目录与页面布局}
+
+通过 \cmd{toc-layout} 可控制目录位置：
+\begin{itemize}
+  \item \texttt{top}：标题页之后（本文即用此选项）
+  \item \texttt{inline}：嵌入标题页中
+  \item \texttt{page}：单独占一页
+\end{itemize}
+
+\cmd{style} 选项提供两种页面版式：
+\begin{itemize}
+  \item \texttt{modern}：标准版式，页边距、行距适合阅读
+  \item \texttt{minimal}：更紧凑，适合短篇笔记
+\end{itemize}
+
+\section{精细断行与微排版}
+
+当 \cmd{fine-breaking=true} 时，包会自动调整紧急拉伸值、容忍度等，减少孤行和过满的水平盒子。
+这对于中文和数学混排尤其有益。
+
+\section{颜色主题}
+
+预定义的三种颜色主题：
+\begin{itemize}
+  \item \texttt{ocean}：深海蓝（默认）
+  \item \texttt{teal}：青绿色（本文所用）
+  \item \texttt{carbon}：炭灰色
+\end{itemize}
+
+\acknowledgments
+感谢所有为 \texttt{synaptic} 提供测试与反馈的用户。
+
+\end{document}
