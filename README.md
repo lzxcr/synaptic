@@ -22,7 +22,9 @@ lecture notes, and technical reports. It requires **LuaLaTeX** with a
 
 ## Installation
 
-### Quick start (no install, TEXINPUTS)
+### Recommended: TEXINPUTS (zero install)
+
+The `.sty` files are pre-committed. Just point `TEXINPUTS` at the package directory:
 
 ```bash
 git clone https://github.com/lzxcr/synaptic
@@ -30,13 +32,19 @@ export TEXINPUTS=/path/to/synaptic/tex/latex/synaptic//:$TEXINPUTS
 lualatex your-document.tex
 ```
 
-### l3build (system-wide install)
+### Alternative: l3build (system-wide)
 
 ```bash
 cd synaptic
-lualatex synaptic.ins        # extract .sty files from .dtx
-l3build install               # install to TEXMFHOME
+l3build install    # unpack + install to TEXMFHOME
 ```
+
+### What happens under the hood
+
+- `synaptic.dtx` — single-file documented source
+- `synaptic.ins` — DocStrip extraction script (run automatically by l3build)
+- `tex/latex/synaptic/` — pre-committed `.sty` files (ready to use with TEXINPUTS)
+- `l3build install` — `unpack → build/local/ → install to TEXMFHOME`
 
 ### Verification
 

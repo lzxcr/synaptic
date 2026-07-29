@@ -1,34 +1,24 @@
-%% synaptic.ins
-%% Installation file for the synaptic bundle
-%%
-%% Run from project root: lualatex tex/latex/synaptic/synaptic.ins
+%% synaptic.ins — per-directory copy
+%% This is identical to the root-level .ins
 %%
 \input docstrip.tex
-
 \keepsilent
 \askforoverwritefalse
-
-\preamble
-
-This file is part of the synaptic bundle.
-License: LPPL 1.3c or later
-
-\endpreamble
+\nopreamble\nopostamble
 
 \generate{%
-  \file{tex/latex/synaptic/synaptic.sty}          {\from{synaptic.dtx}{package}}%
-  \file{tex/latex/synaptic/synaptic-base.sty}     {\from{synaptic.dtx}{base}}%
-  \file{tex/latex/synaptic/synaptic-color.sty}    {\from{synaptic.dtx}{color}}%
-  \file{tex/latex/synaptic/synaptic-fonts.sty}    {\from{synaptic.dtx}{fonts}}%
-  \file{tex/latex/synaptic/synaptic-fonts.lua}    {\from{synaptic.dtx}{lua}}%
-  \file{tex/latex/synaptic/synaptic-layout.sty}   {\from{synaptic.dtx}{layout}}%
-  \file{tex/latex/synaptic/synaptic-title.sty}    {\from{synaptic.dtx}{title}}%
-  \file{tex/latex/synaptic/synaptic-theorem.sty}  {\from{synaptic.dtx}{theorem}}%
-  \file{tex/latex/synaptic/synaptic-book.sty}     {\from{synaptic.dtx}{book}}%
-  \file{tex/latex/synaptic/synaptic-lecture.sty}  {\from{synaptic.dtx}{lecture}}%
-  \file{tex/latex/synaptic/synaptic-boxes.sty}    {\from{synaptic.dtx}{boxes}}%
-  \file{tex/latex/synaptic/synaptic-lang-en.def}  {\from{synaptic.dtx}{lang-en}}%
-  \file{tex/latex/synaptic/synaptic-lang-zh.def}  {\from{synaptic.dtx}{lang-zh}}%
+  \file{synaptic.sty}          {\from{synaptic.dtx}{package}}%
+  \file{synaptic-base.sty}     {\from{synaptic.dtx}{base}}%
+  \file{synaptic-color.sty}    {\from{synaptic.dtx}{color}}%
+  \file{synaptic-fonts.sty}    {\from{synaptic.dtx}{fonts}}%
+  \file{synaptic-fonts.lua}    {\from{synaptic.dtx}{lua}}%
+  \file{synaptic-layout.sty}   {\from{synaptic.dtx}{layout}}%
+  \file{synaptic-title.sty}    {\from{synaptic.dtx}{title}}%
+  \file{synaptic-theorem.sty}  {\from{synaptic.dtx}{theorem}}%
+  \file{synaptic-book.sty}     {\from{synaptic.dtx}{book}}%
+  \file{synaptic-lecture.sty}  {\from{synaptic.dtx}{lecture}}%
+  \file{synaptic-boxes.sty}    {\from{synaptic.dtx}{boxes}}%
+  \file{synaptic-lang-en.def}  {\from{synaptic.dtx}{lang-en}}%
+  \file{synaptic-lang-zh.def}  {\from{synaptic.dtx}{lang-zh}}%
 }
-
 \endbatchfile
