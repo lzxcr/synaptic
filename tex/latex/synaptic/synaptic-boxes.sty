@@ -1,0 +1,161 @@
+%%
+%% synaptic-boxes.sty
+%% tcolorbox-based environments: example, remark, warning, exerxise, synbox
+%%
+%% This file is part of the synaptic bundle.
+%% License: LPPL 1.3c or later
+%%
+\NeedsTeXFormat{LaTeX2e}[2023/11/01]
+\ProvidesExplPackage{synaptic-boxes}{2026-06-05}{2.0.0}
+  {Synaptic~Box~Environments}
+
+\RequirePackage{tcolorbox}
+\tcbuselibrary{skins, breakable, theorems}
+
+% ---------------------------------------------------------------------------
+% Labels (defined in synaptic-lang-*.def, loaded by synaptic-base)
+% ---------------------------------------------------------------------------
+
+% ---------------------------------------------------------------------------
+% Example box
+% ---------------------------------------------------------------------------
+\newtcbtheorem[number within=section]{synapticexample}{\c_synaptic_label_example_tl}
+  {
+    theoremname,
+    colback       = syn-faded!10,
+    colframe      = syn-primary!60,
+    coltitle      = syn-primary,
+    fonttitle     = \bfseries\sffamily,
+    coltext       = syn-text-dark,
+    left          = 6pt,
+    right         = 6pt,
+    top           = 4pt,
+    bottom        = 4pt,
+    boxsep        = 4pt,
+    arc           = 2pt,
+    sharp corners = north,
+    breakable
+  }{ex}
+
+% Wrapper environment
+\NewDocumentEnvironment{example}{ O{} }
+  {
+    \begin{synapticexample}{#1}{}
+  }
+  {
+    \end{synapticexample}
+  }
+
+% ---------------------------------------------------------------------------
+% Remark box (gray left border)
+% ---------------------------------------------------------------------------
+\newtcbtheorem[number within=section]{synapticremark}{\c_synaptic_label_remark_tl}
+  {
+    theoremname,
+    colback       = gray!5,
+    colframe      = gray!50,
+    coltitle      = gray!70,
+    fonttitle     = \bfseries\sffamily,
+    coltext       = syn-text-dark,
+    left          = 6pt,
+    right         = 6pt,
+    top           = 4pt,
+    bottom        = 4pt,
+    boxsep        = 4pt,
+    arc           = 2pt,
+    sharp corners = north,
+    breakable
+  }{rm}
+
+\NewDocumentEnvironment{remark}{ O{} }
+  {
+    \begin{synapticremark}{#1}{}
+  }
+  {
+    \end{synapticremark}
+  }
+
+% ---------------------------------------------------------------------------
+% Warning box (red/amber left border)
+% ---------------------------------------------------------------------------
+\newtcbtheorem[number within=section]{synapticwarning}{\c_synaptic_label_warning_tl}
+  {
+    theoremname,
+    colback       = orange!5,
+    colframe      = orange!70,
+    coltitle      = orange!90!black,
+    fonttitle     = \bfseries\sffamily,
+    coltext       = syn-text-dark,
+    left          = 6pt,
+    right         = 6pt,
+    top           = 4pt,
+    bottom        = 4pt,
+    boxsep        = 4pt,
+    arc           = 2pt,
+    sharp corners = north,
+    breakable
+  }{wrn}
+
+\NewDocumentEnvironment{warning}{ O{} }
+  {
+    \begin{synapticwarning}{#1}{}
+  }
+  {
+    \end{synapticwarning}
+  }
+
+% ---------------------------------------------------------------------------
+% Exercise box (lecture mode)
+% ---------------------------------------------------------------------------
+\newtcbtheorem[number within=section]{synapticexercise}{\c_synaptic_label_exercise_tl}
+  {
+    theoremname,
+    colback       = teal!5,
+    colframe      = teal!60,
+    coltitle      = teal!80!black,
+    fonttitle     = \bfseries\sffamily,
+    coltext       = syn-text-dark,
+    left          = 6pt,
+    right         = 6pt,
+    top           = 4pt,
+    bottom        = 4pt,
+    boxsep        = 4pt,
+    arc           = 2pt,
+    sharp corners = north,
+    breakable
+  }{exr}
+
+\NewDocumentEnvironment{exercise}{ O{} }
+  {
+    \begin{synapticexercise}{#1}{}
+  }
+  {
+    \end{synapticexercise}
+  }
+
+% ---------------------------------------------------------------------------
+% Generic synbox
+% ---------------------------------------------------------------------------
+\NewDocumentEnvironment{synbox}{ O{} }
+  {
+    \begin{tcolorbox}[
+      colback       = syn-faded!15,
+      colframe      = syn-primary,
+      coltitle      = white,
+      fonttitle     = \bfseries\sffamily,
+      title         = {#1},
+      left          = 6pt,
+      right         = 6pt,
+      top           = 4pt,
+      bottom        = 4pt,
+      boxsep        = 4pt,
+      arc           = 2pt,
+      sharp corners = north,
+      breakable
+    ]
+  }
+  {
+    \end{tcolorbox}
+  }
+
+\endinput

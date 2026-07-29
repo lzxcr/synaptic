@@ -3,154 +3,177 @@
 
 \usepackage[
   lang          = zh,
-  color         = teal,
-  style         = modern,
+  theme         = ocean,
+  mode          = journal,
   extra-math    = true,
   toc           = true,
-  toc-layout    = top,
-  fine-breaking = true
+  toc-layout    = inline,
+  fine-breaking = false
 ]{synaptic}
 
 \DeclareMathOperator{\GL}{GL}
-\declarecustomtheorem{example}{示例}
-\declarecustomtheorem{remark}{注释}
+\SynapticNewTheorem{example}{示例}
+\SynapticNewTheorem{remark}{注记}
 
-\fpheader{Synaptic 用户手册}
-\subheader{用户手册}
-\preprint{SYNAPTIC-USER}
-\title{\texttt{synaptic} 用户手册 \\ 中文排版与功能演示}
-\author{模板开发团队}
-\affiliation{CTAN 社区}
-\emailAdd{synaptic@example.com}
-\keywords{synaptic, 用户手册, 中文演示, \LaTeX}
-\arxivnumber{2605.54321}
-\dedicated{谨以此文献给数学排版的结构之美。}
+\SynapticHeader{synaptic 用户指南}
+\SynapticSubHeader{功能展示}
+\SynapticPreprint{v2.0}
+\SynapticTitle{\texttt{synaptic} 宏包——用户指南}
+\SynapticAuthor{synaptic 项目}
+\SynapticAffiliation{CTAN 社区}
+\SynapticEmail{synaptic@example.com}
+\SynapticKeywords{synaptic, 用户指南, LaTeX, LuaLaTeX}
+\SynapticArxiv{2605.54321}
+\SynapticDedicated{献给结构排版的优雅。}
 
 \begin{abstract}
-  \texttt{synaptic} 是一个基于 \texttt{expl3} 与 KOMA-Script 的现代学术排版框架。
-  本文档以演示为主，全面展示语言切换、颜色主题、定理环境、数学字体扩展、目录布局以及精细断行等功能。
-  所有代码均可直接使用，仅需 LuaLaTeX 编译。
+  \textbf{synaptic} 是一个模块化的 \LaTeX3 设计系统，适用于学术论文、书籍、讲义和技术报告。
+  它需要 \texttt{LuaLaTeX} 引擎和 \texttt{KOMA-Script} 文档类。本指南涵盖安装、选项与用法。
 \end{abstract}
 
 \begin{document}
+\SynapticMakeTitle
 
-\maketitle
+\section{安装}
 
-\section{快速上手}
-
-安装 \texttt{synaptic.sty} 后，在文档导言区通过键值对启用所需特性。例如本手册使用了
-\cmd{color=teal}、\cmd{extra-math=true} 等，您可任意组合。
+克隆仓库并将 \texttt{tex/latex/synaptic/} 加入 \texttt{TEXINPUTS}：
 
 \begin{verbatim}
-\usepackage[
-  lang=zh, color=ocean, style=modern,
-  extra-math=true, toc=true,
-  toc-layout=top, fine-breaking=true
-]{synaptic}
+git clone https://github.com/lzxcr/synaptic
+export TEXINPUTS=/path/to/synaptic/tex/latex/synaptic//:$TEXINPUTS
 \end{verbatim}
 
-\section{标题页元素}
-
-标题页支持多种元数据，通过专用命令设置：
+或通过 \texttt{l3build} 安装：
 
 \begin{verbatim}
-\title{标题}
-\author[标记]{姓名}
-\affiliation[标记]{单位}
-\emailAdd{邮箱}
-\keywords{关键词}
-\fpheader{页眉}
-\subheader{副标题}
-\preprint{预印本编号}
-\arxivnumber{arXiv ID}
-\dedicated{献词}
+cd synaptic
+lualatex synaptic.ins   # 解包 .sty 文件
+l3build install          # 安装至 TEXMFHOME
 \end{verbatim}
 
-摘要使用 \texttt{abstract} 环境，可包含多段落。例如本文摘要。
+\section{选项}
 
-\section{定理与自定义环境}
+所有选项通过 \texttt{\string\usepackage[key=val,...]\{synaptic\}} 传入。
+运行时修改用 \verb|\SynapticSetup{key=val}|。
 
-\texttt{synaptic} 预定义了 \texttt{theorem}、\texttt{lemma}、\texttt{proposition}、\texttt{definition} 四种定理。
-它们的标题根据语言选项自动切换（中文模式下为“定理”“引理”等）。
+\subsection{出版模式（\texttt{mode=}）}
 
-您还可以通过 \cmd{declarecustomtheorem} 添加更多环境：
+\begin{tabular}{lp{0.7\textwidth}}
+  \hline
+  \textbf{值} & \textbf{描述} \\
+  \hline
+  \texttt{journal} & 学术论文。含投稿抬头、摘要、关键词、arXiv。 \\
+  \texttt{book}    & 专著或学位论文。章节标题、页眉、前/正/后文。 \\
+  \texttt{lecture} & 讲义笔记。宽边距、大标题、tcolorbox 彩色框。 \\
+  \texttt{notes}   & 个人笔记。紧凑布局、极简配件。 \\
+  \hline
+\end{tabular}
 
-\begin{verbatim}
-\declarecustomtheorem{example}{示例}
-\declarecustomtheorem{remark}{注释}
-\end{verbatim}
+\subsection{颜色主题（\texttt{theme=}）}
 
-这会产生与原有定理统一编号和样式的新区块。
+\begin{tabular}{lll}
+  \hline
+  \textbf{主题} & \textbf{主色} & \textbf{辅色} \\
+  \hline
+  \texttt{ocean}    & 蓝 (0,106,176)   & 深蓝灰 (46,64,83) \\
+  \texttt{graphite} & 灰 (75,86,99)    & 深灰 (45,52,62) \\
+  \texttt{forest}   & 绿 (30,115,80)  & 深绿 (56,68,60) \\
+  \texttt{midnight} & 海军蓝 (25,55,109) & 极深 (30,35,50) \\
+  \texttt{paper}    & 深灰 (55,58,62) & 近黑 (45,48,52) \\
+  \hline
+\end{tabular}
 
-\begin{definition}[线性空间]
-  设 $V$ 是域 $\symbb{F}$ 上的向量空间。若其维数为 $n$，则存在同构 $V \cong \symbb{F}^n$。
-\end{definition}
+\noindent 自定义主题：\verb|\SynapticDefineTheme{名}{RGB:...}{RGB:...}|。
 
-\begin{theorem}[维数公式]\label{thm:dim}
-  对于任意线性变换 $T: V \rightarrow W$，有
-  \begin{equation}
-    \dim \ker T + \dim \operatorname{im} T = \dim V .
-  \end{equation}
+\subsection{字体组合（\texttt{fontset=}）}
+
+\begin{tabular}{llll}
+  \hline
+  \textbf{值} & \textbf{衬线} & \textbf{无衬线} & \textbf{数学} \\
+  \hline
+  \texttt{auto}      & 自动检测    & 自动检测 & 自动检测 \\
+  \texttt{xcharter}  & XCharter    & Cabin    & XCharter Math \\
+  \texttt{libertinus}& Libertinus Serif & Libertinus Sans & Libertinus Math \\
+  \texttt{stix2}     & STIX Two Text & STIX Two Text & STIX Two Math \\
+  \texttt{lm}        & Latin Modern & Latin Modern Sans & Latin Modern Math \\
+  \hline
+\end{tabular}
+
+\subsection{其他选项}
+
+\begin{tabular}{llp{0.5\textwidth}}
+  \hline
+  \textbf{键} & \textbf{类型} & \textbf{说明} \\
+  \hline
+  \texttt{lang} & choice (en, zh) & 标签语言与中文字体。 \\
+  \texttt{toc} & bool (true) & 是否显示目录。 \\
+  \texttt{toc-layout} & choice (top, inline, page) & 目录位置。 \\
+  \texttt{extra-math} & bool (false) & 启用 $\symbb{A}$、$\symcal{A}$、$\symfrak{A}$。 \\
+  \texttt{fine-breaking} & bool (true) & 精细断行优化。 \\
+  \hline
+\end{tabular}
+
+\section{用户 API}
+
+\subsection{元数据命令}
+
+\verb|\SynapticTitle{文本}| —— 文档标题（替代 \verb|\title|）。
+
+\verb|\SynapticAuthor[标记]{姓名}| —— 作者，可选附属机构标记。
+
+\verb|\SynapticAffiliation[标记]{文本}| —— 附属机构。
+
+\verb|\SynapticEmail{地址}|、\verb|\SynapticKeywords{...}|、
+\verb|\SynapticArxiv{编号}| —— 邮箱、关键词、arXiv 链接。
+
+\verb|\SynapticHeader{文本}|、\verb|\SynapticSubHeader{文本}|、
+\verb|\SynapticPreprint{编号}|、\verb|\SynapticDedicated{文本}| —— 自定义页头字段。
+
+\verb|\SynapticMakeTitle| —— 渲染标题页。
+
+\subsection{自定义}
+
+\verb|\SynapticSetup{key=val}| —— 加载后修改选项。
+
+\verb|\SynapticNewTheorem{环境名}{显示名}| —— 声明定理类环境。
+
+\verb|\SynapticDefineTheme{A}{B}| —— 自定义颜色主题。
+
+\section{数学排版}
+
+\begin{theorem}[欧拉恒等式]
+  对任意实数 \(x\)，\(e^{i\pi} + 1 = 0\)。
 \end{theorem}
 
-\begin{lemma}
-  若 $T$ 可逆，则 $\dim V = \dim W$。
-\end{lemma}
-
 \begin{proof}
-  由定理~\ref{thm:dim} 直接推得。
+  由复数指数定义直接推出。
 \end{proof}
 
-\begin{example}[矩阵表示]
-  选定基后，$T$ 可表示为矩阵 $A \in \GL_n(\symbb{R})$。
-\end{example}
+\[
+  \int_{0}^{\infty} e^{-x^2}\,dx = \frac{\sqrt{\pi}}{2}
+\]
 
-\begin{remark}
-  上例展示了 \cmd{declarecustomtheorem} 的使用，编号自动递增且与定理族共用计数器。
-\end{remark}
+启用 \texttt{extra-math} 后：\(\symbb{N} \subset \symbb{Z} \subset \symbb{R} \subset \symbb{C}\)
+以及 \(\mathcal{A} \xrightarrow{\sim} \mathfrak{B}\)。
 
-\section{数学字体扩展}
+\section{列表与图表标题}
 
-启用 \cmd{extra-math=true} 后，您可直接使用以下命令：
+\begin{enumerate}
+  \item 第一项，附带一些展示间距的内容。
+  \item 第二项
+    \begin{itemize}
+      \item 子项一
+      \item 子项二
+    \end{itemize}
+  \item 第三项结束列表。
+\end{enumerate}
 
-\begin{itemize}
-  \item \cmd{symbb\{Q\}} → $\symbbQ$ （黑板体）
-  \item \cmd{symcal\{C\}} → $\symcalC$ （花体）
-  \item \cmd{symfrak\{g\}} → $\symfrakg$ （哥特体）
-\end{itemize}
-
-它们与 \texttt{unicode-math} 的现代支持无缝衔接。
-
-\section{目录与页面布局}
-
-通过 \cmd{toc-layout} 可控制目录位置：
-\begin{itemize}
-  \item \texttt{top}：标题页之后（本文即用此选项）
-  \item \texttt{inline}：嵌入标题页中
-  \item \texttt{page}：单独占一页
-\end{itemize}
-
-\cmd{style} 选项提供两种页面版式：
-\begin{itemize}
-  \item \texttt{modern}：标准版式，页边距、行距适合阅读
-  \item \texttt{minimal}：更紧凑，适合短篇笔记
-\end{itemize}
-
-\section{精细断行与微排版}
-
-当 \cmd{fine-breaking=true} 时，包会自动调整紧急拉伸值、容忍度等，减少孤行和过满的水平盒子。
-这对于中文和数学混排尤其有益。
-
-\section{颜色主题}
-
-预定义的三种颜色主题：
-\begin{itemize}
-  \item \texttt{ocean}：深海蓝（默认）
-  \item \texttt{teal}：青绿色（本文所用）
-  \item \texttt{carbon}：炭灰色
-\end{itemize}
+\begin{figure}[h]
+  \centering \rule{0.3\textwidth}{0.15\textwidth}
+  \caption{带样式标题的示例图像。}
+\end{figure}
 
 \acknowledgments
-感谢所有为 \texttt{synaptic} 提供测试与反馈的用户。
+synaptic 项目感谢 \LaTeX3 团队在 \texttt{expl3} 上的卓越工作。
 
 \end{document}

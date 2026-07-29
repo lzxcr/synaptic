@@ -3,8 +3,8 @@
 
 \usepackage[
   lang          = en,
-  color         = carbon,
-  style         = modern,
+  theme         = ocean,
+  mode          = journal,
   extra-math    = true,
   toc           = true,
   toc-layout    = inline,
@@ -12,147 +12,170 @@
 ]{synaptic}
 
 \DeclareMathOperator{\GL}{GL}
-\declarecustomtheorem{example}{Example}
-\declarecustomtheorem{remark}{Remark}
+\SynapticNewTheorem{example}{Example}
+\SynapticNewTheorem{remark}{Remark}
 
-\fpheader{Synaptic User Guide}
-\subheader{Feature Showcase}
-\preprint{SYNAPTIC-USER}
-\title{The \texttt{synaptic} Package\\ User Guide and Feature Showcase}
-\author{Template Development Team}
-\affiliation{CTAN Community}
-\emailAdd{synaptic@example.com}
-\keywords{synaptic, user guide, LaTeX, feature showcase}
-\arxivnumber{2605.54321}
-\dedicated{To the elegance of structured typesetting.}
+\SynapticHeader{Synaptic User Guide}
+\SynapticSubHeader{Feature Showcase}
+\SynapticPreprint{v2.0}
+\SynapticTitle{The \texttt{synaptic} Package\\User Guide}
+\SynapticAuthor{synaptic project}
+\SynapticAffiliation{CTAN Community}
+\SynapticEmail{synaptic@example.com}
+\SynapticKeywords{synaptic, user guide, LaTeX, LuaLaTeX}
+\SynapticArxiv{2605.54321}
+\SynapticDedicated{To the elegance of structured typesetting.}
 
 \begin{abstract}
-  This document serves as a hands-on demonstration of \texttt{synaptic}, a modern
-  academic typesetting framework built on \texttt{expl3} and KOMA-Script.
-  All major features -- language switching, colour themes, theorem environments,
-  extra math alphabets, table of contents layouts, and micro-typographic fine-tuning --
-  are used here as live examples. Compilation requires LuaLaTeX.
+  \textbf{synaptic} is a modular \LaTeX3 design system for academic articles,
+  books, lecture notes, and technical reports. It requires \texttt{LuaLaTeX}
+  with a \texttt{KOMA-Script} document class. This guide covers installation,
+  options, and usage.
 \end{abstract}
 
 \begin{document}
+\SynapticMakeTitle
 
-\maketitle
+\section{Installation}
 
-\section{Quick Start}
-
-Load the package with your desired options. This document uses
-\cmd{color=carbon}, \cmd{toc-layout=inline}, and \cmd{extra-math=true}:
+Clone the repository and add \texttt{tex/latex/synaptic/} to your \texttt{TEXINPUTS}:
 
 \begin{verbatim}
-\usepackage[
-  lang=en, color=carbon, style=modern,
-  extra-math=true, toc=true,
-  toc-layout=inline, fine-breaking=false
-]{synaptic}
+git clone https://github.com/lzxcr/synaptic
+export TEXINPUTS=/path/to/synaptic/tex/latex/synaptic//:$TEXINPUTS
 \end{verbatim}
 
-\section{Title Page Customization}
-
-The following commands set metadata on the title page:
+Or install via \texttt{l3build}:
 
 \begin{verbatim}
-\title{...}
-\author[mark]{...}
-\affiliation[mark]{...}
-\emailAdd{...}
-\keywords{...}
-\fpheader{...}
-\subheader{...}
-\preprint{...}
-\arxivnumber{...}
-\dedicated{...}
+cd synaptic
+lualatex synaptic.ins   # extract .sty files
+l3build install          # install to TEXMFHOME
 \end{verbatim}
 
-The abstract is entered as an environment, supporting multiple paragraphs.
+\section{Options}
 
-\section{Theorem Environments}
+All options are passed via \texttt{\string\usepackage[key=val,...]\{synaptic\}}.
+Runtime changes use \texttt{\string\SynapticSetup\{key=val\}}.
 
-\texttt{synaptic} provides \texttt{theorem}, \texttt{lemma}, \texttt{proposition},
-and \texttt{definition} by default. Their names are automatically localised when
-\texttt{lang=zh} is used.
+\subsection{Publication Modes (\texttt{mode=})}
 
-You can extend the set with \cmd{declarecustomtheorem}:
+\begin{tabular}{lp{0.7\textwidth}}
+  \hline
+  \textbf{Value} & \textbf{Description} \\
+  \hline
+  \texttt{journal} & Academic paper. Submission header, abstract, keywords, arXiv. \\
+  \texttt{book}    & Monograph or thesis. Chapter headings, running headers, front/back matter. \\
+  \texttt{lecture} & Lecture notes. Wide margins, large headings, tcolorbox environments. \\
+  \texttt{notes}   & Personal notes. Compact layout, minimal extras. \\
+  \hline
+\end{tabular}
 
-\begin{verbatim}
-\declarecustomtheorem{example}{Example}
-\declarecustomtheorem{remark}{Remark}
-\end{verbatim}
+\subsection{Colour Themes (\texttt{theme=})}
 
-\begin{definition}[Linear Space]
-  Let $V$ be a vector space over a field $\symbb{F}$. If $\dim V = n$, then $V \cong \symbb{F}^n$.
-\end{definition}
+\begin{tabular}{lll}
+  \hline
+  \textbf{Theme} & \textbf{Primary} & \textbf{Secondary} \\
+  \hline
+  \texttt{ocean}    & Blue (0,106,176)   & Dark blue-grey (46,64,83) \\
+  \texttt{graphite} & Grey (75,86,99)    & Dark grey (45,52,62) \\
+  \texttt{forest}   & Green (30,115,80)  & Dark green (56,68,60) \\
+  \texttt{midnight} & Navy (25,55,109)   & Deep dark (30,35,50) \\
+  \texttt{paper}    & Dark grey (55,58,62) & Near-black (45,48,52) \\
+  \hline
+\end{tabular}
 
-\begin{theorem}[Dimension Formula]\label{thm:dim}
-  For any linear transformation $T: V \rightarrow W$,
-  \begin{equation}
-    \dim \ker T + \dim \operatorname{im} T = \dim V .
-  \end{equation}
+\noindent Custom themes: \verb|\SynapticDefineTheme{mytheme}{RGB:...}{RGB:...}|.
+
+\subsection{Font Sets (\texttt{fontset=})}
+
+\begin{tabular}{llll}
+  \hline
+  \textbf{Value} & \textbf{Roman} & \textbf{Sans} & \textbf{Math} \\
+  \hline
+  \texttt{auto}      & Auto-detect    & Auto-detect & Auto-detect \\
+  \texttt{xcharter}  & XCharter       & Cabin       & XCharter Math \\
+  \texttt{libertinus}& Libertinus Serif & Libertinus Sans & Libertinus Math \\
+  \texttt{stix2}     & STIX Two Text  & STIX Two Text & STIX Two Math \\
+  \texttt{lm}        & Latin Modern   & Latin Modern Sans & Latin Modern Math \\
+  \hline
+\end{tabular}
+
+\subsection{Other Options}
+
+\begin{tabular}{llp{0.5\textwidth}}
+  \hline
+  \textbf{Key} & \textbf{Type} & \textbf{Description} \\
+  \hline
+  \texttt{lang} & choice (en, zh) & Language for labels and CJK fonts. \\
+  \texttt{toc} & bool (true) & Show table of contents. \\
+  \texttt{toc-layout} & choice (top, inline, page) & TOC position. \\
+  \texttt{extra-math} & bool (false) & Enable $\symbb{A}$, $\symcal{A}$, $\symfrak{A}$. \\
+  \texttt{fine-breaking} & bool (true) & Micro-typographic line breaking. \\
+  \hline
+\end{tabular}
+
+\section{User API}
+
+\subsection{Metadata Commands}
+
+\verb|\SynapticTitle{text}| --- document title (replaces \verb|\title|).
+
+\verb|\SynapticAuthor[mark]{name}| --- author with optional affiliation mark.
+
+\verb|\SynapticAffiliation[mark]{text}| --- affiliation.
+
+\verb|\SynapticEmail{addr}|, \verb|\SynapticKeywords{...}|,
+\verb|\SynapticArxiv{ID}| --- email, keywords, arXiv link.
+
+\verb|\SynapticHeader{text}|, \verb|\SynapticSubHeader{text}|,
+\verb|\SynapticPreprint{ID}|, \verb|\SynapticDedicated{text}| --- custom header fields.
+
+\verb|\SynapticMakeTitle| --- render the title page.
+
+\subsection{Customisation}
+
+\verb|\SynapticSetup{key=val}| --- change options after loading.
+
+\verb|\SynapticNewTheorem{env}{Name}| --- declare theorem-like environment.
+
+\verb|\SynapticDefineTheme{A}{B}| --- custom colour theme.
+
+\section{Mathematics}
+
+\begin{theorem}[Euler's Identity]
+  For any real number \(x\), \(e^{i\pi} + 1 = 0\).
 \end{theorem}
 
-\begin{lemma}
-  If $T$ is invertible, then $\dim V = \dim W$.
-\end{lemma}
-
 \begin{proof}
-  Immediate from Theorem~\ref{thm:dim}.
+  Follows from the definition of complex exponentials.
 \end{proof}
 
-\begin{example}[Matrix Representation]
-  In a chosen basis, $T$ corresponds to a matrix $A \in \GL_n(\symbb{R})$.
-\end{example}
+\[
+  \int_{0}^{\infty} e^{-x^2}\,dx = \frac{\sqrt{\pi}}{2}
+\]
 
-\begin{remark}
-  Custom environments share the same counter as \texttt{theorem}.
-\end{remark}
+With \texttt{extra-math}: \(\symbb{N} \subset \symbb{Z} \subset \symbb{R} \subset \symbb{C}\)
+and \(\mathcal{A} \xrightarrow{\sim} \mathfrak{B}\).
 
-\section{Extra Math Alphabets}
+\section{List and Caption Styling}
 
-When \cmd{extra-math=true}, the following shortcuts are available:
+\begin{enumerate}
+  \item First item with some content to show spacing.
+  \item Second item
+    \begin{itemize}
+      \item Sub-item one
+      \item Sub-item two
+    \end{itemize}
+  \item Third item concludes the list.
+\end{enumerate}
 
-\begin{itemize}
-  \item \cmd{symbb\{Q\}} → $\symbbQ$ (blackboard bold)
-  \item \cmd{symcal\{C\}} → $\symcalC$ (calligraphic)
-  \item \cmd{symfrak\{g\}} → $\symfrakg$ (Fraktur)
-\end{itemize}
-
-They integrate seamlessly with \texttt{unicode-math}.
-
-\section{Table of Contents and Layouts}
-
-The \cmd{toc-layout} option controls where the table of contents appears:
-\begin{itemize}
-  \item \texttt{top} -- after the title page (default)
-  \item \texttt{inline} -- inside the title page (as demonstrated here)
-  \item \texttt{page} -- on a separate page
-\end{itemize}
-
-The \cmd{style} option provides two page geometries:
-\begin{itemize}
-  \item \texttt{modern} -- standard margins for comfortable reading
-  \item \texttt{minimal} -- compact layout for short notes
-\end{itemize}
-
-\section{Fine-Breaking and Micro-typography}
-
-When \cmd{fine-breaking=true}, the package adjusts \verb|\emergencystretch|,
-\verb|\tolerance|, and penalties to avoid widows and overfull boxes.
-Here it is turned off (\texttt{fine-breaking=false}) to show the difference.
-
-\section{Colour Themes}
-
-Three preset colour themes are available:
-\begin{itemize}
-  \item \texttt{ocean} -- deep blue (default)
-  \item \texttt{teal} -- teal green
-  \item \texttt{carbon} -- dark grey (used in this document)
-\end{itemize}
+\begin{figure}[h]
+  \centering \rule{0.3\textwidth}{0.15\textwidth}
+  \caption{A sample figure with styled caption.}
+\end{figure}
 
 \acknowledgments
-Thanks to all beta testers and early adopters of \texttt{synaptic}.
+The synaptic project thanks the \LaTeX3 Team for \texttt{expl3}.
 
 \end{document}

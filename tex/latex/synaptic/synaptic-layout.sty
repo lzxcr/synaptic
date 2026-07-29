@@ -1,0 +1,164 @@
+%%
+%% synaptic-layout.sty
+%% Page geometry, micro-typography, section headings
+%%
+%% This file is part of the synaptic bundle.
+%% License: LPPL 1.3c or later
+%%
+\NeedsTeXFormat{LaTeX2e}[2023/11/01]
+\ProvidesExplPackage{synaptic-layout}{2026-06-05}{2.0.0}
+  {Synaptic~Page~Layout}
+
+\RequirePackage{geometry}
+\RequirePackage{setspace}
+\RequirePackage{caption}
+\RequirePackage{enumitem}
+\RequirePackage{hyperref}
+\RequirePackage{bookmark}
+
+% ---------------------------------------------------------------------------
+% Mode-aware geometry
+% ---------------------------------------------------------------------------
+\str_case:Vn \l_synaptic_mode_tl
+  {
+    { journal }
+      {
+        \geometry{
+          a4paper,
+          textwidth  = 0.74\paperwidth,
+          textheight = 0.76\paperheight,
+          top        = 0.11\paperheight,
+          left       = 0.13\paperwidth,
+          headheight = 16pt,
+          headsep    = 22pt,
+          footskip   = 30pt,
+          includeheadfoot
+        }
+      }
+    { lecture }
+      {
+        \geometry{
+          a4paper,
+          textwidth  = 0.70\paperwidth,
+          textheight = 0.74\paperheight,
+          top        = 0.12\paperheight,
+          left       = 0.14\paperwidth,
+          headheight = 18pt,
+          headsep    = 24pt,
+          footskip   = 32pt,
+          includeheadfoot
+        }
+      }
+    { book }
+      {
+        \geometry{
+          a4paper,
+          textwidth  = 0.70\paperwidth,
+          textheight = 0.76\paperheight,
+          top        = 0.10\paperheight,
+          left       = 0.15\paperwidth,
+          headheight = 16pt,
+          headsep    = 20pt,
+          footskip   = 28pt,
+          includeheadfoot,
+          twoside
+        }
+      }
+    { notes }
+      {
+        \geometry{
+          a4paper,
+          textwidth  = 0.78\paperwidth,
+          textheight = 0.80\paperheight,
+          top        = 0.08\paperheight,
+          left       = 0.11\paperwidth,
+          headheight = 14pt,
+          headsep    = 18pt,
+          footskip   = 24pt,
+          includeheadfoot
+        }
+      }
+  }
+
+% ---------------------------------------------------------------------------
+% Hyperref
+% ---------------------------------------------------------------------------
+\hypersetup{
+  colorlinks  = true,
+  urlcolor    = syn-link,
+  linkcolor   = syn-link,
+  citecolor   = syn-link,
+  filecolor   = syn-link,
+  linktocpage = true
+}
+
+% ---------------------------------------------------------------------------
+% Microtype
+% ---------------------------------------------------------------------------
+\synaptic_if_lang_zh:TF
+  {
+    \PassOptionsToPackage{verbose=false, protrusion=false, expansion=false}{microtype}
+  }
+  {
+    \PassOptionsToPackage{verbose=false}{microtype}
+  }
+\RequirePackage{microtype}
+
+% ---------------------------------------------------------------------------
+% Paragraph typography
+% ---------------------------------------------------------------------------
+\setlength{\parindent}{2em}
+\setlength{\parskip}{0pt plus 1pt}
+\widowpenalty=10000
+\clubpenalty=10000
+
+\bool_if:NT \l_synaptic_fine_breaking_bool
+  {
+    \emergencystretch=4em
+    \tolerance=4000
+    \hfuzz=1.5pt
+    \vfuzz=1.5pt
+    \raggedbottom
+  }
+
+\setstretch{1.25}
+
+% ---------------------------------------------------------------------------
+% Caption
+% ---------------------------------------------------------------------------
+\captionsetup{
+  font      = small,
+  labelfont = {bf, sf},
+  labelsep  = period,
+  skip      = 10pt
+}
+
+% ---------------------------------------------------------------------------
+% Section headings (KOMA)
+% ---------------------------------------------------------------------------
+\AddToHook{begindocument/before}
+  {
+    \setkomafont{section}{\normalfont\large\bfseries\sffamily\color{syn-primary}}
+    \setkomafont{subsection}{\normalfont\normalsize\bfseries\sffamily}
+    \setkomafont{subsubsection}{\normalfont\normalsize\bfseries}
+
+    \RedeclareSectionCommand[
+      beforeskip = -3.5ex plus -1ex minus -.2ex,
+      afterskip  = 2.0ex plus .2ex
+    ]{section}
+    \RedeclareSectionCommand[
+      beforeskip = -2.5ex plus -0.5ex minus -.1ex,
+      afterskip  = 1.2ex plus .1ex
+    ]{subsection}
+    \RedeclareSectionCommand[
+      beforeskip = -2.0ex plus -0.5ex minus -.1ex,
+      afterskip  = 1.0ex plus .1ex
+    ]{subsubsection}
+  }
+
+% ---------------------------------------------------------------------------
+% Equation numbering
+% ---------------------------------------------------------------------------
+\numberwithin{equation}{section}
+
+\endinput

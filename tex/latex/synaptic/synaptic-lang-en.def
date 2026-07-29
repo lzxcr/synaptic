@@ -1,0 +1,34 @@
+%%
+%% synaptic-lang-en.def
+%% English label definitions (idempotent)
+%%
+\tl_new:N \c_synaptic_label_abstract_tl
+\tl_gset:Nn \c_synaptic_label_abstract_tl  { Abstract }
+\tl_new:N \c_synaptic_label_keywords_tl
+\tl_gset:Nn \c_synaptic_label_keywords_tl  { Keywords }
+\tl_new:N \c_synaptic_label_arxiv_tl
+\tl_gset:Nn \c_synaptic_label_arxiv_tl     { arXiv }
+\tl_new:N \c_synaptic_label_header_tl
+\tl_gset:Nn \c_synaptic_label_header_tl    { Prepared~for~submission~to~journal }
+\tl_new:N \c_synaptic_label_thm_tl
+\tl_gset:Nn \c_synaptic_label_thm_tl       { Theorem }
+\tl_new:N \c_synaptic_label_lemma_tl
+\tl_gset:Nn \c_synaptic_label_lemma_tl     { Lemma }
+\tl_new:N \c_synaptic_label_prop_tl
+\tl_gset:Nn \c_synaptic_label_prop_tl      { Proposition }
+\tl_new:N \c_synaptic_label_def_tl
+\tl_gset:Nn \c_synaptic_label_def_tl       { Definition }
+\tl_new:N \c_synaptic_label_proof_tl
+\tl_gset:Nn \c_synaptic_label_proof_tl     { Proof }
+\tl_new:N \c_synaptic_label_example_tl
+\tl_gset:Nn \c_synaptic_label_example_tl   { Example }
+\tl_new:N \c_synaptic_label_remark_tl
+\tl_gset:Nn \c_synaptic_label_remark_tl    { Remark }
+\tl_new:N \c_synaptic_label_warning_tl
+\tl_gset:Nn \c_synaptic_label_warning_tl   { Warning }
+\tl_new:N \c_synaptic_label_exercise_tl
+\tl_gset:Nn \c_synaptic_label_exercise_tl  { Exercise }
+\tl_new:N \c_synaptic_label_acknowledgments_tl
+\tl_gset:Nn \c_synaptic_label_acknowledgments_tl { Acknowledgments }
+\tl_new:N \c_synaptic_label_email_tl
+\tl_gset:Nn \c_synaptic_label_email_tl     { E-mail }

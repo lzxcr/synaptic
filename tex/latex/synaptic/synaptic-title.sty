@@ -1,0 +1,285 @@
+%%
+%% synaptic-title.sty
+%% Title page rendering (journal mode)
+%%
+%% This file is part of the synaptic bundle.
+%% License: LPPL 1.3c or later
+%%
+\NeedsTeXFormat{LaTeX2e}[2023/11/01]
+\ProvidesExplPackage{synaptic-title}{2026-06-05}{2.0.0}
+  {Synaptic~Title~Page}
+
+% ---------------------------------------------------------------------------
+% Data structures
+% ---------------------------------------------------------------------------
+\tl_new:N   \l_synaptic_title_tl
+\tl_new:N   \l_synaptic_abstract_tl
+\tl_new:N   \l_synaptic_header_tl
+\tl_new:N   \l_synaptic_subheader_tl
+\tl_new:N   \l_synaptic_preprint_tl
+\tl_new:N   \l_synaptic_keywords_tl
+\tl_new:N   \l_synaptic_arxiv_tl
+\tl_new:N   \l_synaptic_dedicated_tl
+\seq_new:N  \l_synaptic_authors_seq
+\seq_new:N  \l_synaptic_affils_seq
+\seq_new:N  \l_synaptic_emails_seq
+\seq_new:N  \l_synaptic_author_marks_seq
+
+% ---------------------------------------------------------------------------
+% User API: metadata setters
+% ---------------------------------------------------------------------------
+\NewDocumentCommand{\SynapticTitle}{m}
+  { \tl_set:Nn \l_synaptic_title_tl {#1} }
+
+\NewDocumentCommand{\SynapticAuthor}{o m}
+  {
+    \seq_gput_right:Nx \l_synaptic_authors_seq
+      { { \exp_not:n {#2} } { \IfValueTF {#1} { \exp_not:n {#1} } { } } }
+  }
+
+\NewDocumentCommand{\SynapticAffiliation}{o m}
+  {
+    \seq_gput_right:Nx \l_synaptic_affils_seq
+      { { \IfValueTF {#1} { \exp_not:n {#1} } { } } { \exp_not:n {#2} } }
+  }
+
+\NewDocumentCommand{\SynapticEmail}{m}
+  { \seq_gput_right:Nn \l_synaptic_emails_seq { \href{mailto:#1}{\texttt{#1}} } }
+
+\NewDocumentCommand{\SynapticKeywords}{m}
+  { \tl_set:Nn \l_synaptic_keywords_tl {#1} }
+
+\NewDocumentCommand{\SynapticArxiv}{m}
+  { \tl_set:Nn \l_synaptic_arxiv_tl {#1} }
+
+\NewDocumentCommand{\SynapticHeader}{m}
+  { \tl_set:Nn \l_synaptic_header_tl {#1} }
+
+\NewDocumentCommand{\SynapticSubHeader}{m}
+  { \tl_set:Nn \l_synaptic_subheader_tl {#1} }
+
+\NewDocumentCommand{\SynapticPreprint}{m}
+  { \tl_set:Nn \l_synaptic_preprint_tl { \hfill #1 } }
+
+\NewDocumentCommand{\SynapticDedicated}{m}
+  { \tl_set:Nn \l_synaptic_dedicated_tl {#1} }
+
+% --- Abstract environment ---
+\RenewDocumentEnvironment{abstract}{ +b }
+  { \tl_gset:Nn \l_synaptic_abstract_tl {#1} }
+  { }
+
+% ---------------------------------------------------------------------------
+% Labels (defined in synaptic-lang-*.def, loaded by synaptic-base)
+% The following constants are available:
+%   \c_synaptic_label_abstract_tl, \c_synaptic_label_keywords_tl,
+%   \c_synaptic_label_arxiv_tl, \c_synaptic_label_header_tl,
+%   \c_synaptic_label_email_tl
+% ---------------------------------------------------------------------------
+
+% ---------------------------------------------------------------------------
+% Rendering helpers
+% ---------------------------------------------------------------------------
+\cs_new:Npn \__synaptic_render_author:nn #1 #2
+  {
+    \tl_if_empty:nTF {#2}
+      { #1 \quad }
+      { #1 \textsuperscript{#2} \quad }
+  }
+
+\cs_new:Npn \__synaptic_render_affil:nn #1 #2
+  {
+    \tl_if_empty:nTF {#1}
+      { \item[] #2 }
+      { \item[$^{#1}$] #2 }
+  }
+
+% ---------------------------------------------------------------------------
+% \SynapticMakeTitle
+% ---------------------------------------------------------------------------
+\NewDocumentCommand{\SynapticMakeTitle}{}
+  {
+    \pagenumbering{Alph}
+    \thispagestyle{empty}
+
+    \group_begin:
+      \setstretch{1.1}
+
+      % --- Submission header ---
+      \tl_if_empty:NTF \l_synaptic_header_tl
+        {
+          \noindent
+          {\small\sffamily\bfseries\color{gray!80} \c_synaptic_label_header_tl}
+        }
+        {
+          \noindent
+          {\small\sffamily\bfseries\color{gray!80} \l_synaptic_header_tl}
+        }
+      \l_synaptic_preprint_tl \par
+      \addvspace{8pt}
+
+      % --- Sub-header ---
+      \tl_if_empty:NF \l_synaptic_subheader_tl
+        {
+          \noindent
+          {\footnotesize\sffamily\bfseries\color{syn-primary} \l_synaptic_subheader_tl}\par
+        }
+      \addvspace{24pt}
+
+      % --- Title ---
+      { \LARGE\raggedright\normalfont\bfseries \l_synaptic_title_tl \par }
+      \addvspace{16pt}
+
+      % --- Rule ---
+      \noindent\textcolor{syn-primary!80}{\rule{\linewidth}{1.2pt}}\par
+      \addvspace{20pt}
+
+      % --- Authors ---
+      \seq_if_empty:NF \l_synaptic_authors_seq
+        {
+          \group_begin:
+            \large\bfseries\raggedright\sffamily
+            \seq_map_inline:Nn \l_synaptic_authors_seq
+              { \__synaptic_render_author:nn ##1 }
+            \unskip
+            \par
+          \group_end:
+          \addvspace{10pt}
+        }
+
+      % --- Affiliations ---
+      \seq_if_empty:NF \l_synaptic_affils_seq
+        {
+          \group_begin:
+            \itshape\small\color{syn-text-dark}
+            \begin{synaffillist}
+              \seq_map_inline:Nn \l_synaptic_affils_seq
+                { \__synaptic_render_affil:nn ##1 }
+            \end{synaffillist}
+          \group_end:
+          \addvspace{12pt}
+        }
+
+      % --- Emails ---
+      \seq_if_empty:NF \l_synaptic_emails_seq
+        {
+          \noindent\hspace{0.3cm}
+          \begin{minipage}[t]{0.95\linewidth}
+            \small\color{syn-text-dark}
+            \textit{\c_synaptic_label_email_tl} \c_colon_str ~ \seq_use:Nn \l_synaptic_emails_seq {,~}
+          \end{minipage}\par
+          \addvspace{24pt}
+        }
+
+      % --- Abstract ---
+      \tl_if_empty:NF \l_synaptic_abstract_tl
+        {
+          \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.5pt}}\par
+          \addvspace{12pt}
+          \noindent
+          {\small\sffamily\bfseries\color{syn-primary} \c_synaptic_label_abstract_tl
+            \c_colon_str}~
+          \group_begin:
+            \small\setstretch{1.2}
+            \l_synaptic_abstract_tl\par
+          \group_end:
+          \addvspace{12pt}
+        }
+
+      % --- Keywords ---
+      \tl_if_empty:NF \l_synaptic_keywords_tl
+        {
+          \noindent
+          {\small\sffamily\bfseries\color{syn-primary} \c_synaptic_label_keywords_tl
+            \c_colon_str}~
+          {\small\l_synaptic_keywords_tl}\par
+          \addvspace{10pt}
+        }
+
+      % --- arXiv ---
+      \tl_if_empty:NF \l_synaptic_arxiv_tl
+        {
+          \noindent
+          {\small\sffamily\bfseries\color{syn-primary} \c_synaptic_label_arxiv_tl
+            \c_colon_str}~
+          \href{https://arxiv.org/abs/\l_synaptic_arxiv_tl}
+               {\small\texttt{\l_synaptic_arxiv_tl}}\par
+          \addvspace{12pt}
+        }
+
+      % --- Bottom rule ---
+      \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.5pt}}\par
+
+      % --- Dedicated ---
+      \tl_if_empty:NF \l_synaptic_dedicated_tl
+        {
+          \addvspace{20pt}
+          \vbox{\raggedleft\small\itshape\color{syn-text-dark!80}
+            \l_synaptic_dedicated_tl}
+        }
+
+      % --- TOC (inline) ---
+      \str_if_eq:VnT \l_synaptic_toc_layout_tl { inline }
+        {
+          \bool_if:NT \l_synaptic_toc_bool
+            {
+              \addvspace{20pt}
+              \group_begin:
+                \hypersetup{linkcolor=black}
+                \tableofcontents
+              \group_end:
+              \addvspace{15pt}
+              \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.5pt}}
+            }
+        }
+    \group_end:
+
+    \clearpage
+
+    % --- TOC (page) ---
+    \str_if_eq:VnT \l_synaptic_toc_layout_tl { page }
+      {
+        \bool_if:NT \l_synaptic_toc_bool
+          {
+            \group_begin:
+              \hypersetup{linkcolor=black}
+              \tableofcontents
+            \group_end:
+            \addvspace{15pt}
+            \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.5pt}}
+            \clearpage
+          }
+      }
+
+    % --- TOC (top) ---
+    \str_if_eq:VnT \l_synaptic_toc_layout_tl { top }
+      {
+        \bool_if:NT \l_synaptic_toc_bool
+          {
+            \group_begin:
+              \hypersetup{linkcolor=black}
+              \tableofcontents
+            \group_end:
+            \addvspace{20pt}
+            \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.5pt}}
+            \addvspace{20pt}
+          }
+      }
+
+    \setcounter{footnote}{0}
+    \pagenumbering{arabic}
+  }
+
+% ---------------------------------------------------------------------------
+% Affillist environment
+% ---------------------------------------------------------------------------
+\newlist{synaffillist}{description}{1}
+\setlist[synaffillist]{
+  leftmargin = 0.3cm,
+  labelsep   = 4pt,
+  itemsep    = -2pt,
+  topsep     = 2pt,
+  parsep     = 0pt
+}
+
+\endinput

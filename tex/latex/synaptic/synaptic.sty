@@ -1,0 +1,38 @@
+%%
+%% synaptic.sty
+%% Thin shell: loads modules based on active mode
+%%
+%% This file is part of the synaptic bundle.
+%% License: LPPL 1.3c or later
+%%
+\NeedsTeXFormat{LaTeX2e}[2023/11/01]
+\ProvidesExplPackage{synaptic}{2026-06-05}{2.0.0}
+  {Modern~Academic~Typesetting~Framework}
+
+% Forward all user options to synaptic-base
+\RequirePackageWithOptions{synaptic-base}
+
+\RequirePackage{seqsplit}
+
+% ---------------------------------------------------------------------------
+% Convenience: \pkg and \cmd
+% ---------------------------------------------------------------------------
+\NewDocumentCommand{\pkg}{m}
+  { {\color{syn-primary}\texttt{\seqsplit{#1}}} }
+\NewDocumentCommand{\cmd}{m}
+  { {\color{syn-primary!80}\texttt{\textbackslash\seqsplit{#1}}} }
+
+% ---------------------------------------------------------------------------
+% \acknowledgments
+% ---------------------------------------------------------------------------
+\synaptic_if_lang_zh:TF
+  {
+    \NewDocumentCommand{\acknowledgments}{s O{致~~谢}}
+      { \IfBooleanTF{#1}{\section*{#2}}{\section*{#2}} }
+  }
+  {
+    \NewDocumentCommand{\acknowledgments}{s O{Acknowledgments}}
+      { \IfBooleanTF{#1}{\section*{#2}}{\section*{#2}} }
+  }
+
+\endinput

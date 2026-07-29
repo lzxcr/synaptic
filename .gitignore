@@ -1,0 +1,26 @@
+# Build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.glo
+*.gls
+*.idx
+*.ilg
+*.ind
+*.bbl
+*.blg
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# LuaLaTeX font cache
+.cache/
+
+# Backup files
+*~
+*.bak
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,230 @@
+%%
+%% synaptic-fonts.sty
+%% Font system: fontset selection, Lua detection, CJK support
+%%
+%% This file is part of the synaptic bundle.
+%% License: LPPL 1.3c or later
+%%
+\NeedsTeXFormat{LaTeX2e}[2023/11/01]
+\ProvidesExplPackage{synaptic-fonts}{2026-06-05}{2.0.0}
+  {Synaptic~Font~System}
+
+\RequirePackage{fontspec}
+\RequirePackage{mathtools}
+\RequirePackage[ warnings-off = { mathtools-colon, mathtools-over, mathtools-overbracket } ]
+  {unicode-math}
+
+% ---------------------------------------------------------------------------
+% Lua font helper — use kpathsea to locate the Lua module
+% ---------------------------------------------------------------------------
+\directlua
+  {
+    local path = kpse.find_file('synaptic-fonts.lua', 'lua')
+    if path then
+      dofile(path)
+    end
+  }
+
+\cs_new:Npn \__synaptic_font_if_exist:n #1
+  {
+    \directlua
+      {
+        if tex.synaptic then
+          tex.print(tex.synaptic.fonts.exists('#1') and 'true' or 'false')
+        else
+          tex.print('false')
+        end
+      }
+  }
+
+% ---------------------------------------------------------------------------
+% Fontset definitions
+% ---------------------------------------------------------------------------
+\cs_new_protected:Npn \__synaptic_fontset_xcharter:
+  {
+    \setmainfont{XCharter}[
+      Ligatures    = TeX,
+      Numbers      = {OldStyle,Proportional}
+    ]
+    \setsansfont{Cabin}[
+      Scale        = 0.94,
+      BoldFeatures = {LetterSpace=1.5}
+    ]
+    \setmonofont{Inconsolatazi4}[
+      Scale        = MatchLowercase,
+      StylisticSet = {2,3}
+    ]
+    \setmathfont{XCharter Math}
+  }
+
+\cs_new_protected:Npn \__synaptic_fontset_libertinus:
+  {
+    \setmainfont{Libertinus Serif}[
+      Ligatures = TeX,
+      Numbers   = {OldStyle,Proportional}
+    ]
+    \setsansfont{Libertinus Sans}[
+      Scale = 0.95
+    ]
+    \setmonofont{Libertinus Mono}[
+      Scale = MatchLowercase
+    ]
+    \setmathfont{Libertinus Math}
+  }
+
+\cs_new_protected:Npn \__synaptic_fontset_stix2:
+  {
+    \setmainfont{STIX Two Text}[
+      Ligatures = TeX
+    ]
+    \setsansfont{STIX Two Text}[
+      Scale = 0.95
+    ]
+    \setmonofont{STIX Two Text}[
+      Scale = MatchLowercase
+    ]
+    \setmathfont{STIX Two Math}
+  }
+
+\cs_new_protected:Npn \__synaptic_fontset_lm:
+  {
+    \setmainfont{Latin Modern Roman}
+    \setsansfont{Latin Modern Sans}
+    \setmonofont{Latin Modern Mono}
+    \setmathfont{Latin Modern Math}
+  }
+
+% ---------------------------------------------------------------------------
+% Auto-detection (Lua-assisted)
+% ---------------------------------------------------------------------------
+\cs_new_protected:Npn \__synaptic_fontset_auto:
+  {
+    \directlua
+      {
+        if kpse.find_file('synaptic-fonts.lua', 'lua') then
+          tex.print('lua')
+        else
+          tex.print('fallback')
+        end
+      }
+    \str_if_eq:VnTF \l_tmpa_tl { lua }
+      { \__synaptic_fontset_detect_lua: }
+      { \__synaptic_fontset_detect_fallback: }
+  }
+
+\cs_new_protected:Npn \__synaptic_fontset_detect_lua:
+  {
+    \directlua
+      {
+        local result = tex.synaptic.fonts.detect()
+        tex.print(result)
+      }
+    \tl_set:Nx \l_tmpa_tl { \synaptic_fontset: }
+    \str_case:Vn \l_tmpa_tl
+      {
+        { xcharter }   { \__synaptic_fontset_xcharter: }
+        { libertinus } { \__synaptic_fontset_libertinus: }
+        { stix2 }      { \__synaptic_fontset_stix2: }
+        { lm }         { \__synaptic_fontset_lm: }
+      }
+  }
+
+\cs_new_protected:Npn \__synaptic_fontset_detect_fallback:
+  {
+    \IfFontExistsTF{XCharter}
+      { \__synaptic_fontset_xcharter: }
+      {
+        \IfFontExistsTF{Libertinus Serif}
+          { \__synaptic_fontset_libertinus: }
+          {
+            \IfFontExistsTF{STIX Two Text}
+              { \__synaptic_fontset_stix2: }
+              { \__synaptic_fontset_lm: }
+          }
+      }
+  }
+
+% ---------------------------------------------------------------------------
+% Dispatch
+% ---------------------------------------------------------------------------
+\str_case:Vn \l_synaptic_fontset_tl
+  {
+    { xcharter }   { \__synaptic_fontset_xcharter: }
+    { libertinus } { \__synaptic_fontset_libertinus: }
+    { stix2 }      { \__synaptic_fontset_stix2: }
+    { lm }         { \__synaptic_fontset_lm: }
+    { auto }       { \__synaptic_fontset_auto: }
+  }
+
+% ---------------------------------------------------------------------------
+% CJK fonts (lang=zh)
+% ---------------------------------------------------------------------------
+\synaptic_if_lang_zh:TF
+  {
+    \RequirePackage[heading=false, fontset=none, scheme=plain]{ctex}
+    \IfFontExistsTF{Noto Serif CJK SC}
+      {
+        \setCJKmainfont{Noto Serif CJK SC}[
+          UprightFont    = *~Regular,
+          BoldFont       = *~Bold,
+          ItalicFont     = *~Regular,
+          ItalicFeatures = {AutoFakeSlant=0.17},
+          Scale          = 0.95
+        ]
+      }
+      {
+        \IfFontExistsTF{FandolSong-Regular.otf}
+          {
+            \PackageWarning{synaptic-fonts}
+              {Noto~Serif~CJK~SC~not~found.~Falling~back~to~FandolSong.}
+            \setCJKmainfont{FandolSong-Regular.otf}[
+              BoldFont = FandolSong-Bold.otf,
+              Scale    = 0.95
+            ]
+          }
+          {
+            \PackageError{synaptic-fonts}{No~CJK~main~font~found}
+              {Install~Noto~Serif~CJK~SC~or~Fandol~fonts.}
+          }
+      }
+    \IfFontExistsTF{Noto Sans CJK SC}
+      {
+        \setCJKsansfont{Noto Sans CJK SC}[
+          UprightFont    = *~Regular,
+          BoldFont       = *~Regular,
+          BoldFeatures   = {FakeBold=4},
+          ItalicFont     = *~Regular,
+          ItalicFeatures = {AutoFakeSlant=0.17},
+          Scale          = 0.95
+        ]
+        \setCJKmonofont{Noto Sans CJK SC}[
+          UprightFont    = *~Regular,
+          BoldFont       = *~Regular,
+          BoldFeatures   = {FakeBold=4},
+          ItalicFont     = *~Regular,
+          ItalicFeatures = {AutoFakeSlant=0.17},
+          Scale          = 0.95
+        ]
+      }
+      {
+        \IfFontExistsTF{FandolHei-Regular.otf}
+          {
+            \PackageWarning{synaptic-fonts}
+              {Noto~Sans~CJK~SC~not~found.~Falling~back~to~FandolHei.}
+            \setCJKsansfont{FandolHei-Regular.otf}[
+              BoldFont = FandolHei-Bold.otf,
+              Scale    = 0.95
+            ]
+            \setCJKmonofont{FandolFang-Regular.otf}[
+              Scale = 0.95
+            ]
+          }
+          {
+            \PackageError{synaptic-fonts}{No~CJK~sans/mono~font~found}
+              {Install~Noto~Sans~CJK~SC~or~Fandol~fonts.}
+          }
+      }
+  }
+  { }
+
+\endinput

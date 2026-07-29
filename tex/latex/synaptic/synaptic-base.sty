@@ -1,0 +1,194 @@
+%%
+%% synaptic-base.sty
+%% Core infrastructure: engine check, options, module dispatching
+%%
+%% This file is part of the synaptic bundle.
+%% License: LPPL 1.3c or later
+%%
+\NeedsTeXFormat{LaTeX2e}[2023/11/01]
+\ProvidesExplPackage{synaptic-base}{2026-06-05}{2.0.0}
+  {Synaptic~Core~Infrastructure}
+
+% ---------------------------------------------------------------------------
+% Engine check
+% ---------------------------------------------------------------------------
+\sys_if_engine_luatex:F
+  {
+    \PackageError{synaptic-base}{LuaLaTeX~required}
+      {This~package~requires~LuaLaTeX.~Please~switch~your~compiler.}
+  }
+
+% ---------------------------------------------------------------------------
+% KOMA-Script check
+% ---------------------------------------------------------------------------
+\cs_if_exist:cF { KOMAoptions }
+  {
+    \PackageError{synaptic-base}{KOMA-Script~document~class~required}
+      {synaptic~requires~a~KOMA-Script~class~(scrartcl,~scrreprt,~scrbook,~etc.).}
+  }
+
+% ---------------------------------------------------------------------------
+% Option variables
+% ---------------------------------------------------------------------------
+\tl_new:N  \l_synaptic_mode_tl
+\tl_new:N  \l_synaptic_theme_tl
+\tl_new:N  \l_synaptic_lang_tl
+\tl_new:N  \l_synaptic_fontset_tl
+\tl_new:N  \l_synaptic_toc_layout_tl
+\bool_new:N \l_synaptic_toc_bool
+\bool_new:N \l_synaptic_extra_math_bool
+\bool_new:N \l_synaptic_fine_breaking_bool
+
+% ---------------------------------------------------------------------------
+% \SynapticSetup — unified configuration interface
+% ---------------------------------------------------------------------------
+\cs_new_protected:Npn \__synaptic_base_unknown_warning:n #1
+  {
+    \PackageWarning{synaptic-base}
+      {Unknown~option~`#1'.~Ignored.}
+  }
+
+\keys_define:nn { synaptic }
+  {
+    % --- mode system ---
+    mode .choice:,
+    mode / journal .code:n  = \tl_set:Nn \l_synaptic_mode_tl { journal },
+    mode / book   .code:n  = \tl_set:Nn \l_synaptic_mode_tl { book },
+    mode / lecture.code:n  = \tl_set:Nn \l_synaptic_mode_tl { lecture },
+    mode / notes  .code:n  = \tl_set:Nn \l_synaptic_mode_tl { notes },
+    mode .initial:n = journal,
+
+    % --- theme system ---
+    theme .choice:,
+    theme / ocean    .code:n = \tl_set:Nn \l_synaptic_theme_tl { ocean },
+    theme / graphite .code:n = \tl_set:Nn \l_synaptic_theme_tl { graphite },
+    theme / forest   .code:n = \tl_set:Nn \l_synaptic_theme_tl { forest },
+    theme / midnight .code:n = \tl_set:Nn \l_synaptic_theme_tl { midnight },
+    theme / paper    .code:n = \tl_set:Nn \l_synaptic_theme_tl { paper },
+    theme .initial:n = ocean,
+
+    % --- language ---
+    lang .choice:,
+    lang / en .code:n = \tl_set:Nn \l_synaptic_lang_tl { en },
+    lang / zh .code:n = \tl_set:Nn \l_synaptic_lang_tl { zh },
+    lang .initial:n = en,
+
+    % --- fontset ---
+    fontset .choice:,
+    fontset / auto       .code:n = \tl_set:Nn \l_synaptic_fontset_tl { auto },
+    fontset / xcharter   .code:n = \tl_set:Nn \l_synaptic_fontset_tl { xcharter },
+    fontset / libertinus .code:n = \tl_set:Nn \l_synaptic_fontset_tl { libertinus },
+    fontset / stix2      .code:n = \tl_set:Nn \l_synaptic_fontset_tl { stix2 },
+    fontset / lm         .code:n = \tl_set:Nn \l_synaptic_fontset_tl { lm },
+    fontset .initial:n = auto,
+
+    % --- generic booleans ---
+    toc .bool_set:N = \l_synaptic_toc_bool,
+    toc .initial:n  = true,
+
+    extra-math .bool_set:N = \l_synaptic_extra_math_bool,
+    extra-math .initial:n  = false,
+
+    fine-breaking .bool_set:N = \l_synaptic_fine_breaking_bool,
+    fine-breaking .initial:n  = true,
+
+    % --- toc layout ---
+    toc-layout .choice:,
+    toc-layout / top    .code:n = \tl_set:Nn \l_synaptic_toc_layout_tl { top },
+    toc-layout / inline .code:n = \tl_set:Nn \l_synaptic_toc_layout_tl { inline },
+    toc-layout / page   .code:n = \tl_set:Nn \l_synaptic_toc_layout_tl { page },
+    toc-layout .initial:n = top,
+
+    % --- legacy: emit errors for old options ---
+    style .code:n =
+      {
+        \PackageError{synaptic-base}{Option~`style'~is~obsolete}
+          {Use~`mode=journal'~or~`mode=notes'~instead.}
+      },
+    color .code:n =
+      {
+        \PackageError{synaptic-base}{Option~`color'~is~obsolete}
+          {Use~`theme=ocean'~or~`theme=graphite'~etc.~instead.}
+      },
+
+    % --- unknown ---
+    unknown .code:n = \__synaptic_base_unknown_warning:n { \l_keys_key_tl },
+  }
+
+% Forward to package-level
+\NewDocumentCommand{\SynapticSetup}{m}
+  {
+    \keys_set:nn { synaptic } {#1}
+  }
+
+% Also accept options via \usepackage[...]
+\ProcessKeyOptions[synaptic]
+
+% ---------------------------------------------------------------------------
+% Public option accessors (for other modules)
+% ---------------------------------------------------------------------------
+\cs_new:Npn \synaptic_mode:    { \l_synaptic_mode_tl }
+\cs_new:Npn \synaptic_theme:   { \l_synaptic_theme_tl }
+\cs_new:Npn \synaptic_lang:    { \l_synaptic_lang_tl }
+\cs_new:Npn \synaptic_fontset: { \l_synaptic_fontset_tl }
+
+\cs_new_protected:Npn \synaptic_if_lang_zh:TF #1#2
+  {
+    \str_if_eq:eeTF { \l_synaptic_lang_tl } { zh } {#1} {#2}
+  }
+
+\cs_new:Npn \synaptic_if_toc:TF #1#2
+  {
+    \bool_if:NTF \l_synaptic_toc_bool {#1} {#2}
+  }
+
+\cs_new:Npn \synaptic_toc_layout: { \l_synaptic_toc_layout_tl }
+
+% ---------------------------------------------------------------------------
+% Load language definitions (must be before module loading)
+% ---------------------------------------------------------------------------
+\synaptic_if_lang_zh:TF
+  { \file_input:n { synaptic-lang-zh.def } }
+  { \file_input:n { synaptic-lang-en.def } }
+
+% ---------------------------------------------------------------------------
+% Mode-aware module loader
+% ---------------------------------------------------------------------------
+\cs_new_protected:Npn \__synaptic_load_core_modules:
+  {
+    \RequirePackage{synaptic-color}
+    \RequirePackage{synaptic-fonts}
+    \RequirePackage{synaptic-layout}
+    \RequirePackage{synaptic-theorem}
+  }
+
+\cs_new_protected:Npn \__synaptic_load_mode_modules:
+  {
+    \str_case:Vn \l_synaptic_mode_tl
+      {
+        { journal }
+          {
+            \RequirePackage{synaptic-title}
+          }
+        { book }
+          {
+            \RequirePackage{synaptic-title}
+            \RequirePackage{synaptic-book}
+          }
+        { lecture }
+          {
+            \RequirePackage{synaptic-lecture}
+            \RequirePackage{synaptic-boxes}
+          }
+        { notes }
+          {
+            % no extra modules
+          }
+      }
+  }
+
+% Load everything at package end
+\__synaptic_load_core_modules:
+\__synaptic_load_mode_modules:
+
+\endinput

@@ -2,121 +2,118 @@
 \documentclass[a4paper,11pt]{scrartcl}
 
 \usepackage[
-  lang          = zh,
-  color         = ocean,
-  style         = minimal,
-  extra-math    = false,
-  toc           = true,
-  toc-layout    = page,
-  fine-breaking = true
+  lang       = zh,
+  theme      = ocean,
+  mode       = journal,
+  toc        = true,
+  toc-layout = inline
 ]{synaptic}
 
-\DeclareMathOperator{\End}{End}
-\declarecustomtheorem{notation}{记号}
-\declarecustomtheorem{caution}{注意}
-
-\fpheader{Synaptic 技术手册}
-\subheader{内部架构与扩展}
-\preprint{SYNAPTIC-TECH}
-\title{\texttt{synaptic} 技术手册 \\ 内部架构与自定义扩展}
-\author{模板开发团队}
-\affiliation{CTAN 社区}
-\emailAdd{synaptic@example.com}
-\keywords{synaptic, 技术手册, 内部实现, 自定义}
-\arxivnumber{2605.54321}
-\dedicated{献给所有热爱 \TeX{} 排版艺术的探索者。}
+\SynapticHeader{synaptic 技术参考}
+\SynapticTitle{\texttt{synaptic} --- 技术参考}
+\SynapticAuthor{synaptic 项目}
+\SynapticAffiliation{CTAN 社区}
 
 \begin{abstract}
-  本文档面向包开发者和高级用户，详细说明 \texttt{synaptic} 的内部数据结构、
-  标签与样式自定义接口、定理环境扩展以及字体加载与回退机制。
-  同时通过实例展示如何在不修改核心文件的情况下完全定制外观。
+  synaptic v2 技术概览：模块架构、命名空间约定、Mode 分发与扩展点。
 \end{abstract}
 
 \begin{document}
+\SynapticMakeTitle
 
-\maketitle
+\section{架构}
 
-\section{架构概览}
+\subsection{模块依赖图}
 
-\texttt{synaptic} 全部以 \texttt{expl3} 编写，内部函数前缀为 \verb|\__synaptic_| 或
-\verb|\g__synaptic_|。键值选项通过 \texttt{l3keys2e} 处理并在早期执行。
+\begin{verbatim}
+synaptic.sty (薄壳, RequirePackageWithOptions → base)
+  +-- synaptic-base.sty      引擎检查、选项解析
+  +-- synaptic-color.sty     主题配色系统（5 套主题）
+  +-- synaptic-fonts.sty     字体组合选择 + 中日韩支持
+  |     +-- synaptic-fonts.lua   Lua 字体自动检测
+  +-- synaptic-layout.sty    页面布局、微排印、标题样式
+  +-- synaptic-title.sty     标题页渲染（journal 模式）
+  +-- synaptic-theorem.sty   定理/证明环境
+  +-- synaptic-book.sty      书籍模式（章节、页眉）
+  +-- synaptic-lecture.sty   讲义模式（宽边距）
+  +-- synaptic-boxes.sty     tcolorbox 环境
+  +-- synaptic-lang-en.def   英文标签
+  +-- synaptic-lang-zh.def   中文标签
+\end{verbatim}
 
-核心数据容器：
+\subsection{Mode 分发表}
+
+\begin{tabular}{lll}
+  \hline
+  \textbf{mode} & \textbf{文档类} & \textbf{加载模块} \\
+  \hline
+  journal & scrartcl & base, color, fonts, layout, title, theorem \\
+  book    & scrbook  & journal 模块 + book \\
+  lecture & scrartcl / scrreprt & base, color, fonts, layout, theorem, lecture, boxes \\
+  notes   & scrartcl & base, color, fonts, layout, theorem \\
+  \hline
+\end{tabular}
+
+\subsection{命名空间约定}
+
+\begin{tabular}{lll}
+  \hline
+  \textbf{范围} & \textbf{模式} & \textbf{示例} \\
+  \hline
+  用户 API        & \verb|\Synaptic*|      & \verb|\SynapticTitle| \\
+  用户环境        & \verb|synaptic*|       & \verb|synapticexample| \\
+  内部宏          & \verb|\__synaptic_*|   & \verb|\__synaptic_title_render:| \\
+  局部变量        & \verb|\l_synaptic_*|   & \verb|\l_synaptic_mode_tl| \\
+  标签常量        & \verb|\c_synaptic_label_*| & \verb|\c_synaptic_label_thm_tl| \\
+  \hline
+\end{tabular}
+
+\section{核心命令参考}
+
+\subsection{用户 API}
+
+\begin{description}
+  \item[\texttt{\textbackslash SynapticSetup\{key=val\}}] 运行时修改选项。
+  \item[\texttt{\textbackslash SynapticTitle\{文本\}}] 文档标题。
+  \item[\texttt{\textbackslash SynapticAuthor[标记]\{姓名\}}] 作者。
+  \item[\texttt{\textbackslash SynapticAffiliation[标记]\{文本\}}] 附属机构。
+  \item[\texttt{\textbackslash SynapticEmail\{地址\}}] 电子邮箱。
+  \item[\texttt{\textbackslash SynapticKeywords\{...\}}] 关键词。
+  \item[\texttt{\textbackslash SynapticArxiv\{编号\}}] arXiv 链接。
+  \item[\texttt{\textbackslash SynapticHeader\{文本\}}] 自定义投稿抬头。
+  \item[\texttt{\textbackslash SynapticSubHeader\{文本\}}] 子抬头。
+  \item[\texttt{\textbackslash SynapticPreprint\{编号\}}] 预印本标识。
+  \item[\texttt{\textbackslash SynapticDedicated\{文本\}}] 致辞文。
+  \item[\texttt{\textbackslash SynapticMakeTitle}] 渲染标题页。
+  \item[\texttt{\textbackslash SynapticNewTheorem\{环境\}\{名称\}}] 声明定理环境。
+  \item[\texttt{\textbackslash SynapticDefineTheme\{主色\}\{辅色\}}] 自定义主题。
+\end{description}
+
+\subsection{环境}
+
+\begin{description}
+  \item[abstract] 收集摘要文本用于标题页。
+  \item[theorem, lemma, proposition, definition] 定理环境（共享计数器，按节编号）。
+  \item[proof] 证明环境，含 QED 符号。
+  \item[example, remark, warning, exercise] tcolorbox 环境（lecture 模式）。
+  \item[synbox] 通用 tcolorbox 带可选标题。
+\end{description}
+
+\section{扩展点}
 
 \begin{itemize}
-  \item \verb|\g__synaptic_labels_prop| — 标签文本（如“摘要”“定理”等）
-  \item \verb|\g__synaptic_styles_prop| — 样式代码（如定理头字体）
-  \item \verb|\g__synaptic_meta_prop| — 标题页元数据
-  \item \verb|\g__synaptic_authors_seq|、\verb|\g__synaptic_affils_seq|、\verb|\g__synaptic_emails_seq| — 作者、单位、邮箱列表
+  \item \textbf{新语言} —— 复制 \texttt{synaptic-lang-en.def} 为 \texttt{synaptic-lang-fr.def} 并翻译各标签常量。
+  \item \textbf{新主题} —— 使用 \texttt{\textbackslash SynapticDefineTheme\{名\}\{主色\}\{辅色\}}。
+  \item \textbf{新字体组合} —— 在 \texttt{synaptic-fonts.sty} 的分发块中新增分支。
+  \item \textbf{新模式} —— 创建新的 \texttt{synaptic-*.sty} 并在 \texttt{synaptic-base.sty} 的 mode 分发中添加对应分支。
+  \item \textbf{字体自动检测} —— 编辑 \texttt{synaptic-fonts.lua} 修改检测优先级列表。
 \end{itemize}
 
-这些容器均通过 \cmd{prop\_gput:Nnn} 和 \cmd{seq\_gput\_right:Nn} 填充，保证了扩展性。
+\section{版本历史}
 
-\section{标签与样式的自定义}
-
-用户可在导言区使用以下命令覆盖任何标签或样式：
-
-\begin{verbatim}
-\synaptic_register_label:nn { abstract } { 摘要 }
-\synaptic_register_style:nn { thmhead }
-  { \normalfont\bfseries\color{blue} }
-\end{verbatim}
-
-支持的标签键：\texttt{abstract}、\texttt{keywords}、\texttt{arxiv}、\texttt{default\_header}、
-\texttt{acknowledgments}、\texttt{proof}、\texttt{thm}、\texttt{lemma}、\texttt{prop}、\texttt{def}、\texttt{email}。
-
-样式键：\texttt{thmhead}（定理头）、\texttt{thmnote}（定理注释）、\texttt{label}（标题页标签字体）、\texttt{thmbody}（定理正文）。
-
-\begin{caution}
-  自定义标签或样式应在 \cmd{maketitle} 之前完成，以确保标题页和定理环境使用正确的名称和字体。
-\end{caution}
-
-\section{定理环境的底层构造}
-
-预定义的定理样式名为 \texttt{syn\_thm\_modern\_style}，它使用 \cmd{declaretheoremstyle} 定义。
-所有定理均通过 \cmd{declaretheorem} 基于该样式创建，且默认与 \texttt{theorem} 计数器兄弟关联。
-
-\begin{verbatim}
-\declaretheorem[
-  style = syn_thm_modern_style,
-  name  = \synaptic_get_label:n { lemma },
-  sibling = theorem
-]{lemma}
-\end{verbatim}
-
-\cmd{declarecustomtheorem} 宏是对上述过程的封装，便于用户快速添加新环境。
-
-\begin{notation}
-  本文档中我们自定义了 \texttt{notation} 和 \texttt{caution} 环境，以展示扩展的简洁性。
-\end{notation}
-
-\section{字体加载与回退逻辑}
-
-包使用 \cmd{IfFontExistsTF} 检测字体是否存在，并提供显式回退。
-例如，主罗马字体优先选择 \texttt{XCharter}，若缺失则回退至 \texttt{Latin Modern Roman}，并给出警告。
-中文模式通过 \cmd{ctex} 加载，选项 \texttt{scheme=plain} 可避免与 \texttt{amsthm} 冲突。
-
-\section{颜色方案的内部实现}
-
-所有颜色均继承自 \texttt{syncolor}，其派生颜色通过 \cmd{colorlet} 计算，例如：
-\begin{verbatim}
-\colorlet{syncolor-light}{syncolor!40}
-\colorlet{syncolor-rule}{gray!40}
-\end{verbatim}
-若要完全自定义颜色，只需在文档前导区重新定义 \texttt{syncolor} 及其派生色。
-
-\section{精细断行的实现}
-
-当 \texttt{fine-breaking=true} 时，包会设置：
-\begin{verbatim}
-\emergencystretch=4em
-\tolerance=4000
-\widowpenalty=10000
-\clubpenalty=10000
-\end{verbatim}
-并启用 \cmd{raggedbottom}。这些参数在不破坏整体对齐的前提下有效减少了断行问题。
-
-\acknowledgments
-本文档由 \texttt{synaptic} 团队编写，欢迎通过 CTAN 提交改进建议。
+\begin{description}
+  \item[v2.0] (2026-06-05) 完全模块化重构：mode 系统、theme 系统、fontset 抽象、Lua 字体检测、非侵入 API、tcolorbox 环境。
+  \item[v1.0] (2025) 初始单体版本：单个 \texttt{synaptic.sty} 含基础颜色/样式选项。
+\end{description}
 
 \end{document}

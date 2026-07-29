@@ -1,0 +1,89 @@
+%%
+%% synaptic-color.sty
+%% Theme colour system with 5 built-in themes
+%%
+%% This file is part of the synaptic bundle.
+%% License: LPPL 1.3c or later
+%%
+\NeedsTeXFormat{LaTeX2e}[2023/11/01]
+\ProvidesExplPackage{synaptic-color}{2026-06-05}{2.0.0}
+  {Synaptic~Theme~Colour~System}
+
+\RequirePackage{xcolor}
+
+% ---------------------------------------------------------------------------
+% Theme colours
+% ---------------------------------------------------------------------------
+\cs_new_protected:Npn \__synaptic_color_load_theme:n #1
+  {
+    \str_case:enF {#1}
+      {
+        { ocean }
+          {
+            \definecolor{syn-primary}{RGB}{0,106,176}
+            \definecolor{syn-secondary}{RGB}{46,64,83}
+            \definecolor{syn-accent}{RGB}{14,98,81}
+          }
+        { graphite }
+          {
+            \definecolor{syn-primary}{RGB}{75,86,99}
+            \definecolor{syn-secondary}{RGB}{45,52,62}
+            \definecolor{syn-accent}{RGB}{41,128,185}
+          }
+        { forest }
+          {
+            \definecolor{syn-primary}{RGB}{30,115,80}
+            \definecolor{syn-secondary}{RGB}{56,68,60}
+            \definecolor{syn-accent}{RGB}{211,84,0}
+          }
+        { midnight }
+          {
+            \definecolor{syn-primary}{RGB}{25,55,109}
+            \definecolor{syn-secondary}{RGB}{30,35,50}
+            \definecolor{syn-accent}{RGB}{200,170,80}
+          }
+        { paper }
+          {
+            \definecolor{syn-primary}{RGB}{55,58,62}
+            \definecolor{syn-secondary}{RGB}{45,48,52}
+            \definecolor{syn-accent}{RGB}{150,80,30}
+          }
+      }
+      {
+        \PackageError{synaptic-color}{Unknown~theme~`#1'}
+          {Available~themes:~ocean,~graphite,~forest,~midnight,~paper}
+      }
+  }
+
+% Load the active theme
+\__synaptic_color_load_theme:n { \synaptic_theme: }
+
+% ---------------------------------------------------------------------------
+% Derived colours
+% ---------------------------------------------------------------------------
+\colorlet{syn-text-dark}{syn-secondary!90!black}
+\colorlet{syn-rule}{syn-primary!25}
+\colorlet{syn-link}{syn-primary}
+\colorlet{syn-faded}{syn-primary!20}
+\colorlet{syn-light}{syn-primary!40}
+
+% ---------------------------------------------------------------------------
+% \SynapticDefineTheme — user custom theme
+% ---------------------------------------------------------------------------
+\NewDocumentCommand{\SynapticDefineTheme}{m m m}
+  {
+    \definecolor{syn-primary}{#2}
+    \definecolor{syn-secondary}{#3}
+    \IfNoValueF {#1}
+      {
+        \definecolor{syn-accent} {#1}
+      }
+    % Re-derive
+    \colorlet{syn-text-dark}{syn-secondary!90!black}
+    \colorlet{syn-rule}{syn-primary!25}
+    \colorlet{syn-link}{syn-primary}
+    \colorlet{syn-faded}{syn-primary!20}
+    \colorlet{syn-light}{syn-primary!40}
+  }
+
+\endinput

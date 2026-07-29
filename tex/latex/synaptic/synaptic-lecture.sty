@@ -1,0 +1,57 @@
+%%
+%% synaptic-lecture.sty
+%% Lecture mode: wider margins, coloured theorem boxes, larger headings
+%%
+%% This file is part of the synaptic bundle.
+%% License: LPPL 1.3c or later
+%%
+\NeedsTeXFormat{LaTeX2e}[2023/11/01]
+\ProvidesExplPackage{synaptic-lecture}{2026-06-05}{2.0.0}
+  {Synaptic~Lecture~Mode}
+
+% ---------------------------------------------------------------------------
+% Larger section headings for lecture
+% ---------------------------------------------------------------------------
+\AddToHook{begindocument/before}
+  {
+    \setkomafont{section}{\normalfont\LARGE\bfseries\sffamily\color{syn-primary}}
+    \setkomafont{subsection}{\normalfont\Large\bfseries\sffamily\color{syn-primary!80}}
+
+    \RedeclareSectionCommand[
+      beforeskip = -4.5ex plus -1ex minus -.2ex,
+      afterskip  = 2.5ex plus .2ex
+    ]{section}
+    \RedeclareSectionCommand[
+      beforeskip = -3.0ex plus -0.5ex minus -.1ex,
+      afterskip  = 1.5ex plus .1ex
+    ]{subsection}
+  }
+
+% ---------------------------------------------------------------------------
+% Lecture theorem style (tcolorbox)
+% ---------------------------------------------------------------------------
+\RequirePackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+
+\newtcbtheorem[number within=section]{synapticlecturetheorem}{Theorem}
+  {
+    theoremname,
+    colback       = syn-faded!15,
+    colframe      = syn-primary,
+    coltitle      = white,
+    fonttitle     = \bfseries\sffamily,
+    coltext       = syn-text-dark,
+    left          = 6pt,
+    right         = 6pt,
+    top           = 4pt,
+    bottom        = 4pt,
+    boxsep        = 4pt,
+    arc           = 2pt,
+    sharp corners = north,
+    breakable
+  }{th}
+
+% Map standard theorem to lecture box
+% We keep the original thmtools theams but also provide the box variant
+
+\endinput

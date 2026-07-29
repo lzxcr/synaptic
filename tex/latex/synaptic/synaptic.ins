@@ -1,0 +1,34 @@
+%% synaptic.ins
+%% Installation file for the synaptic bundle
+%%
+%% Run: lualatex synaptic.ins
+%%
+\input docstrip.tex
+
+\keepsilent
+\askforoverwritefalse
+
+\preamble
+
+This file is part of the synaptic bundle.
+License: LPPL 1.3c or later
+
+\endpreamble
+
+\generate{%
+  \file{synaptic.sty}          {\from{synaptic.dtx}{package}}%
+  \file{synaptic-base.sty}     {\from{synaptic.dtx}{base}}%
+  \file{synaptic-color.sty}    {\from{synaptic.dtx}{color}}%
+  \file{synaptic-fonts.sty}    {\from{synaptic.dtx}{fonts}}%
+  \file{synaptic-fonts.lua}    {\from{synaptic.dtx}{lua}}%
+  \file{synaptic-layout.sty}   {\from{synaptic.dtx}{layout}}%
+  \file{synaptic-title.sty}    {\from{synaptic.dtx}{title}}%
+  \file{synaptic-theorem.sty}  {\from{synaptic.dtx}{theorem}}%
+  \file{synaptic-book.sty}     {\from{synaptic.dtx}{book}}%
+  \file{synaptic-lecture.sty}  {\from{synaptic.dtx}{lecture}}%
+  \file{synaptic-boxes.sty}    {\from{synaptic.dtx}{boxes}}%
+  \file{synaptic-lang-en.def}  {\from{synaptic.dtx}{lang-en}}%
+  \file{synaptic-lang-zh.def}  {\from{synaptic.dtx}{lang-zh}}%
+}
+
+\endbatchfile

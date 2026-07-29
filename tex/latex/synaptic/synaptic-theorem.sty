@@ -1,0 +1,85 @@
+%%
+%% synaptic-theorem.sty
+%% Theorem environments with mode-aware styling
+%%
+%% This file is part of the synaptic bundle.
+%% License: LPPL 1.3c or later
+%%
+\NeedsTeXFormat{LaTeX2e}[2023/11/01]
+\ProvidesExplPackage{synaptic-theorem}{2026-06-05}{2.0.0}
+  {Synaptic~Theorem~Environments}
+
+\RequirePackage{amsthm}
+\RequirePackage{thmtools}
+
+% ---------------------------------------------------------------------------
+% Labels (defined in synaptic-lang-*.def, loaded by synaptic-base)
+% ---------------------------------------------------------------------------
+
+% ---------------------------------------------------------------------------
+% Theorem style (journal/academic default)
+% ---------------------------------------------------------------------------
+\declaretheoremstyle[
+  spaceabove    = 10pt plus 2pt minus 1pt,
+  spacebelow    = 10pt plus 2pt minus 1pt,
+  headfont      = \normalfont\bfseries\color{syn-primary},
+  notefont      = \normalfont\upshape\color{syn-text-dark!85},
+  bodyfont      = \normalfont\itshape,
+  postheadspace = 0.8em plus 0.2em,
+  headpunct     = {.}
+]{syn-theorem-academic}
+
+% ---------------------------------------------------------------------------
+% Theorem environments (always available)
+% ---------------------------------------------------------------------------
+\declaretheorem[style=syn-theorem-academic, name=\c_synaptic_label_thm_tl,  numberwithin=section]{theorem}
+\declaretheorem[style=syn-theorem-academic, name=\c_synaptic_label_lemma_tl, sibling=theorem]{lemma}
+\declaretheorem[style=syn-theorem-academic, name=\c_synaptic_label_prop_tl, sibling=theorem]{proposition}
+\declaretheorem[style=syn-theorem-academic, name=\c_synaptic_label_def_tl,  sibling=theorem]{definition}
+
+% ---------------------------------------------------------------------------
+% \SynapticNewTheorem
+% ---------------------------------------------------------------------------
+\NewDocumentCommand{\SynapticNewTheorem}{m m}
+  {
+    \declaretheorem[style=syn-theorem-academic, name=#2, sibling=theorem]{#1}
+  }
+
+% ---------------------------------------------------------------------------
+% Proof environment
+% ---------------------------------------------------------------------------
+\RenewDocumentEnvironment{proof}{ O{\c_synaptic_label_proof_tl} }
+  {
+    \par\addvspace{6pt plus 2pt}
+    \pushQED{\qedsymbol}
+    \normalfont
+    \trivlist
+    \item[\hskip\labelsep \normalfont\bfseries\color{syn-primary} #1.]\ignorespaces
+  }
+  {
+    \popQED\endtrivlist
+  }
+
+\renewcommand{\qedsymbol}{\text{\rule[0.05em]{0.5em}{0.5em}}}
+
+% ---------------------------------------------------------------------------
+% Extra math alphabets (optional)
+% ---------------------------------------------------------------------------
+\bool_if:NT \l_synaptic_extra_math_bool
+  {
+    \clist_map_inline:nn
+      {
+        A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,R,S,T,U,V,W,X,Y,Z,
+        a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u,v,w,x,y,z
+      }
+      {
+        \cs_if_free:cT { symbb#1 }
+          { \exp_args:Nc \providecommand { symbb#1 } { \symbb{#1} } }
+        \cs_if_free:cT { symcal#1 }
+          { \exp_args:Nc \providecommand { symcal#1 } { \mathcal{#1} } }
+        \cs_if_free:cT { symfrak#1 }
+          { \exp_args:Nc \providecommand { symfrak#1 } { \mathfrak{#1} } }
+      }
+  }
+
+\endinput

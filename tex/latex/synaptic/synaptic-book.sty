@@ -1,0 +1,81 @@
+%%
+%% synaptic-book.sty
+%% Book mode: chapter styling, running headers, front/back matter
+%%
+%% This file is part of the synaptic bundle.
+%% License: LPPL 1.3c or later
+%%
+\NeedsTeXFormat{LaTeX2e}[2023/11/01]
+\ProvidesExplPackage{synaptic-book}{2026-06-05}{2.0.0}
+  {Synaptic~Book~Mode}
+
+\RequirePackage{scrlayer-scrpage}
+
+% ---------------------------------------------------------------------------
+% Chapter heading style
+% ---------------------------------------------------------------------------
+\AddToHook{begindocument/before}
+  {
+    \setkomafont{chapter}{\normalfont\Huge\bfseries\sffamily\color{syn-primary}}
+    \setkomafont{chapterprefix}{\normalfont\normalsize\sffamily\color{syn-primary!60}}
+
+    \RedeclareSectionCommand[
+      beforeskip  = -2em,
+      afterskip   = 2em,
+      font        = \normalfont\Huge\bfseries\sffamily\color{syn-primary}
+    ]{chapter}
+
+    % Chapter decoration: rule below chapter title
+    \renewcommand*{\chapterformat}{%
+      \thechapter\enskip\textcolor{syn-primary!40}{%
+        \rule[-0.2em]{0.5pt}{1.5em}}%
+    }
+  }
+
+% ---------------------------------------------------------------------------
+% Running headers (book)
+% ---------------------------------------------------------------------------
+\clearpairofpagestyles
+
+\lehead{\pagemark}
+\rohead{\pagemark}
+\lefoot{\headmark}
+\rofoot{\headmark}
+
+\automark[section]{chapter}
+\setkomafont{pagehead}{\normalfont\small\color{syn-text-dark!70}}
+
+% ---------------------------------------------------------------------------
+% Front/back matter styling
+% ---------------------------------------------------------------------------
+\AddToHook{begindocument/before}
+  {
+    \newcommand{\synapticfrontmatter}{%
+      \frontmatter
+      \pagenumbering{roman}
+      \setkomafont{chapter}{\normalfont\large\bfseries\sffamily\color{syn-primary}}
+    }
+    \newcommand{\synapticmainmatter}{%
+      \mainmatter
+      \pagenumbering{arabic}
+      \setkomafont{chapter}{\normalfont\Huge\bfseries\sffamily\color{syn-primary}}
+    }
+    \newcommand{\synapticbackmatter}{%
+      \backmatter
+      \setkomafont{chapter}{\normalfont\large\bfseries\sffamily\color{syn-primary}}
+    }
+  }
+
+% ---------------------------------------------------------------------------
+% Part style
+% ---------------------------------------------------------------------------
+\AddToHook{begindocument/before}
+  {
+    \setkomafont{part}{\normalfont\huge\bfseries\sffamily\color{syn-primary}}
+    \RedeclareSectionCommand[
+      beforeskip = 0pt,
+      afterskip  = 2em
+    ]{part}
+  }
+
+\endinput

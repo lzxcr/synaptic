@@ -1,0 +1,34 @@
+%%
+%% synaptic-lang-zh.def
+%% Chinese label definitions (idempotent)
+%%
+\tl_new:N \c_synaptic_label_abstract_tl
+\tl_gset:Nn \c_synaptic_label_abstract_tl  { 摘~~要 }
+\tl_new:N \c_synaptic_label_keywords_tl
+\tl_gset:Nn \c_synaptic_label_keywords_tl  { 关键词 }
+\tl_new:N \c_synaptic_label_arxiv_tl
+\tl_gset:Nn \c_synaptic_label_arxiv_tl     { arXiv~电子文献 }
+\tl_new:N \c_synaptic_label_header_tl
+\tl_gset:Nn \c_synaptic_label_header_tl    { 专~供~学~术~期~刊~阅~读~与~评~审 }
+\tl_new:N \c_synaptic_label_thm_tl
+\tl_gset:Nn \c_synaptic_label_thm_tl       { 定理 }
+\tl_new:N \c_synaptic_label_lemma_tl
+\tl_gset:Nn \c_synaptic_label_lemma_tl     { 引理 }
+\tl_new:N \c_synaptic_label_prop_tl
+\tl_gset:Nn \c_synaptic_label_prop_tl      { 命题 }
+\tl_new:N \c_synaptic_label_def_tl
+\tl_gset:Nn \c_synaptic_label_def_tl       { 定义 }
+\tl_new:N \c_synaptic_label_proof_tl
+\tl_gset:Nn \c_synaptic_label_proof_tl     { 证明 }
+\tl_new:N \c_synaptic_label_example_tl
+\tl_gset:Nn \c_synaptic_label_example_tl   { 例题 }
+\tl_new:N \c_synaptic_label_remark_tl
+\tl_gset:Nn \c_synaptic_label_remark_tl    { 注记 }
+\tl_new:N \c_synaptic_label_warning_tl
+\tl_gset:Nn \c_synaptic_label_warning_tl   { 注意 }
+\tl_new:N \c_synaptic_label_exercise_tl
+\tl_gset:Nn \c_synaptic_label_exercise_tl  { 练习 }
+\tl_new:N \c_synaptic_label_acknowledgments_tl
+\tl_gset:Nn \c_synaptic_label_acknowledgments_tl { 致~~谢 }
+\tl_new:N \c_synaptic_label_email_tl
+\tl_gset:Nn \c_synaptic_label_email_tl     { 电子邮箱 }
