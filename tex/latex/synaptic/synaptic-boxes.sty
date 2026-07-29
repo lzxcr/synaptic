@@ -1,10 +1,19 @@
-%%
-%% synaptic-boxes.sty
-%% tcolorbox-based environments: example, remark, warning, exerxise, synbox
-%%
-%% This file is part of the synaptic bundle.
+%% File: synaptic.dtx
 %% License: LPPL 1.3c or later
 %%
+%% synaptic -- Modern Academic Typesetting Framework
+%% A modular LaTeX3 design system for articles, books, and lecture notes.
+%% Requires LuaLaTeX + KOMA-Script.
+%%
+
+
+
+
+
+
+
+
+
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
 \ProvidesExplPackage{synaptic-boxes}{2026-06-05}{2.0.0}
   {Synaptic~Box~Environments}
@@ -12,13 +21,7 @@
 \RequirePackage{tcolorbox}
 \tcbuselibrary{skins, breakable, theorems}
 
-% ---------------------------------------------------------------------------
-% Labels (defined in synaptic-lang-*.def, loaded by synaptic-base)
-% ---------------------------------------------------------------------------
 
-% ---------------------------------------------------------------------------
-% Example box
-% ---------------------------------------------------------------------------
 \newtcbtheorem[number within=section]{synapticexample}{\c_synaptic_label_example_tl}
   {
     theoremname,
@@ -37,7 +40,6 @@
     breakable
   }{ex}
 
-% Wrapper environment
 \NewDocumentEnvironment{example}{ O{} }
   {
     \begin{synapticexample}{#1}{}
@@ -46,9 +48,6 @@
     \end{synapticexample}
   }
 
-% ---------------------------------------------------------------------------
-% Remark box (gray left border)
-% ---------------------------------------------------------------------------
 \newtcbtheorem[number within=section]{synapticremark}{\c_synaptic_label_remark_tl}
   {
     theoremname,
@@ -75,9 +74,6 @@
     \end{synapticremark}
   }
 
-% ---------------------------------------------------------------------------
-% Warning box (red/amber left border)
-% ---------------------------------------------------------------------------
 \newtcbtheorem[number within=section]{synapticwarning}{\c_synaptic_label_warning_tl}
   {
     theoremname,
@@ -104,9 +100,6 @@
     \end{synapticwarning}
   }
 
-% ---------------------------------------------------------------------------
-% Exercise box (lecture mode)
-% ---------------------------------------------------------------------------
 \newtcbtheorem[number within=section]{synapticexercise}{\c_synaptic_label_exercise_tl}
   {
     theoremname,
@@ -133,9 +126,6 @@
     \end{synapticexercise}
   }
 
-% ---------------------------------------------------------------------------
-% Generic synbox
-% ---------------------------------------------------------------------------
 \NewDocumentEnvironment{synbox}{ O{} }
   {
     \begin{tcolorbox}[
@@ -158,4 +148,8 @@
     \end{tcolorbox}
   }
 
-\endinput
+
+
+
+
+

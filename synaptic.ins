@@ -1,19 +1,10 @@
-%% synaptic.ins
-%% Installation file for the synaptic bundle
-%%
-%% Run from project root: lualatex tex/latex/synaptic/synaptic.ins
+%% synaptic.ins -- Installation file for the synaptic bundle
+%% Run: lualatex synaptic.ins  (from project root)
 %%
 \input docstrip.tex
-
 \keepsilent
 \askforoverwritefalse
-
-\preamble
-
-This file is part of the synaptic bundle.
-License: LPPL 1.3c or later
-
-\endpreamble
+\nopreamble\nopostamble
 
 \generate{%
   \file{tex/latex/synaptic/synaptic.sty}          {\from{synaptic.dtx}{package}}%
@@ -30,5 +21,4 @@ License: LPPL 1.3c or later
   \file{tex/latex/synaptic/synaptic-lang-en.def}  {\from{synaptic.dtx}{lang-en}}%
   \file{tex/latex/synaptic/synaptic-lang-zh.def}  {\from{synaptic.dtx}{lang-zh}}%
 }
-
 \endbatchfile

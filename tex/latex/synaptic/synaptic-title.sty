@@ -1,17 +1,20 @@
-%%
-%% synaptic-title.sty
-%% Title page rendering (journal mode)
-%%
-%% This file is part of the synaptic bundle.
+%% File: synaptic.dtx
 %% License: LPPL 1.3c or later
 %%
+%% synaptic -- Modern Academic Typesetting Framework
+%% A modular LaTeX3 design system for articles, books, and lecture notes.
+%% Requires LuaLaTeX + KOMA-Script.
+%%
+
+
+
+
+
+
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
 \ProvidesExplPackage{synaptic-title}{2026-06-05}{2.0.0}
   {Synaptic~Title~Page}
 
-% ---------------------------------------------------------------------------
-% Data structures
-% ---------------------------------------------------------------------------
 \tl_new:N   \l_synaptic_title_tl
 \tl_new:N   \l_synaptic_abstract_tl
 \tl_new:N   \l_synaptic_header_tl
@@ -25,9 +28,6 @@
 \seq_new:N  \l_synaptic_emails_seq
 \seq_new:N  \l_synaptic_author_marks_seq
 
-% ---------------------------------------------------------------------------
-% User API: metadata setters
-% ---------------------------------------------------------------------------
 \NewDocumentCommand{\SynapticTitle}{m}
   { \tl_set:Nn \l_synaptic_title_tl {#1} }
 
@@ -64,22 +64,11 @@
 \NewDocumentCommand{\SynapticDedicated}{m}
   { \tl_set:Nn \l_synaptic_dedicated_tl {#1} }
 
-% --- Abstract environment ---
 \RenewDocumentEnvironment{abstract}{ +b }
   { \tl_gset:Nn \l_synaptic_abstract_tl {#1} }
   { }
 
-% ---------------------------------------------------------------------------
-% Labels (defined in synaptic-lang-*.def, loaded by synaptic-base)
-% The following constants are available:
-%   \c_synaptic_label_abstract_tl, \c_synaptic_label_keywords_tl,
-%   \c_synaptic_label_arxiv_tl, \c_synaptic_label_header_tl,
-%   \c_synaptic_label_email_tl
-% ---------------------------------------------------------------------------
 
-% ---------------------------------------------------------------------------
-% Rendering helpers
-% ---------------------------------------------------------------------------
 \cs_new:Npn \__synaptic_render_author:nn #1 #2
   {
     \tl_if_empty:nTF {#2}
@@ -94,9 +83,6 @@
       { \item[$^{#1}$] #2 }
   }
 
-% ---------------------------------------------------------------------------
-% \SynapticMakeTitle
-% ---------------------------------------------------------------------------
 \NewDocumentCommand{\SynapticMakeTitle}{}
   {
     \pagenumbering{Alph}
@@ -270,9 +256,6 @@
     \pagenumbering{arabic}
   }
 
-% ---------------------------------------------------------------------------
-% Affillist environment
-% ---------------------------------------------------------------------------
 \newlist{synaffillist}{description}{1}
 \setlist[synaffillist]{
   leftmargin = 0.3cm,
@@ -282,4 +265,11 @@
   parsep     = 0pt
 }
 
-\endinput
+
+
+
+
+
+
+
+

@@ -1,35 +1,27 @@
-%%
-%% synaptic-base.sty
-%% Core infrastructure: engine check, options, module dispatching
-%%
-%% This file is part of the synaptic bundle.
+%% File: synaptic.dtx
 %% License: LPPL 1.3c or later
 %%
+%% synaptic -- Modern Academic Typesetting Framework
+%% A modular LaTeX3 design system for articles, books, and lecture notes.
+%% Requires LuaLaTeX + KOMA-Script.
+%%
+
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
 \ProvidesExplPackage{synaptic-base}{2026-06-05}{2.0.0}
   {Synaptic~Core~Infrastructure}
 
-% ---------------------------------------------------------------------------
-% Engine check
-% ---------------------------------------------------------------------------
 \sys_if_engine_luatex:F
   {
     \PackageError{synaptic-base}{LuaLaTeX~required}
       {This~package~requires~LuaLaTeX.~Please~switch~your~compiler.}
   }
 
-% ---------------------------------------------------------------------------
-% KOMA-Script check
-% ---------------------------------------------------------------------------
 \cs_if_exist:cF { KOMAoptions }
   {
     \PackageError{synaptic-base}{KOMA-Script~document~class~required}
       {synaptic~requires~a~KOMA-Script~class~(scrartcl,~scrreprt,~scrbook,~etc.).}
   }
 
-% ---------------------------------------------------------------------------
-% Option variables
-% ---------------------------------------------------------------------------
 \tl_new:N  \l_synaptic_mode_tl
 \tl_new:N  \l_synaptic_theme_tl
 \tl_new:N  \l_synaptic_lang_tl
@@ -39,9 +31,6 @@
 \bool_new:N \l_synaptic_extra_math_bool
 \bool_new:N \l_synaptic_fine_breaking_bool
 
-% ---------------------------------------------------------------------------
-% \SynapticSetup — unified configuration interface
-% ---------------------------------------------------------------------------
 \cs_new_protected:Npn \__synaptic_base_unknown_warning:n #1
   {
     \PackageWarning{synaptic-base}
@@ -115,18 +104,13 @@
     unknown .code:n = \__synaptic_base_unknown_warning:n { \l_keys_key_tl },
   }
 
-% Forward to package-level
 \NewDocumentCommand{\SynapticSetup}{m}
   {
     \keys_set:nn { synaptic } {#1}
   }
 
-% Also accept options via \usepackage[...]
 \ProcessKeyOptions[synaptic]
 
-% ---------------------------------------------------------------------------
-% Public option accessors (for other modules)
-% ---------------------------------------------------------------------------
 \cs_new:Npn \synaptic_mode:    { \l_synaptic_mode_tl }
 \cs_new:Npn \synaptic_theme:   { \l_synaptic_theme_tl }
 \cs_new:Npn \synaptic_lang:    { \l_synaptic_lang_tl }
@@ -144,16 +128,10 @@
 
 \cs_new:Npn \synaptic_toc_layout: { \l_synaptic_toc_layout_tl }
 
-% ---------------------------------------------------------------------------
-% Load language definitions (must be before module loading)
-% ---------------------------------------------------------------------------
 \synaptic_if_lang_zh:TF
   { \file_input:n { synaptic-lang-zh.def } }
   { \file_input:n { synaptic-lang-en.def } }
 
-% ---------------------------------------------------------------------------
-% Mode-aware module loader
-% ---------------------------------------------------------------------------
 \cs_new_protected:Npn \__synaptic_load_core_modules:
   {
     \RequirePackage{synaptic-color}
@@ -187,8 +165,19 @@
       }
   }
 
-% Load everything at package end
 \__synaptic_load_core_modules:
 \__synaptic_load_mode_modules:
 
-\endinput
+
+
+
+
+
+
+
+
+
+
+
+
+

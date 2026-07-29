@@ -1,19 +1,18 @@
-%%
-%% synaptic-color.sty
-%% Theme colour system with 5 built-in themes
-%%
-%% This file is part of the synaptic bundle.
+%% File: synaptic.dtx
 %% License: LPPL 1.3c or later
 %%
+%% synaptic -- Modern Academic Typesetting Framework
+%% A modular LaTeX3 design system for articles, books, and lecture notes.
+%% Requires LuaLaTeX + KOMA-Script.
+%%
+
+
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
 \ProvidesExplPackage{synaptic-color}{2026-06-05}{2.0.0}
   {Synaptic~Theme~Colour~System}
 
 \RequirePackage{xcolor}
 
-% ---------------------------------------------------------------------------
-% Theme colours
-% ---------------------------------------------------------------------------
 \cs_new_protected:Npn \__synaptic_color_load_theme:n #1
   {
     \str_case:enF {#1}
@@ -55,21 +54,14 @@
       }
   }
 
-% Load the active theme
 \__synaptic_color_load_theme:n { \synaptic_theme: }
 
-% ---------------------------------------------------------------------------
-% Derived colours
-% ---------------------------------------------------------------------------
 \colorlet{syn-text-dark}{syn-secondary!90!black}
 \colorlet{syn-rule}{syn-primary!25}
 \colorlet{syn-link}{syn-primary}
 \colorlet{syn-faded}{syn-primary!20}
 \colorlet{syn-light}{syn-primary!40}
 
-% ---------------------------------------------------------------------------
-% \SynapticDefineTheme — user custom theme
-% ---------------------------------------------------------------------------
 \NewDocumentCommand{\SynapticDefineTheme}{m m m}
   {
     \definecolor{syn-primary}{#2}
@@ -86,4 +78,15 @@
     \colorlet{syn-light}{syn-primary!40}
   }
 
-\endinput
+
+
+
+
+
+
+
+
+
+
+
+

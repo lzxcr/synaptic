@@ -1,3 +1,21 @@
+%% File: synaptic.dtx
+%% License: LPPL 1.3c or later
+%%
+%% synaptic -- Modern Academic Typesetting Framework
+%% A modular LaTeX3 design system for articles, books, and lecture notes.
+%% Requires LuaLaTeX + KOMA-Script.
+%%
+
+
+
+
+
+
+
+
+
+
+
 %%
 %% synaptic-lang-en.def
 %% English label definitions (idempotent)
@@ -32,3 +50,7 @@
 \tl_gset:Nn \c_synaptic_label_acknowledgments_tl { Acknowledgments }
 \tl_new:N \c_synaptic_label_email_tl
 \tl_gset:Nn \c_synaptic_label_email_tl     { E-mail }
+
+
+
+

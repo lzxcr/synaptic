@@ -1,10 +1,13 @@
-%%
-%% synaptic-fonts.sty
-%% Font system: fontset selection, Lua detection, CJK support
-%%
-%% This file is part of the synaptic bundle.
+%% File: synaptic.dtx
 %% License: LPPL 1.3c or later
 %%
+%% synaptic -- Modern Academic Typesetting Framework
+%% A modular LaTeX3 design system for articles, books, and lecture notes.
+%% Requires LuaLaTeX + KOMA-Script.
+%%
+
+
+
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
 \ProvidesExplPackage{synaptic-fonts}{2026-06-05}{2.0.0}
   {Synaptic~Font~System}
@@ -14,9 +17,6 @@
 \RequirePackage[ warnings-off = { mathtools-colon, mathtools-over, mathtools-overbracket } ]
   {unicode-math}
 
-% ---------------------------------------------------------------------------
-% Lua font helper — use kpathsea to locate the Lua module
-% ---------------------------------------------------------------------------
 \directlua
   {
     local path = kpse.find_file('synaptic-fonts.lua', 'lua')
@@ -37,9 +37,6 @@
       }
   }
 
-% ---------------------------------------------------------------------------
-% Fontset definitions
-% ---------------------------------------------------------------------------
 \cs_new_protected:Npn \__synaptic_fontset_xcharter:
   {
     \setmainfont{XCharter}[
@@ -94,9 +91,6 @@
     \setmathfont{Latin Modern Math}
   }
 
-% ---------------------------------------------------------------------------
-% Auto-detection (Lua-assisted)
-% ---------------------------------------------------------------------------
 \cs_new_protected:Npn \__synaptic_fontset_auto:
   {
     \directlua
@@ -144,9 +138,6 @@
       }
   }
 
-% ---------------------------------------------------------------------------
-% Dispatch
-% ---------------------------------------------------------------------------
 \str_case:Vn \l_synaptic_fontset_tl
   {
     { xcharter }   { \__synaptic_fontset_xcharter: }
@@ -156,9 +147,6 @@
     { auto }       { \__synaptic_fontset_auto: }
   }
 
-% ---------------------------------------------------------------------------
-% CJK fonts (lang=zh)
-% ---------------------------------------------------------------------------
 \synaptic_if_lang_zh:TF
   {
     \RequirePackage[heading=false, fontset=none, scheme=plain]{ctex}
@@ -227,4 +215,14 @@
   }
   { }
 
-\endinput
+
+
+
+
+
+
+
+
+
+
+

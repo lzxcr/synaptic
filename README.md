@@ -6,56 +6,54 @@
 </p>
 
 <h1 align="center">
-  synaptic<br>
-  <sup><i>Modern Academic Typesetting Framework</i></sup>
+  synaptic — Modern Academic Typesetting Framework
 </h1>
+
+<p align="center">
+  <i>Like a biological synapse, this framework connects your ideas, formulas, and
+  layout into a seamless, beautiful network.</i>
+</p>
 
 **synaptic** is a modular LaTeX3 design system for academic articles, books,
 lecture notes, and technical reports. It requires **LuaLaTeX** with a
 **KOMA‑Script** document class.
 
-> _Like a biological synapse, this framework connects your ideas, formulas, and
-> layout into a seamless, beautiful network._
-
 ---
 
 ## Installation
 
-### Quick start (no install)
+### Quick start (no install, TEXINPUTS)
 
 ```bash
 git clone https://github.com/lzxcr/synaptic
 export TEXINPUTS=/path/to/synaptic/tex/latex/synaptic//:$TEXINPUTS
+lualatex your-document.tex
 ```
 
-### l3build install
+### l3build (system-wide install)
 
 ```bash
 cd synaptic
-lualatex tex/latex/synaptic/synaptic.ins   # extract .sty files
-l3build install                             # install to TEXMFHOME
+lualatex synaptic.ins        # extract .sty files from .dtx
+l3build install               # install to TEXMFHOME
 ```
 
-### User document
+### Verification
 
 ```latex
+% minimal.tex — test your installation
 \documentclass{scrartcl}
 \usepackage[mode=journal, theme=ocean]{synaptic}
-
-\SynapticTitle{A Note on Algebraic Geometry}
-\SynapticAuthor{Alice Smith}
-\SynapticAffiliation{University of Example}
-\SynapticEmail{alice@example.com}
-\SynapticKeywords{algebraic geometry}
-
-\begin{abstract}This paper discusses...\end{abstract}
-
+\SynapticTitle{Test}
+\SynapticAuthor{You}
 \begin{document}
 \SynapticMakeTitle
-\section{Introduction}
-\begin{theorem}[Main Result] ... \end{theorem}
+\section{Hello}
+\begin{theorem} It works! \end{theorem}
 \end{document}
 ```
+
+Compile with `lualatex minimal.tex`.
 
 ---
 
@@ -85,55 +83,59 @@ l3build install                             # install to TEXMFHOME
 
 | Theme | Primary | Secondary |
 |-------|---------|-----------|
-| `ocean` | Blue (0,106,176) | Dark blue-grey (46,64,83) |
-| `graphite` | Grey (75,86,99) | Dark grey (45,52,62) |
-| `forest` | Green (30,115,80) | Dark green (56,68,60) |
-| `midnight` | Navy (25,55,109) | Deep dark (30,35,50) |
-| `paper` | Dark grey (55,58,62) | Near-black (45,48,52) |
+| `ocean` | `RGB(0,106,176)` blue | `RGB(46,64,83)` dark blue-grey |
+| `graphite` | `RGB(75,86,99)` grey | `RGB(45,52,62)` dark grey |
+| `forest` | `RGB(30,115,80)` green | `RGB(56,68,60)` dark green |
+| `midnight` | `RGB(25,55,109)` navy | `RGB(30,35,50)` deep dark |
+| `paper` | `RGB(55,58,62)` dark grey | `RGB(45,48,52)` near-black |
+
+Custom themes: `\SynapticDefineTheme{name}{primary}{secondary}`.
 
 ### Font sets
 
-| fontset | Roman | Sans | Math |
-|---------|-------|------|------|
-| `auto` | Auto-detect | Auto-detect | Auto-detect |
-| `xcharter` | XCharter | Cabin | XCharter Math |
-| `libertinus` | Libertinus Serif | Libertinus Sans | Libertinus Math |
-| `stix2` | STIX Two Text | STIX Two Text | STIX Two Math |
-| `lm` | Latin Modern | Latin Modern Sans | Latin Modern Math |
+| fontset | Roman | Sans | Monospace | Math |
+|---------|-------|------|-----------|------|
+| `auto` | Auto-detect | Auto-detect | Auto-detect | Auto-detect |
+| `xcharter` | XCharter | Cabin | Inconsolata | XCharter Math |
+| `libertinus` | Libertinus Serif | Libertinus Sans | Libertinus Mono | Libertinus Math |
+| `stix2` | STIX Two Text | STIX Two Text | STIX Two Text | STIX Two Math |
+| `lm` | Latin Modern | Latin Modern Sans | Latin Modern Mono | Latin Modern Math |
 
 ---
 
-## user API
+## User API
 
-### Metadata commands
+### Metadata
 
 | Command | Purpose |
 |---------|---------|
 | `\SynapticTitle{...}` | Document title |
-| `\SynapticAuthor[mark]{name}` | Author with optional affil mark |
+| `\SynapticAuthor[mark]{name}` | Author with optional affiliation mark |
 | `\SynapticAffiliation[mark]{...}` | Affiliation |
 | `\SynapticEmail{...}` | Email address |
 | `\SynapticKeywords{...}` | Keywords |
 | `\SynapticArxiv{ID}` | arXiv link |
 | `\SynapticMakeTitle` | Render title page |
-| `\SynapticSetup{key=val}` | Runtime option changes |
+| `\SynapticSetup{key=val}` | Change options at runtime |
 
 ### Customisation
 
 | Command | Purpose |
 |---------|---------|
-| `\SynapticNewTheorem{env}{Name}` | Declare theorem environment |
+| `\SynapticNewTheorem{env}{Name}` | Declare theorem-like environment |
 | `\SynapticDefineTheme{primary}{secondary}` | Custom colour theme |
-| `\SynapticHeader{...}` | Custom submission header |
+| `\SynapticHeader{...}` | Submission header override |
 | `\SynapticSubHeader{...}` | Sub-header |
-| `\SynapticPreprint{...}` | Preprint ID |
-| `\SynapticDedicated{...}` | Dedication |
+| `\SynapticPreprint{...}` | Preprint identifier |
+| `\SynapticDedicated{...}` | Dedication text |
 
 ### Environments
 
-`abstract`, `theorem`, `lemma`, `proposition`, `definition`, `proof` (always available).
+**Always available:**
+`abstract`, `theorem`, `lemma`, `proposition`, `definition`, `proof`
 
-`example`, `remark`, `warning`, `exercise`, `synbox` (lecture mode).
+**Lecture mode only (`mode=lecture`):**
+`example`, `remark`, `warning`, `exercise`, `synbox` (tcolorbox-based)
 
 ---
 
@@ -141,56 +143,79 @@ l3build install                             # install to TEXMFHOME
 
 ```
 synaptic/
-├── synaptic.dtx                    Single-file DocStrip source
-├── CHANGELOG.md
+├── synaptic.dtx              DocStrip source (all modules)
+├── synaptic.ins              Extraction script
+├── build.lua                 l3build configuration
 ├── README.md
+├── CHANGELOG.md
 ├── LICENSE
 ├── .gitignore
 │
-├── tex/latex/synaptic/             Installed package files
-│   ├── synaptic.sty                Thin shell (RequirePackageWithOptions → base)
-│   ├── synaptic-base.sty           Engine check, options, dispatching
-│   ├── synaptic-color.sty          Theme colour system
-│   ├── synaptic-fonts.sty          Fontset + CJK support
-│   │   └── synaptic-fonts.lua      Lua auto-detection
-│   ├── synaptic-layout.sty         Geometry, microtype, headings
-│   ├── synaptic-title.sty          Title page (journal)
-│   ├── synaptic-theorem.sty        Theorem/proof environments
-│   ├── synaptic-book.sty           Book mode
-│   ├── synaptic-lecture.sty        Lecture mode
-│   ├── synaptic-boxes.sty          tcolorbox environments
-│   ├── synaptic-lang-en.def        English labels
-│   ├── synaptic-lang-zh.def        Chinese labels
-│   ├── synaptic.ins                DocStrip installation
-│   └── l3build.lua                 Build script
+├── tex/latex/synaptic/        Package files (installed)
+│   ├── synaptic.sty           Thin shell: loads modules by mode
+│   ├── synaptic-base.sty      Engine check, options, dispatching
+│   ├── synaptic-color.sty     Theme colour system (5 themes)
+│   ├── synaptic-fonts.sty     Fontset selection + CJK
+│   │   └── synaptic-fonts.lua Lua font auto-detection
+│   ├── synaptic-layout.sty    Page geometry, microtype, headings
+│   ├── synaptic-title.sty     Title page (journal mode)
+│   ├── synaptic-theorem.sty   Theorem / proof environments
+│   ├── synaptic-book.sty      Book mode (chapter, headers)
+│   ├── synaptic-lecture.sty   Lecture mode (wide margins)
+│   ├── synaptic-boxes.sty     tcolorbox environments
+│   ├── synaptic-lang-en.def   English labels
+│   ├── synaptic-lang-zh.def   Chinese labels
+│   └── synaptic.ins           Per-directory extraction
 │
-├── srcs/                           Manual source files
+├── srcs/                      Manual source files
 │   ├── synaptic-user-en.tex
 │   ├── synaptic-user-zh.tex
 │   ├── synaptic-tech-en.tex
 │   └── synaptic-tech-zh.tex
 │
-├── docs/                           Compiled manuals
-│   ├── synaptic-user-en.pdf
-│   ├── synaptic-user-zh.pdf
-│   ├── synaptic-tech-en.pdf
-│   └── synaptic-tech-zh.pdf
-│
-└── openspec/                       Specifications
-    └── changes/
-        ├── refactor-v2/
-        └── cleanup-v2/
+└── docs/                      Compiled PDF manuals
+    ├── synaptic-user-en.pdf
+    ├── synaptic-user-zh.pdf
+    ├── synaptic-tech-en.pdf
+    └── synaptic-tech-zh.pdf
 ```
+
+---
+
+## Module architecture
+
+```
+synaptic.sty
+  └── synaptic-base.sty            (RequirePackageWithOptions)
+        ├── synaptic-color.sty     theme colour definitions
+        ├── synaptic-fonts.sty     font loading + Lua detection
+        ├── synaptic-layout.sty    geometry, microtype, KOMA headings
+        ├── synaptic-theorem.sty   thmtools + amsthm
+        │
+        ├── synaptic-title.sty     [mode=journal]  title page
+        ├── synaptic-book.sty      [mode=book]     chapter + headers
+        ├── synaptic-lecture.sty   [mode=lecture]  wide margins
+        └── synaptic-boxes.sty     [mode=lecture]  tcolorbox
+```
+
+Each mode loads a different subset:
+
+| `mode=` | Loads |
+|---------|-------|
+| `journal` | base + color + fonts + layout + theorem + title |
+| `book`    | journal + book |
+| `lecture` | base + color + fonts + layout + theorem + lecture + boxes |
+| `notes`   | base + color + fonts + layout + theorem |
 
 ---
 
 ## Documentation
 
-- [User Manual (English)](docs/synaptic-user-en.pdf)
-- [User Manual (Chinese)](docs/synaptic-user-zh.pdf)
-- [Technical Reference (English)](docs/synaptic-tech-en.pdf)
-- [Technical Reference (Chinese)](docs/synaptic-tech-zh.pdf)
-- [DTX compiled doc](synaptic.dtx) — Run `lualatex synaptic.dtx`
+- [User Manual (English)](docs/synaptic-user-en.pdf) — options, API, examples
+- [User Manual (Chinese)](docs/synaptic-user-zh.pdf) — 同上（中文版）
+- [Technical Reference (English)](docs/synaptic-tech-en.pdf) — architecture, extension
+- [Technical Reference (Chinese)](docs/synaptic-tech-zh.pdf) — 同上（中文版）
+- `lualatex synaptic.dtx` — compile the documented source (35-page dev doc)
 
 ---
 
@@ -202,4 +227,4 @@ LPPL 1.3c or later. See [LICENSE](LICENSE).
 
 ## Links
 
-- [GitHub](https://github.com/lzxcr/synaptic)
+- GitHub: <https://github.com/lzxcr/synaptic>

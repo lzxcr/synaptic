@@ -1,3 +1,20 @@
+%% File: synaptic.dtx
+%% License: LPPL 1.3c or later
+%%
+%% synaptic -- Modern Academic Typesetting Framework
+%% A modular LaTeX3 design system for articles, books, and lecture notes.
+%% Requires LuaLaTeX + KOMA-Script.
+%%
+
+
+
+
+
+
+
+
+
+
 -- synaptic-fonts.lua
 -- Font detection and priority selection for synaptic
 
@@ -38,3 +55,8 @@ function synaptic.fonts.detect()
 end
 
 return synaptic
+
+
+
+
+

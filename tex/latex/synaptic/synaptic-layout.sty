@@ -1,10 +1,14 @@
-%%
-%% synaptic-layout.sty
-%% Page geometry, micro-typography, section headings
-%%
-%% This file is part of the synaptic bundle.
+%% File: synaptic.dtx
 %% License: LPPL 1.3c or later
 %%
+%% synaptic -- Modern Academic Typesetting Framework
+%% A modular LaTeX3 design system for articles, books, and lecture notes.
+%% Requires LuaLaTeX + KOMA-Script.
+%%
+
+
+
+
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
 \ProvidesExplPackage{synaptic-layout}{2026-06-05}{2.0.0}
   {Synaptic~Page~Layout}
@@ -16,9 +20,6 @@
 \RequirePackage{hyperref}
 \RequirePackage{bookmark}
 
-% ---------------------------------------------------------------------------
-% Mode-aware geometry
-% ---------------------------------------------------------------------------
 \str_case:Vn \l_synaptic_mode_tl
   {
     { journal }
@@ -80,9 +81,6 @@
       }
   }
 
-% ---------------------------------------------------------------------------
-% Hyperref
-% ---------------------------------------------------------------------------
 \hypersetup{
   colorlinks  = true,
   urlcolor    = syn-link,
@@ -92,9 +90,6 @@
   linktocpage = true
 }
 
-% ---------------------------------------------------------------------------
-% Microtype
-% ---------------------------------------------------------------------------
 \synaptic_if_lang_zh:TF
   {
     \PassOptionsToPackage{verbose=false, protrusion=false, expansion=false}{microtype}
@@ -104,9 +99,6 @@
   }
 \RequirePackage{microtype}
 
-% ---------------------------------------------------------------------------
-% Paragraph typography
-% ---------------------------------------------------------------------------
 \setlength{\parindent}{2em}
 \setlength{\parskip}{0pt plus 1pt}
 \widowpenalty=10000
@@ -123,9 +115,6 @@
 
 \setstretch{1.25}
 
-% ---------------------------------------------------------------------------
-% Caption
-% ---------------------------------------------------------------------------
 \captionsetup{
   font      = small,
   labelfont = {bf, sf},
@@ -133,9 +122,6 @@
   skip      = 10pt
 }
 
-% ---------------------------------------------------------------------------
-% Section headings (KOMA)
-% ---------------------------------------------------------------------------
 \AddToHook{begindocument/before}
   {
     \setkomafont{section}{\normalfont\large\bfseries\sffamily\color{syn-primary}}
@@ -156,9 +142,15 @@
     ]{subsubsection}
   }
 
-% ---------------------------------------------------------------------------
-% Equation numbering
-% ---------------------------------------------------------------------------
 \numberwithin{equation}{section}
 
-\endinput
+
+
+
+
+
+
+
+
+
+

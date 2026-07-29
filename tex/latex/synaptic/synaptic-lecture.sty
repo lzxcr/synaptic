@@ -1,17 +1,22 @@
-%%
-%% synaptic-lecture.sty
-%% Lecture mode: wider margins, coloured theorem boxes, larger headings
-%%
-%% This file is part of the synaptic bundle.
+%% File: synaptic.dtx
 %% License: LPPL 1.3c or later
 %%
+%% synaptic -- Modern Academic Typesetting Framework
+%% A modular LaTeX3 design system for articles, books, and lecture notes.
+%% Requires LuaLaTeX + KOMA-Script.
+%%
+
+
+
+
+
+
+
+
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
 \ProvidesExplPackage{synaptic-lecture}{2026-06-05}{2.0.0}
   {Synaptic~Lecture~Mode}
 
-% ---------------------------------------------------------------------------
-% Larger section headings for lecture
-% ---------------------------------------------------------------------------
 \AddToHook{begindocument/before}
   {
     \setkomafont{section}{\normalfont\LARGE\bfseries\sffamily\color{syn-primary}}
@@ -27,9 +32,6 @@
     ]{subsection}
   }
 
-% ---------------------------------------------------------------------------
-% Lecture theorem style (tcolorbox)
-% ---------------------------------------------------------------------------
 \RequirePackage{tcolorbox}
 \tcbuselibrary{skins, breakable}
 
@@ -51,7 +53,10 @@
     breakable
   }{th}
 
-% Map standard theorem to lecture box
-% We keep the original thmtools theams but also provide the box variant
 
-\endinput
+
+
+
+
+
+

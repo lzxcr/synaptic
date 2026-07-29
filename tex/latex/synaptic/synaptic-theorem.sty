@@ -1,10 +1,15 @@
-%%
-%% synaptic-theorem.sty
-%% Theorem environments with mode-aware styling
-%%
-%% This file is part of the synaptic bundle.
+%% File: synaptic.dtx
 %% License: LPPL 1.3c or later
 %%
+%% synaptic -- Modern Academic Typesetting Framework
+%% A modular LaTeX3 design system for articles, books, and lecture notes.
+%% Requires LuaLaTeX + KOMA-Script.
+%%
+
+
+
+
+
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
 \ProvidesExplPackage{synaptic-theorem}{2026-06-05}{2.0.0}
   {Synaptic~Theorem~Environments}
@@ -12,13 +17,7 @@
 \RequirePackage{amsthm}
 \RequirePackage{thmtools}
 
-% ---------------------------------------------------------------------------
-% Labels (defined in synaptic-lang-*.def, loaded by synaptic-base)
-% ---------------------------------------------------------------------------
 
-% ---------------------------------------------------------------------------
-% Theorem style (journal/academic default)
-% ---------------------------------------------------------------------------
 \declaretheoremstyle[
   spaceabove    = 10pt plus 2pt minus 1pt,
   spacebelow    = 10pt plus 2pt minus 1pt,
@@ -29,25 +28,16 @@
   headpunct     = {.}
 ]{syn-theorem-academic}
 
-% ---------------------------------------------------------------------------
-% Theorem environments (always available)
-% ---------------------------------------------------------------------------
 \declaretheorem[style=syn-theorem-academic, name=\c_synaptic_label_thm_tl,  numberwithin=section]{theorem}
 \declaretheorem[style=syn-theorem-academic, name=\c_synaptic_label_lemma_tl, sibling=theorem]{lemma}
 \declaretheorem[style=syn-theorem-academic, name=\c_synaptic_label_prop_tl, sibling=theorem]{proposition}
 \declaretheorem[style=syn-theorem-academic, name=\c_synaptic_label_def_tl,  sibling=theorem]{definition}
 
-% ---------------------------------------------------------------------------
-% \SynapticNewTheorem
-% ---------------------------------------------------------------------------
 \NewDocumentCommand{\SynapticNewTheorem}{m m}
   {
     \declaretheorem[style=syn-theorem-academic, name=#2, sibling=theorem]{#1}
   }
 
-% ---------------------------------------------------------------------------
-% Proof environment
-% ---------------------------------------------------------------------------
 \RenewDocumentEnvironment{proof}{ O{\c_synaptic_label_proof_tl} }
   {
     \par\addvspace{6pt plus 2pt}
@@ -62,9 +52,6 @@
 
 \renewcommand{\qedsymbol}{\text{\rule[0.05em]{0.5em}{0.5em}}}
 
-% ---------------------------------------------------------------------------
-% Extra math alphabets (optional)
-% ---------------------------------------------------------------------------
 \bool_if:NT \l_synaptic_extra_math_bool
   {
     \clist_map_inline:nn
@@ -82,4 +69,12 @@
       }
   }
 
-\endinput
+
+
+
+
+
+
+
+
+

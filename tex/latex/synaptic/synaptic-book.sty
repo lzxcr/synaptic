@@ -1,19 +1,23 @@
-%%
-%% synaptic-book.sty
-%% Book mode: chapter styling, running headers, front/back matter
-%%
-%% This file is part of the synaptic bundle.
+%% File: synaptic.dtx
 %% License: LPPL 1.3c or later
 %%
+%% synaptic -- Modern Academic Typesetting Framework
+%% A modular LaTeX3 design system for articles, books, and lecture notes.
+%% Requires LuaLaTeX + KOMA-Script.
+%%
+
+
+
+
+
+
+
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
 \ProvidesExplPackage{synaptic-book}{2026-06-05}{2.0.0}
   {Synaptic~Book~Mode}
 
 \RequirePackage{scrlayer-scrpage}
 
-% ---------------------------------------------------------------------------
-% Chapter heading style
-% ---------------------------------------------------------------------------
 \AddToHook{begindocument/before}
   {
     \setkomafont{chapter}{\normalfont\Huge\bfseries\sffamily\color{syn-primary}}
@@ -32,9 +36,6 @@
     }
   }
 
-% ---------------------------------------------------------------------------
-% Running headers (book)
-% ---------------------------------------------------------------------------
 \clearpairofpagestyles
 
 \lehead{\pagemark}
@@ -45,9 +46,6 @@
 \automark[section]{chapter}
 \setkomafont{pagehead}{\normalfont\small\color{syn-text-dark!70}}
 
-% ---------------------------------------------------------------------------
-% Front/back matter styling
-% ---------------------------------------------------------------------------
 \AddToHook{begindocument/before}
   {
     \newcommand{\synapticfrontmatter}{%
@@ -66,9 +64,6 @@
     }
   }
 
-% ---------------------------------------------------------------------------
-% Part style
-% ---------------------------------------------------------------------------
 \AddToHook{begindocument/before}
   {
     \setkomafont{part}{\normalfont\huge\bfseries\sffamily\color{syn-primary}}
@@ -78,4 +73,10 @@
     ]{part}
   }
 
-\endinput
+
+
+
+
+
+
+

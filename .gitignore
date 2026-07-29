@@ -17,6 +17,15 @@
 # LuaLaTeX font cache
 .cache/
 
+# l3build output
+build/
+
+# Development specs (completed)
+openspec/
+
+# Root-level stray compilation output
+synaptic.log
+
 # Backup files
 *~
 *.bak
