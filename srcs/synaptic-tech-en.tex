@@ -2,21 +2,29 @@
 \documentclass[a4paper,11pt]{scrartcl}
 
 \usepackage[
-  lang       = en,
-  theme      = ocean,
-  mode       = journal,
-  toc        = true,
-  toc-layout = inline
+  lang=en,
+  mode=journal,
+  theme=graphite,
+  fontset=lm,
+  toc=true,
+  toc-layout=page
 ]{synaptic}
+\usepackage{booktabs,tabularx}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 
 \SynapticHeader{Synaptic Technical Reference}
-\SynapticTitle{\texttt{synaptic} --- Technical Reference}
+\SynapticSubHeader{Architecture, invariants, and release workflow}
+\SynapticPreprint{v2.2.0}
+\SynapticTitle{synaptic Technical Reference}
 \SynapticAuthor{synaptic project}
-\SynapticAffiliation{CTAN Community}
+\SynapticAffiliation{Open-source LaTeX community}
+\SynapticSubject{Technical reference for synaptic version 2.2.0}
+\SynapticKeywords{LaTeX3, architecture, l3build, regression testing}
 
 \begin{abstract}
-  Technical overview of synaptic v2: module architecture, namespace conventions,
-  mode dispatch, and extension points.
+  This reference describes synaptic's module graph, load-time invariants,
+  namespace rules, font and colour subsystems, extension points, generated-file
+  policy, and automated verification workflow.
 \end{abstract}
 
 \begin{document}
@@ -24,97 +32,179 @@
 
 \section{Architecture}
 
-\subsection{Module Dependency Graph}
-
 \begin{verbatim}
-synaptic.sty (thin shell, RequirePackageWithOptions -> base)
-  +-- synaptic-base.sty      Engine check, option parsing
-  +-- synaptic-color.sty     Theme colour system (5 themes)
-  +-- synaptic-fonts.sty     Fontset selection + CJK support
-  |     +-- synaptic-fonts.lua   Lua font auto-detection
-  +-- synaptic-layout.sty    Page geometry, microtype, headings
-  +-- synaptic-title.sty     Title page rendering (journal)
-  +-- synaptic-theorem.sty   Theorem/proof environments
-  +-- synaptic-book.sty      Book mode (chapter, headers)
-  +-- synaptic-lecture.sty   Lecture mode (wide margins)
-  +-- synaptic-boxes.sty     tcolorbox environments
-  +-- synaptic-lang-en.def   English labels
-  +-- synaptic-lang-zh.def   Chinese labels
+synaptic.sty
+  `-- synaptic-base.sty
+      |-- synaptic-lang-{en,zh}.def
+      |-- synaptic-color.sty
+      |-- synaptic-fonts.sty
+      |-- synaptic-layout.sty
+      |-- synaptic-theorem.sty
+      |-- synaptic-title.sty       shared metadata/renderers
+      `-- mode module(s)
+          |-- synaptic-journal.sty     journal
+          |-- synaptic-book.sty        book
+          |-- synaptic-lecture.sty     lecture
+          |-- synaptic-boxes.sty       lecture
+          `-- synaptic-notes.sty       notes
 \end{verbatim}
 
-\subsection{Mode Dispatch Table}
+The thin shell forwards user options to \texttt{synaptic-base} and defines a
+small set of collision-resistant convenience commands. The base module checks
+the engine and class, parses options, loads labels, validates book mode, and
+dispatches core and mode-specific modules.
 
-\begin{tabular}{lll}
-  \hline
-  \textbf{mode} & \textbf{Document Class} & \textbf{Loaded Modules} \\
-  \hline
-  journal & scrartcl & base, color, fonts, layout, title, theorem \\
-  book    & scrbook  & journal modules + book \\
-  lecture & scrartcl / scrreprt & base, color, fonts, layout, theorem, lecture, boxes \\
-  notes   & scrartcl & base, color, fonts, layout, theorem \\
-  \hline
-\end{tabular}
+\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+  \toprule
+  \textbf{Mode} & \textbf{Class invariant} & \textbf{Extra modules} \\
+  \midrule
+  journal & KOMA article/report & journal \\
+  book & chapter-based KOMA class with front matter & book \\
+  lecture & KOMA article/report & lecture, boxes \\
+  notes & KOMA article/report & notes \\
+  \bottomrule
+\end{tabularx}
 
-\subsection{Namespace Convention}
+\section{Configuration lifecycle}
 
-\begin{tabular}{lll}
-  \hline
+The package-level \texttt{synaptic} key family is evaluated before module
+loading. Mode, language, font set, title layout, measure, density, numbering,
+delivery colour mode, extra math alphabets, and fine-breaking behaviour
+therefore become structural invariants. The runtime key family
+exposes only the state that can be applied without reloading packages:
+\texttt{theme}, \texttt{toc}, and \texttt{toc-layout}. Frozen or unknown keys
+produce diagnostic warnings.
+
+Book mode is rejected unless both chapter and front-matter interfaces exist.
+LuaLaTeX and KOMA-Script requirements are fatal diagnostics rather than delayed
+undefined-control-sequence failures.
+
+\section{Subsystems}
+
+\subsection{Colour tokens}
+
+Built-in themes are stored in a global property list. Activating a theme maps
+its primary, secondary, and accent colours to semantic public names and derives
+surface, border, rule, link, readable-muted, decorative-muted, and text tokens.
+Print and mono delivery modes alter derived roles without changing component
+code. Danger, warning, and success
+colours remain semantic constants so their meaning does not change with brand
+colour.
+
+\begin{verbatim}
+\SynapticDefineTheme{name}{primary}{secondary}[accent]
+\SynapticUseTheme{name}
+\end{verbatim}
+
+The arguments are xcolor expressions. Defining a custom theme registers and
+activates it.
+
+\subsection{Font selection}
+
+Font discovery is implemented entirely with \verb|\IfFontExistsTF|. Each
+candidate is a complete roman/sans/mono/math bundle; auto selection never picks
+a family whose companions are missing. The fixed priority is XCharter,
+Libertinus, STIX Two, then Latin Modern. An explicit incomplete choice emits a
+package error with the missing bundle requirements.
+
+For \texttt{lang=zh}, ctex is loaded without a preset font scheme. Noto CJK SC
+is preferred and Fandol is the TeX Live fallback. Synthetic weight/slant is
+limited to faces for which the preferred family has no native counterpart.
+
+\subsection{Layout and document structure}
+
+Geometry combines mode defaults with explicit measure and density profiles.
+Journal and lecture favour moderate line lengths; notes supports compact
+single/two-column composition; book uses mirrored inner/outer margins, binding
+correction, outer running heads, and empty duplex blanks. Widow and club penalties,
+vertical rhythm, list spacing, line spacing, and paragraph indentation are
+explicit rather than hidden behind global bad-box suppression.
+
+KOMA heading fonts and skips are installed in the
+\texttt{begindocument/before} hook. Hyperref, bookmark, microtype, captions,
+lists, caption punctuation, and mode-aware equation numbering are configured centrally.
+
+\subsection{Titles and metadata}
+
+Title values are held in expl3 token lists and sequences. Authors and their
+affiliation marks use parallel sequences; affiliations and emails are
+repeatable. A common metadata model feeds four renderers: inline journal,
+book title sequence, course masthead, and compact notes masthead. The title
+command validates a non-empty title and controls optional TOC placement without
+silently resetting the user's page numbering. Standard LaTeX metadata is an
+input adapter, not a redefinition of \verb|\maketitle|.
+
+PDF information is passed as source tokens to hyperref. Hyperref performs the
+Unicode PDF-string conversion once; pre-converting and then calling
+\verb|\hypersetup| would double-encode metadata.
+
+\subsection{Theorems and boxes}
+
+thmtools defines plain, definition, and remark styles on top of amsthm. The
+built-in theorem family uses a mode-aware shared counter: chapter scope for
+books and section scope elsewhere by default. Lecture mode wraps core theorem
+environments with tcolorbox; examples and exercises can share that counter,
+while warning and remark cards remain unnumbered by default. Public short names use the
+\texttt{syn} prefix; v2.0 generic aliases are conditional compatibility shims.
+
+\section{Namespace policy}
+
+\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+  \toprule
   \textbf{Scope} & \textbf{Pattern} & \textbf{Example} \\
-  \hline
-  User API        & \verb|\Synaptic*|      & \verb|\SynapticTitle| \\
-  User environments & \verb|synaptic*|     & \verb|synapticexample| \\
-  Internal macros   & \verb|\__synaptic_*| & \verb|\__synaptic_title_render:| \\
-  Local variables   & \verb|\l_synaptic_*| & \verb|\l_synaptic_mode_tl| \\
-  Label constants   & \verb|\c_synaptic_label_*| & \verb|\c_synaptic_label_thm_tl| \\
-  \hline
-\end{tabular}
+  \midrule
+  Public command & \texttt{\textbackslash Synaptic\ldots} & \SynapticCmd{SynapticDefineTheme} \\
+  Public environment & \texttt{syn...} & \texttt{synwarning} \\
+  Internal function & \texttt{\textbackslash\_\_synaptic\_\ldots:} & title rendering helper \\
+  Module interface & \texttt{\textbackslash synaptic\_\ldots:} & mode accessor \\
+  Local state & \texttt{\textbackslash l\_synaptic\_\ldots} & selected theme token list \\
+  Global registry & \texttt{\textbackslash g\_synaptic\_\ldots} & theme property list \\
+  Label constant & \texttt{\textbackslash c\_synaptic\_label\_\ldots} & theorem label \\
+  \bottomrule
+\end{tabularx}
 
-\section{Key Commands Reference}
+New public names should avoid common nouns. Compatibility aliases must use
+\verb|\ProvideDocumentCommand| or an explicit existence check.
 
-\subsection{User-Facing API}
-
-\begin{description}
-  \item[\texttt{\textbackslash SynapticSetup\{key=val\}}] Runtime option changes.
-  \item[\texttt{\textbackslash SynapticTitle\{text\}}] Document title.
-  \item[\texttt{\textbackslash SynapticAuthor[mark]\{name\}}] Author with optional affiliation mark.
-  \item[\texttt{\textbackslash SynapticAffiliation[mark]\{text\}}] Affiliation.
-  \item[\texttt{\textbackslash SynapticEmail\{addr\}}] Email address.
-  \item[\texttt{\textbackslash SynapticKeywords\{...\}}] Keywords below abstract.
-  \item[\texttt{\textbackslash SynapticArxiv\{ID\}}] arXiv identifier link.
-  \item[\texttt{\textbackslash SynapticHeader\{text\}}] Custom submission header.
-  \item[\texttt{\textbackslash SynapticSubHeader\{text\}}] Sub-header.
-  \item[\texttt{\textbackslash SynapticPreprint\{ID\}}] Preprint identifier.
-  \item[\texttt{\textbackslash SynapticDedicated\{text\}}] Dedication text.
-  \item[\texttt{\textbackslash SynapticMakeTitle}] Render title page.
-  \item[\texttt{\textbackslash SynapticNewTheorem\{env\}\{Name\}}] Declare theorem-like environment.
-  \item[\texttt{\textbackslash SynapticDefineTheme\{primary\}\{secondary\}}] Custom colour theme.
-\end{description}
-
-\subsection{Environments}
-
-\begin{description}
-  \item[abstract] Collect abstract text for title page.
-  \item[theorem, lemma, proposition, definition] Theorem environments (shared counter, numbered by section).
-  \item[proof] Proof environment with QED symbol.
-  \item[example, remark, warning, exercise] tcolorbox environments (lecture mode).
-  \item[synbox] Generic tcolorbox with optional title.
-\end{description}
-
-\section{Extension Points}
+\section{Extension points}
 
 \begin{itemize}
-  \item \textbf{New languages} --- Copy \texttt{synaptic-lang-en.def} to \texttt{synaptic-lang-fr.def} and translate each label constant.
-  \item \textbf{New themes} --- Use \texttt{\textbackslash SynapticDefineTheme\{name\}\{primary\}\{secondary\}}.
-  \item \textbf{New font sets} --- Add a new case to \texttt{synaptic-fonts.sty} in the dispatch block.
-  \item \textbf{New modes} --- Create a new \texttt{synaptic-*.sty} file and add a case to the mode dispatch in \texttt{synaptic-base.sty}.
-  \item \textbf{Font auto-detect} --- Edit \texttt{synaptic-fonts.lua} to modify the detection priority list.
+  \item Add labels in a new \texttt{synaptic-lang-*.def} file, then extend the
+    language key and definition-file dispatch.
+  \item Add a complete font predicate, setter, explicit dispatch branch, and a
+    deliberate location in the auto-selection chain.
+  \item Add modes in the base key family, layout dispatch, and mode-module
+    loader. State the required KOMA class capability and test it.
+  \item Build visual extensions from semantic colour tokens rather than fixed
+    RGB values.
 \end{itemize}
 
-\section{Version History}
+\section{Source and release workflow}
 
-\begin{description}
-  \item[v2.0] (2026-06-05) Complete modular refactoring: mode system, theme system, fontset abstraction, Lua font detection, non-invasive API, tcolorbox environments.
-  \item[v1.0] (2025) Initial monolithic release: single \texttt{synaptic.sty} with basic colour/style options.
-\end{description}
+\texttt{synaptic.dtx} is the source of truth. DocStrip uses
+\texttt{synaptic.ins} to generate the installable \texttt{.sty} and
+\texttt{.def} files. The generated copies under
+\texttt{tex/latex/synaptic/} are committed for zero-install use and must remain
+byte-identical to fresh extraction.
+
+\begin{verbatim}
+l3build unpack
+l3build check
+l3build doc
+l3build ctan
+\end{verbatim}
+
+The nine-group regression suite covers journal titles and statements, book
+matter and chapter numbering, lecture navigation and boxes, notes cards and
+standard metadata, structural options, custom themes, and Chinese typesetting. CI also builds
+the documented source, four manuals, and all examples.
+
+\section{Compatibility notes}
+
+Version 2.2 retains lower-case book matter helpers and generic lecture box names
+as conditional v2.0 aliases. The former \texttt{theme} key remains the palette
+selection interface. New documents should use the namespaced public
+forms. Removed \texttt{style=} and \texttt{color=} options remain explicit
+errors with migration hints.
 
 \end{document}

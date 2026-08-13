@@ -1,5 +1,10 @@
 %% File: synaptic.dtx
 %% License: LPPL 1.3c or later
+%% Current Maintainer: synaptic project
+%% Copyright (C) 2025--2026 synaptic project
+%%
+%% This work consists of synaptic.dtx, synaptic.ins, the files generated
+%% from them, and the accompanying documentation and examples.
 %%
 %% synaptic -- Modern Academic Typesetting Framework
 %% A modular LaTeX3 design system for articles, books, and lecture notes.
@@ -16,41 +21,33 @@
 
 
 
+
 %%
 %% synaptic-lang-en.def
-%% English label definitions (idempotent)
+%% English label definitions
 %%
-\tl_new:N \c_synaptic_label_abstract_tl
-\tl_gset:Nn \c_synaptic_label_abstract_tl  { Abstract }
-\tl_new:N \c_synaptic_label_keywords_tl
-\tl_gset:Nn \c_synaptic_label_keywords_tl  { Keywords }
-\tl_new:N \c_synaptic_label_arxiv_tl
-\tl_gset:Nn \c_synaptic_label_arxiv_tl     { arXiv }
-\tl_new:N \c_synaptic_label_header_tl
-\tl_gset:Nn \c_synaptic_label_header_tl    { Prepared~for~submission~to~journal }
-\tl_new:N \c_synaptic_label_thm_tl
-\tl_gset:Nn \c_synaptic_label_thm_tl       { Theorem }
-\tl_new:N \c_synaptic_label_lemma_tl
-\tl_gset:Nn \c_synaptic_label_lemma_tl     { Lemma }
-\tl_new:N \c_synaptic_label_prop_tl
-\tl_gset:Nn \c_synaptic_label_prop_tl      { Proposition }
-\tl_new:N \c_synaptic_label_def_tl
-\tl_gset:Nn \c_synaptic_label_def_tl       { Definition }
-\tl_new:N \c_synaptic_label_proof_tl
-\tl_gset:Nn \c_synaptic_label_proof_tl     { Proof }
-\tl_new:N \c_synaptic_label_example_tl
-\tl_gset:Nn \c_synaptic_label_example_tl   { Example }
-\tl_new:N \c_synaptic_label_remark_tl
-\tl_gset:Nn \c_synaptic_label_remark_tl    { Remark }
-\tl_new:N \c_synaptic_label_warning_tl
-\tl_gset:Nn \c_synaptic_label_warning_tl   { Warning }
-\tl_new:N \c_synaptic_label_exercise_tl
-\tl_gset:Nn \c_synaptic_label_exercise_tl  { Exercise }
-\tl_new:N \c_synaptic_label_acknowledgments_tl
-\tl_gset:Nn \c_synaptic_label_acknowledgments_tl { Acknowledgments }
-\tl_new:N \c_synaptic_label_email_tl
-\tl_gset:Nn \c_synaptic_label_email_tl     { E-mail }
-
-
-
-
+\tl_const:Nn \c_synaptic_label_abstract_tl       { Abstract }
+\tl_const:Nn \c_synaptic_label_keywords_tl       { Keywords }
+\tl_const:Nn \c_synaptic_label_arxiv_tl          { arXiv }
+\tl_const:Nn \c_synaptic_label_header_tl         { Prepared~for~submission~to~journal }
+\tl_const:Nn \c_synaptic_label_thm_tl            { Theorem }
+\tl_const:Nn \c_synaptic_label_lemma_tl          { Lemma }
+\tl_const:Nn \c_synaptic_label_prop_tl           { Proposition }
+\tl_const:Nn \c_synaptic_label_def_tl            { Definition }
+\tl_const:Nn \c_synaptic_label_proof_tl          { Proof }
+\tl_const:Nn \c_synaptic_label_example_tl        { Example }
+\tl_const:Nn \c_synaptic_label_remark_tl         { Remark }
+\tl_const:Nn \c_synaptic_label_warning_tl        { Warning }
+\tl_const:Nn \c_synaptic_label_exercise_tl       { Exercise }
+\tl_const:Nn \c_synaptic_label_acknowledgments_tl { Acknowledgments }
+\tl_const:Nn \c_synaptic_label_email_tl          { E-mail }
+\tl_const:Nn \c_synaptic_label_correspondence_tl { Correspondence }
+\tl_const:Nn \c_synaptic_label_about_book_tl     { About~this~book }
+\tl_const:Nn \c_synaptic_label_lecture_tl        { Lecture }
+\tl_const:Nn \c_synaptic_label_overview_tl       { Overview }
+\tl_const:Nn \c_synaptic_label_learning_goals_tl { Learning~goals }
+\tl_const:Nn \c_synaptic_label_summary_tl        { Summary }
+\tl_const:Nn \c_synaptic_label_key_idea_tl       { Key~idea }
+\tl_const:Nn \c_synaptic_label_question_tl       { Question }
+\tl_const:Nn \c_synaptic_label_todo_tl           { To~do }
+\tl_const:Nn \c_synaptic_colon_tl                { : }

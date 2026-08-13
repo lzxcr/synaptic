@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    container: ghcr.io/xu-cheng/texlive-full:latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+      - name: Run regression tests
+        run: l3build check
+      - name: Build documentation and examples
+        run: |
+          l3build doc
+          mkdir -p build/examples
+          for source in examples/*.tex; do
+            for pass in 1 2; do
+              TEXINPUTS="$PWD/tex/latex/synaptic//:" lualatex \
+                -interaction=nonstopmode -halt-on-error \
+                -output-directory=build/examples "$source"
+            done
+          done
+          if grep -E "LaTeX Warning|Package .* Warning|Class .* Warning|Overfull|Missing character|^!" build/examples/*.log; then
+            exit 1
+          fi

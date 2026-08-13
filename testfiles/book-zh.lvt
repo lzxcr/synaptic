@@ -1,0 +1,25 @@
+\input regression-test.tex
+\documentclass[11pt,twoside]{scrbook}
+\usepackage[mode=book,lang=zh,fontset=lm,toc=false]{synaptic}
+
+\SynapticTitle{中文书籍回归测试}
+\SynapticSubtitle{扉页、篇章与双面导航}
+\SynapticAuthor{测试作者}
+\SynapticPublisher{测试出版社}
+\begin{abstract}检查中文书籍标题、前文、章标题和定理。\end{abstract}
+
+\begin{document}
+\SynapticMakeTitle
+\SynapticFrontMatter
+\chapter{前言}
+前言正文。
+\SynapticMainMatter
+\chapter{第一章}
+\SynapticChapterSubtitle{中文章副标题}
+\section{基础}
+\begin{theorem}中文书籍定理。\end{theorem}
+\START
+\TYPE{zh-book-theorem=\thetheorem}
+\TYPE{zh-book-workflow=ok}
+\END
+\end{document}

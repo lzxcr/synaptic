@@ -1,0 +1,12 @@
+This is a generated file for the l3build validation system.
+Don't change this file in any respect.
+mode=lecture
+Package hyperref Info: Option `unicode' set `true' on input line ....
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `LatinModernSans' (encoding: TU).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+generic-example-preserved=ok
+Package hyperref Info: bookmark level for unknown theorem defaults to 0 on input line ....
+shared-teaching-counter=3
+lecture-navigation-and-boxes=ok

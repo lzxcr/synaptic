@@ -1,0 +1,29 @@
+\input regression-test.tex
+\documentclass[11pt]{scrartcl}
+\usepackage[mode=journal,theme=ocean,fontset=lm,title-layout=inline,
+  toc=true,toc-layout=inline]{synaptic}
+
+\SynapticTitle{Regression Journal}
+\SynapticAuthor[1]{Test Author}
+\SynapticAffiliation[1]{Test Institute}
+\SynapticEmail{test@example.org}
+\SynapticCorrespondence{Test Author, test@example.org}
+\SynapticPublicationInfo{Regression preprint}
+\SynapticSubject{Journal regression test}
+\SynapticKeywords{regression, journal}
+\begin{abstract}A short abstract.\end{abstract}
+
+\begin{document}
+\START
+\ExplSyntaxOn
+\TYPE{mode=\synaptic_mode:}
+\TYPE{theme=\synaptic_theme:}
+\ExplSyntaxOff
+\SynapticMakeTitle
+\section{Result}
+\begin{theorem}The theorem environment is available.\end{theorem}
+\begin{definition}Definitions use their dedicated style.\end{definition}
+\SynapticStatement{Funding}{No external funding.}
+\TYPE{journal-inline-title-and-statements=ok}
+\END
+\end{document}

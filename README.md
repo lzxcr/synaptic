@@ -1,238 +1,232 @@
 <p align="center">
-  <a href="https://www.latex-project.org/"><img src="https://img.shields.io/badge/LaTeX-3-008080?style=for-the-badge&logo=latex" alt="LaTeX3"></a>
-  <a href="https://www.luatex.org/"><img src="https://img.shields.io/badge/Engine-LuaLaTeX-blue?style=for-the-badge&logo=lua" alt="LuaLaTeX"></a>
-  <a href="https://ctan.org/pkg/koma-script"><img src="https://img.shields.io/badge/Class-KOMA--Script-orange?style=for-the-badge" alt="KOMA-Script"></a>
-  <a href="https://www.latex-project.org/lppl/"><img src="https://img.shields.io/badge/License-LPPL%201.3c-lightgrey?style=for-the-badge" alt="License"></a>
+  <a href="https://www.latex-project.org/"><img src="https://img.shields.io/badge/LaTeX-3-008080?style=flat-square&logo=latex" alt="LaTeX3"></a>
+  <a href="https://www.luatex.org/"><img src="https://img.shields.io/badge/engine-LuaLaTeX-2c5aa0?style=flat-square" alt="LuaLaTeX"></a>
+  <a href="https://www.latex-project.org/lppl/"><img src="https://img.shields.io/badge/license-LPPL%201.3c-lightgrey?style=flat-square" alt="LPPL 1.3c"></a>
 </p>
 
-<h1 align="center">
-  synaptic — Modern Academic Typesetting Framework
-</h1>
+<h1 align="center">synaptic</h1>
 
-<p align="center">
-  <i>Like a biological synapse, this framework connects your ideas, formulas, and
-  layout into a seamless, beautiful network.</i>
-</p>
+<p align="center">A modular LaTeX3 design system for academic articles, books, lectures, and notes.</p>
 
-**synaptic** is a modular LaTeX3 design system for academic articles, books,
-lecture notes, and technical reports. It requires **LuaLaTeX** with a
-**KOMA‑Script** document class.
+`synaptic` combines a consistent typographic system with mode-aware layouts,
+Unicode mathematics, bilingual labels, semantic colour tokens, and a
+collision-resistant public API. It requires LuaLaTeX, a recent LaTeX format,
+and a KOMA-Script document class.
 
----
+## Quick start
 
-## Installation
-
-### Recommended: TEXINPUTS (zero install)
-
-The `.sty` files are pre-committed. Just point `TEXINPUTS` at the package directory:
+Point `TEXINPUTS` at the pre-generated package directory:
 
 ```bash
-git clone https://github.com/lzxcr/synaptic
 export TEXINPUTS=/path/to/synaptic/tex/latex/synaptic//:$TEXINPUTS
-lualatex your-document.tex
+lualatex document.tex
 ```
 
-### Alternative: l3build (system-wide)
-
-```bash
-cd synaptic
-l3build install    # unpack + install to TEXMFHOME
-```
-
-### What happens under the hood
-
-- `synaptic.dtx` — single-file documented source
-- `synaptic.ins` — DocStrip extraction script (run automatically by l3build)
-- `tex/latex/synaptic/` — pre-committed `.sty` files (ready to use with TEXINPUTS)
-- `l3build install` — `unpack → build/local/ → install to TEXMFHOME`
-
-### Verification
+Then use a KOMA-Script class:
 
 ```latex
-% minimal.tex — test your installation
-\documentclass{scrartcl}
-\usepackage[mode=journal, theme=ocean]{synaptic}
-\SynapticTitle{Test}
-\SynapticAuthor{You}
+\documentclass[11pt]{scrartcl}
+\usepackage[mode=journal,theme=ocean,fontset=auto]{synaptic}
+
+\SynapticTitle{A Clear Academic Article}
+\SynapticAuthor[1]{Ada Author}
+\SynapticAffiliation[1]{Department of Typesetting}
+\SynapticEmail{ada@example.org}
+\SynapticSubject{A short article example}
+\SynapticKeywords{LaTeX, typography}
+\begin{abstract}A concise abstract.\end{abstract}
+
 \begin{document}
 \SynapticMakeTitle
-\section{Hello}
-\begin{theorem} It works! \end{theorem}
+\section{Introduction}
+\begin{theorem}A readable theorem.\end{theorem}
 \end{document}
 ```
 
-Compile with `lualatex minimal.tex`.
+Ready-to-compile documents for every mode live in [`examples/`](examples/).
 
----
+## Requirements
 
-## Options
+- LuaLaTeX; pdfLaTeX and XeLaTeX are rejected with an explicit error.
+- A KOMA-Script class. Use `scrbook` for `mode=book`; the other modes normally
+  use `scrartcl` or `scrreprt`.
+- A recent TeX distribution containing `expl3`, `fontspec`, `unicode-math`,
+  `geometry`, `microtype`, `thmtools`, and the other standard dependencies.
+- `tcolorbox` and PGF for the teaching and notes cards; `ctex` and a supported
+  CJK font for `lang=zh`.
 
-| Key | Type | Default | Choices |
-|-----|------|---------|---------|
-| `mode` | choice | `journal` | `journal`, `book`, `lecture`, `notes` |
-| `theme` | choice | `ocean` | `ocean`, `graphite`, `forest`, `midnight`, `paper` |
-| `lang` | choice | `en` | `en`, `zh` |
-| `fontset` | choice | `auto` | `auto`, `xcharter`, `libertinus`, `stix2`, `lm` |
-| `toc` | bool | `true` | — |
-| `toc-layout` | choice | `top` | `top`, `inline`, `page` |
-| `extra-math` | bool | `false` | — |
-| `fine-breaking` | bool | `true` | — |
+The package respects the paper size selected by the class. It does not force A4.
 
-### Mode descriptions
+## Package options
 
-| mode | Document class | Features |
-|------|---------------|----------|
-| `journal` | scrartcl | Submission header, abstract, keywords, arXiv |
-| `book` | scrbook | Chapter headings, running headers, front/back matter |
-| `lecture` | scrartcl / scrreprt | Wide margins, large headings, tcolorbox environments |
-| `notes` | scrartcl | Compact layout, minimal extras |
+| Key | Default | Values | Runtime? |
+|---|---:|---|:---:|
+| `mode` | `journal` | `journal`, `book`, `lecture`, `notes` | No |
+| `theme` | `ocean` | `ocean`, `graphite`, `forest`, `midnight`, `paper` | Yes |
+| `lang` | `en` | `en`, `zh` | No |
+| `fontset` | `auto` | `auto`, `xcharter`, `libertinus`, `stix2`, `lm` | No |
+| `toc` | `false` | Boolean | Yes |
+| `toc-layout` | `top` | `top`, `inline`, `page` | Yes |
+| `title-layout` | `auto` | `auto`, `inline`, `compact`, `page`, `cover` | No |
+| `numbering` | `auto` | `auto`, `section`, `chapter`, `continuous`, `none` | No |
+| `box-numbering` | `shared` | `shared`, `separate`, `none` | No |
+| `color-mode` | `screen` | `screen`, `print`, `mono` | No |
+| `density` | `balanced` | `compact`, `balanced`, `airy` | No |
+| `measure` | `auto` | `auto`, `narrow`, `standard`, `wide` | No |
+| `binding-offset` | `0pt` | Any dimension; primarily for books | No |
+| `extra-math` | `false` | Boolean | No |
+| `fine-breaking` | `true` | Boolean | No |
 
-### Theme colours
+Only theme and title-page TOC settings can change safely after package loading:
 
-| Theme | Primary | Secondary |
-|-------|---------|-----------|
-| `ocean` | `RGB(0,106,176)` blue | `RGB(46,64,83)` dark blue-grey |
-| `graphite` | `RGB(75,86,99)` grey | `RGB(45,52,62)` dark grey |
-| `forest` | `RGB(30,115,80)` green | `RGB(56,68,60)` dark green |
-| `midnight` | `RGB(25,55,109)` navy | `RGB(30,35,50)` deep dark |
-| `paper` | `RGB(55,58,62)` dark grey | `RGB(45,48,52)` near-black |
+```latex
+\SynapticSetup{theme=paper,toc=false,toc-layout=page}
+```
 
-Custom themes: `\SynapticDefineTheme{name}{primary}{secondary}`.
+Structural runtime changes emit a warning instead of leaving the document in a
+partially reconfigured state.
+
+### Modes
+
+| Mode | Recommended class | Main behaviour |
+|---|---|---|
+| `journal` | `scrartcl` | Inline article title, publication metadata, running heads, statements |
+| `book` | `scrbook` | Book title sequence, mirrored navigation, part/chapter design, matter helpers |
+| `lecture` | `scrartcl` / `scrreprt` | Course masthead, shared teaching counter, learning and summary cards |
+| `notes` | `scrartcl` | Compact masthead, single/two-column support, lightweight knowledge cards |
 
 ### Font sets
 
-| fontset | Roman | Sans | Monospace | Math |
-|---------|-------|------|-----------|------|
-| `auto` | Auto-detect | Auto-detect | Auto-detect | Auto-detect |
-| `xcharter` | XCharter | Cabin | Inconsolata | XCharter Math |
+`auto` selects the first complete installed bundle in this order: XCharter,
+Libertinus, STIX Two, then Latin Modern. Detection is performed through
+`fontspec`; there is no external Lua helper or shell command. Explicit font-set
+requests fail clearly when any required font is missing.
+
+| Set | Roman | Sans | Mono | Math |
+|---|---|---|---|---|
+| `xcharter` | XCharter | Cabin | Inconsolatazi4 | XCharter Math |
 | `libertinus` | Libertinus Serif | Libertinus Sans | Libertinus Mono | Libertinus Math |
-| `stix2` | STIX Two Text | STIX Two Text | STIX Two Text | STIX Two Math |
-| `lm` | Latin Modern | Latin Modern Sans | Latin Modern Mono | Latin Modern Math |
+| `stix2` | STIX Two Text | TeX Gyre Heros | Latin Modern Mono | STIX Two Math |
+| `lm` | Latin Modern Roman | Latin Modern Sans | Latin Modern Mono | Latin Modern Math |
 
----
+For Chinese, Noto CJK is preferred and the TeX Live Fandol fonts are used as a
+fallback.
 
-## User API
+## Public API
 
-### Metadata
-
-| Command | Purpose |
-|---------|---------|
-| `\SynapticTitle{...}` | Document title |
-| `\SynapticAuthor[mark]{name}` | Author with optional affiliation mark |
-| `\SynapticAffiliation[mark]{...}` | Affiliation |
-| `\SynapticEmail{...}` | Email address |
-| `\SynapticKeywords{...}` | Keywords |
-| `\SynapticArxiv{ID}` | arXiv link |
-| `\SynapticMakeTitle` | Render title page |
-| `\SynapticSetup{key=val}` | Change options at runtime |
-
-### Customisation
+### Shared metadata and mode-aware titles
 
 | Command | Purpose |
-|---------|---------|
-| `\SynapticNewTheorem{env}{Name}` | Declare theorem-like environment |
-| `\SynapticDefineTheme{primary}{secondary}` | Custom colour theme |
-| `\SynapticHeader{...}` | Submission header override |
-| `\SynapticSubHeader{...}` | Sub-header |
-| `\SynapticPreprint{...}` | Preprint identifier |
-| `\SynapticDedicated{...}` | Dedication text |
+|---|---|
+| `\SynapticTitle{...}` | Required title |
+| `\SynapticSubtitle{...}` / `\SynapticShortTitle{...}` | Display and running titles |
+| `\SynapticDate{...}` | Explicit document or lecture date |
+| `\SynapticAuthor[mark]{...}` | Repeatable author and optional affiliation mark |
+| `\SynapticAffiliation[mark]{...}` | Repeatable affiliation |
+| `\SynapticEmail{...}` | Repeatable email |
+| `\SynapticSubject{...}` | PDF subject metadata |
+| `\SynapticKeywords{...}` | Printed keywords and PDF metadata |
+| `\SynapticHeader{...}` / `\SynapticSubHeader{...}` | Title-page header text |
+| `\SynapticPreprint{...}` / `\SynapticArxiv{...}` | Preprint fields |
+| `\SynapticDedicated{...}` | Dedication |
+| `\SynapticMakeTitle` | Validate metadata and render the title |
 
-### Environments
+The same title API is available in all four modes. `journal` renders an inline
+article heading by default, `book` renders a book title sequence, and `lecture`
+and `notes` use compact mode-specific mastheads. Standard `\title`, `\author`,
+and `\date` values are imported when the corresponding Synaptic fields are
+empty and `\SynapticMakeTitle` is called.
 
-**Always available:**
-`abstract`, `theorem`, `lemma`, `proposition`, `definition`, `proof`
+PDF title, author, subject, and keywords use Unicode-safe conversion. The PDF
+catalog language is set to `en-US` or `zh-CN`.
 
-**Lecture mode only (`mode=lecture`):**
-`example`, `remark`, `warning`, `exercise`, `synbox` (tcolorbox-based)
+Journal extensions include `\SynapticCorrespondence`,
+`\SynapticPublicationInfo`, repeatable `\SynapticAuthorNote`, and the generic
+`\SynapticStatement{heading}{body}` for funding, data, ethics, or conflict
+statements. Its starred form omits the statement from the table of contents.
 
----
+### Theorems and boxes
 
-## Project structure
+The core environments are `theorem`, `lemma`, `proposition`, `definition`, and
+`proof`. Definitions use upright body text; theorem statements use italics in
+English and upright text in Chinese. Book mode numbers theorems by chapter by
+default; the shorter modes use sections.
 
-```
-synaptic/
-├── synaptic.dtx              DocStrip source (all modules)
-├── synaptic.ins              Extraction script
-├── build.lua                 l3build configuration
-├── README.md
-├── CHANGELOG.md
-├── LICENSE
-├── .gitignore
-│
-├── tex/latex/synaptic/        Package files (installed)
-│   ├── synaptic.sty           Thin shell: loads modules by mode
-│   ├── synaptic-base.sty      Engine check, options, dispatching
-│   ├── synaptic-color.sty     Theme colour system (5 themes)
-│   ├── synaptic-fonts.sty     Fontset selection + CJK
-│   │   └── synaptic-fonts.lua Lua font auto-detection
-│   ├── synaptic-layout.sty    Page geometry, microtype, headings
-│   ├── synaptic-title.sty     Title page (journal mode)
-│   ├── synaptic-theorem.sty   Theorem / proof environments
-│   ├── synaptic-book.sty      Book mode (chapter, headers)
-│   ├── synaptic-lecture.sty   Lecture mode (wide margins)
-│   ├── synaptic-boxes.sty     tcolorbox environments
-│   ├── synaptic-lang-en.def   English labels
-│   ├── synaptic-lang-zh.def   Chinese labels
-│   └── synaptic.ins           Per-directory extraction
-│
-├── srcs/                      Manual source files
-│   ├── synaptic-user-en.tex
-│   ├── synaptic-user-zh.tex
-│   ├── synaptic-tech-en.tex
-│   └── synaptic-tech-zh.tex
-│
-└── docs/                      Compiled PDF manuals
-    ├── synaptic-user-en.pdf
-    ├── synaptic-user-zh.pdf
-    ├── synaptic-tech-en.pdf
-    └── synaptic-tech-zh.pdf
+```latex
+\SynapticNewTheorem[remark]{observation}{Observation}
 ```
 
----
+The optional style is `plain`, `definition`, or `remark`.
 
-## Module architecture
+Lecture mode adds `synexample`, `synremark`, `synwarning`, `synexercise`, and
+`synbox`. The first optional argument is a title and the second is a label.
+Examples and exercises share the theorem counter by default; warnings and
+remarks remain unnumbered:
 
-```
-synaptic.sty
-  └── synaptic-base.sty            (RequirePackageWithOptions)
-        ├── synaptic-color.sty     theme colour definitions
-        ├── synaptic-fonts.sty     font loading + Lua detection
-        ├── synaptic-layout.sty    geometry, microtype, KOMA headings
-        ├── synaptic-theorem.sty   thmtools + amsthm
-        │
-        ├── synaptic-title.sty     [mode=journal]  title page
-        ├── synaptic-book.sty      [mode=book]     chapter + headers
-        ├── synaptic-lecture.sty   [mode=lecture]  wide margins
-        └── synaptic-boxes.sty     [mode=lecture]  tcolorbox
+```latex
+\begin{synexample}[Worked example][worked]
+  Example content.
+\end{synexample}
 ```
 
-Each mode loads a different subset:
+The short v2.0 environment names (`example`, `remark`, `warning`, `exercise`)
+are provided only when no existing package or class has already claimed them.
 
-| `mode=` | Loads |
-|---------|-------|
-| `journal` | base + color + fonts + layout + theorem + title |
-| `book`    | journal + book |
-| `lecture` | base + color + fonts + layout + theorem + lecture + boxes |
-| `notes`   | base + color + fonts + layout + theorem |
+### Themes
 
----
+Switch a built-in theme with `\SynapticUseTheme{name}` or `\SynapticSetup`.
+Define and activate a custom theme using normal xcolor expressions:
+
+```latex
+\SynapticDefineTheme{brand}{blue!70!black}{gray!80!black}[orange!80!black]
+```
+
+The semantic colours `syn-primary`, `syn-secondary`, `syn-accent`,
+`syn-danger`, `syn-warning`, `syn-success`, `syn-surface`, and `syn-border`
+are available for extensions.
+
+### Book, lecture, and notes workflows
+
+Book mode provides `\SynapticFrontMatter`, `\SynapticMainMatter`, and
+`\SynapticBackMatter`, plus `\SynapticBookContents`, list-of-figures/tables and
+appendix helpers. `\SynapticHalfTitle`, `\SynapticPublisher`,
+`\SynapticEdition`, `\SynapticISBN`, and `\SynapticCopyright` populate the book
+title sequence. `\SynapticChapterSubtitle` and `\SynapticEpigraph` extend
+chapter openings.
+
+Lecture metadata uses `\SynapticCourse`, `\SynapticCourseCode`,
+`\SynapticLectureNumber`, `\SynapticInstructor`, and `\SynapticSemester`.
+The `synlearninggoals` and `synlecturesummary` environments define the beginning
+and end of a teaching unit.
+
+Notes mode provides `synkeyidea`, `synquestion`, `syntodo`, and `synsummary`.
+It supports class-level `twocolumn`; call `\SynapticBalanceColumns` near the end
+when the final two-column page should be balanced.
+
+`\SynapticAcknowledgments` uses a chapter heading in book mode and a section
+heading elsewhere; its starred form omits the TOC entry.
+
+## Development
+
+```bash
+l3build unpack   # regenerate package files from synaptic.dtx
+l3build check    # run LuaLaTeX regression tests
+l3build doc      # build documented source and four manuals
+l3build ctan     # create a TDS/CTAN release archive
+```
+
+`synaptic.dtx` is the source of truth. Generated `.sty` and `.def` files under
+`tex/latex/synaptic/` are committed so the repository can be used directly.
+CI runs the regression suite and compiles the documentation and examples.
 
 ## Documentation
 
-- [User Manual (English)](docs/synaptic-user-en.pdf) — options, API, examples
-- [User Manual (Chinese)](docs/synaptic-user-zh.pdf) — 同上（中文版）
-- [Technical Reference (English)](docs/synaptic-tech-en.pdf) — architecture, extension
-- [Technical Reference (Chinese)](docs/synaptic-tech-zh.pdf) — 同上（中文版）
-- `lualatex synaptic.dtx` — compile the documented source (35-page dev doc)
-
----
+- [English user manual](docs/synaptic-user-en.pdf)
+- [中文用户手册](docs/synaptic-user-zh.pdf)
+- [English technical reference](docs/synaptic-tech-en.pdf)
+- [中文技术参考](docs/synaptic-tech-zh.pdf)
+- [`synaptic.dtx`](synaptic.dtx) for the documented implementation
 
 ## License
 
 LPPL 1.3c or later. See [LICENSE](LICENSE).
-
----
-
-## Links
-
-- GitHub: <https://github.com/lzxcr/synaptic>

@@ -1,5 +1,10 @@
 %% File: synaptic.dtx
 %% License: LPPL 1.3c or later
+%% Current Maintainer: synaptic project
+%% Copyright (C) 2025--2026 synaptic project
+%%
+%% This work consists of synaptic.dtx, synaptic.ins, the files generated
+%% from them, and the accompanying documentation and examples.
 %%
 %% synaptic -- Modern Academic Typesetting Framework
 %% A modular LaTeX3 design system for articles, books, and lecture notes.
@@ -10,7 +15,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-layout}{2026-06-05}{2.0.0}
+\ProvidesExplPackage{synaptic-layout}{2026-08-13}{2.2.0}
   {Synaptic~Page~Layout}
 
 \RequirePackage{geometry}
@@ -20,18 +25,19 @@
 \RequirePackage{hyperref}
 \RequirePackage{bookmark}
 
+\KOMAoptions{numbers=noendperiod}
+
 \str_case:Vn \l_synaptic_mode_tl
   {
     { journal }
       {
         \geometry{
-          a4paper,
-          textwidth  = 0.74\paperwidth,
-          textheight = 0.76\paperheight,
-          top        = 0.11\paperheight,
-          left       = 0.13\paperwidth,
-          headheight = 16pt,
-          headsep    = 22pt,
+          textwidth  = 0.68\paperwidth,
+          textheight = 0.78\paperheight,
+          top        = 0.09\paperheight,
+          hcentering,
+          headheight = 20pt,
+          headsep    = 18pt,
           footskip   = 30pt,
           includeheadfoot
         }
@@ -39,13 +45,12 @@
     { lecture }
       {
         \geometry{
-          a4paper,
-          textwidth  = 0.70\paperwidth,
-          textheight = 0.74\paperheight,
-          top        = 0.12\paperheight,
-          left       = 0.14\paperwidth,
-          headheight = 18pt,
-          headsep    = 24pt,
+          textwidth  = 0.72\paperwidth,
+          textheight = 0.76\paperheight,
+          top        = 0.10\paperheight,
+          hcentering,
+          headheight = 20pt,
+          headsep    = 18pt,
           footskip   = 32pt,
           includeheadfoot
         }
@@ -53,12 +58,12 @@
     { book }
       {
         \geometry{
-          a4paper,
-          textwidth  = 0.70\paperwidth,
           textheight = 0.76\paperheight,
-          top        = 0.10\paperheight,
-          left       = 0.15\paperwidth,
-          headheight = 16pt,
+          top        = 0.095\paperheight,
+          inner      = 0.15\paperwidth,
+          outer      = 0.17\paperwidth,
+          bindingoffset = \dim_use:N \l_synaptic_binding_offset_dim,
+          headheight = 22pt,
           headsep    = 20pt,
           footskip   = 28pt,
           includeheadfoot,
@@ -68,27 +73,48 @@
     { notes }
       {
         \geometry{
-          a4paper,
-          textwidth  = 0.78\paperwidth,
-          textheight = 0.80\paperheight,
-          top        = 0.08\paperheight,
-          left       = 0.11\paperwidth,
-          headheight = 14pt,
-          headsep    = 18pt,
+          textwidth  = 0.80\paperwidth,
+          textheight = 0.82\paperheight,
+          top        = 0.07\paperheight,
+          hcentering,
+          headheight = 20pt,
+          headsep    = 14pt,
           footskip   = 24pt,
           includeheadfoot
         }
       }
   }
 
+\str_case:Vn \l_synaptic_measure_tl
+  {
+    { narrow }
+      {
+        \str_if_eq:VnTF \l_synaptic_mode_tl { book }
+          { \geometry{inner=0.18\paperwidth,outer=0.20\paperwidth} }
+          { \geometry{textwidth=0.62\paperwidth,hcentering} }
+      }
+    { standard }
+      {
+        \str_if_eq:VnTF \l_synaptic_mode_tl { book }
+          { \geometry{inner=0.15\paperwidth,outer=0.17\paperwidth} }
+          { \geometry{textwidth=0.70\paperwidth,hcentering} }
+      }
+    { wide }
+      {
+        \str_if_eq:VnTF \l_synaptic_mode_tl { book }
+          { \geometry{inner=0.12\paperwidth,outer=0.14\paperwidth} }
+          { \geometry{textwidth=0.80\paperwidth,hcentering} }
+      }
+  }
+
 \hypersetup{
   colorlinks  = true,
-  urlcolor    = syn-link,
-  linkcolor   = syn-link,
-  citecolor   = syn-link,
-  filecolor   = syn-link,
+  allcolors   = syn-link,
   linktocpage = true
 }
+\synaptic_if_lang_zh:TF
+  { \hypersetup{pdflang={zh-CN}} }
+  { \hypersetup{pdflang={en-US}} }
 
 \synaptic_if_lang_zh:TF
   {
@@ -98,28 +124,106 @@
     \PassOptionsToPackage{verbose=false}{microtype}
   }
 \RequirePackage{microtype}
+\synaptic_if_lang_zh:TF
+  { \microtypesetup{protrusion=false, expansion=false} }
+  { }
 
-\setlength{\parindent}{2em}
+\synaptic_if_lang_zh:TF
+  { \setlength{\parindent}{2em} }
+  { \setlength{\parindent}{1.25em} }
 \setlength{\parskip}{0pt plus 1pt}
-\widowpenalty=10000
-\clubpenalty=10000
+\widowpenalty=8000
+\clubpenalty=8000
 
 \bool_if:NT \l_synaptic_fine_breaking_bool
   {
-    \emergencystretch=4em
-    \tolerance=4000
-    \hfuzz=1.5pt
-    \vfuzz=1.5pt
-    \raggedbottom
+    \emergencystretch=2em
+    \tolerance=2000
   }
 
-\setstretch{1.25}
+\str_case:Vn \l_synaptic_density_tl
+  {
+    { compact }
+      {
+        \synaptic_if_lang_zh:TF
+          {
+            \str_case:Vn \l_synaptic_mode_tl
+              {
+                { journal } { \setstretch{1.18} }
+                { book }    { \setstretch{1.20} }
+                { lecture } { \setstretch{1.22} }
+                { notes }   { \setstretch{1.13} }
+              }
+          }
+          {
+            \str_case:Vn \l_synaptic_mode_tl
+              {
+                { journal } { \setstretch{1.10} }
+                { book }    { \setstretch{1.12} }
+                { lecture } { \setstretch{1.16} }
+                { notes }   { \setstretch{1.05} }
+              }
+          }
+      }
+    { balanced }
+      {
+        \synaptic_if_lang_zh:TF
+          {
+            \str_case:Vn \l_synaptic_mode_tl
+              {
+                { journal } { \setstretch{1.28} }
+                { book }    { \setstretch{1.30} }
+                { lecture } { \setstretch{1.32} }
+                { notes }   { \setstretch{1.22} }
+              }
+          }
+          {
+            \str_case:Vn \l_synaptic_mode_tl
+              {
+                { journal } { \setstretch{1.18} }
+                { book }    { \setstretch{1.20} }
+                { lecture } { \setstretch{1.25} }
+                { notes }   { \setstretch{1.12} }
+              }
+          }
+      }
+    { airy }
+      {
+        \synaptic_if_lang_zh:TF
+          {
+            \str_case:Vn \l_synaptic_mode_tl
+              {
+                { journal } { \setstretch{1.36} }
+                { book }    { \setstretch{1.38} }
+                { lecture } { \setstretch{1.42} }
+                { notes }   { \setstretch{1.30} }
+              }
+          }
+          {
+            \str_case:Vn \l_synaptic_mode_tl
+              {
+                { journal } { \setstretch{1.25} }
+                { book }    { \setstretch{1.27} }
+                { lecture } { \setstretch{1.34} }
+                { notes }   { \setstretch{1.20} }
+              }
+          }
+      }
+  }
+\str_if_eq:VnT \l_synaptic_mode_tl { lecture } { \raggedbottom }
+\str_if_eq:VnT \l_synaptic_mode_tl { notes }   { \raggedbottom }
 
 \captionsetup{
   font      = small,
   labelfont = {bf, sf},
-  labelsep  = period,
+  labelsep  = quad,
   skip      = 10pt
+}
+
+\setlist{
+  itemsep = 0.25em,
+  parsep  = 0pt,
+  topsep  = 0.5em
 }
 
 \AddToHook{begindocument/before}
@@ -142,15 +246,41 @@
     ]{subsubsection}
   }
 
-\numberwithin{equation}{section}
+\cs_new_protected:Npn \__synaptic_layout_number_equations_within:n #1
+  { \numberwithin{equation}{#1} }
 
+\cs_new_protected:Npn \__synaptic_layout_disable_display_numbers:
+  {
+    % Alias the unstarred AMS environments to their native starred forms.
+    % Capturing an alignment body in an xparse environment breaks amsmath's
+    % matching begin/end machinery, especially for align and alignat.
+    \cs_set_eq:cc { equation }    { equation* }
+    \cs_set_eq:cc { endequation } { endequation* }
+    % The starred AMS alignment end macros intentionally delegate to their
+    % unstarred counterparts.  Only the begin macro therefore needs aliasing;
+    % aliasing both ends would create a recursive \endalign loop.
+    \clist_map_inline:nn { align, alignat, flalign, gather, multline }
+      { \cs_set_eq:cc { ##1 } { ##1* } }
+  }
 
-
-
-
-
-
-
-
-
-
+\str_case:VnF \l_synaptic_numbering_tl
+  {
+    { section }    { \__synaptic_layout_number_equations_within:n { section } }
+    { chapter }
+      {
+        \cs_if_exist:NTF \chapter
+          { \__synaptic_layout_number_equations_within:n { chapter } }
+          {
+            \PackageWarning{synaptic-layout}
+              {Chapter~numbering~requested~without~chapters;~using~sections}
+            \__synaptic_layout_number_equations_within:n { section }
+          }
+      }
+    { continuous } { }
+    { none }       { \__synaptic_layout_disable_display_numbers: }
+  }
+  {
+    \str_if_eq:VnTF \l_synaptic_mode_tl { book }
+      { \__synaptic_layout_number_equations_within:n { chapter } }
+      { \__synaptic_layout_number_equations_within:n { section } }
+  }

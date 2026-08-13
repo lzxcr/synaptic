@@ -2,20 +2,21 @@
 module = "synaptic"
 
 sourcefiledir = "."
-sourcefiles   = {"synaptic.dtx", "synaptic.ins"}
+sourcefiles   = {"synaptic.dtx", "synaptic.ins", "srcs/*.tex", "examples/*.tex"}
 installfiles  = {"synaptic.sty", "synaptic-base.sty", "synaptic-color.sty",
-                  "synaptic-fonts.sty", "synaptic-fonts.lua", "synaptic-layout.sty",
+                  "synaptic-fonts.sty", "synaptic-layout.sty",
                   "synaptic-title.sty", "synaptic-theorem.sty", "synaptic-book.sty",
-                  "synaptic-lecture.sty", "synaptic-boxes.sty",
+                  "synaptic-journal.sty", "synaptic-lecture.sty", "synaptic-boxes.sty",
+                  "synaptic-notes.sty",
                   "synaptic-lang-en.def", "synaptic-lang-zh.def"}
-typesetfiles  = {"synaptic.dtx"}
-docfiles      = {"README.md", "CHANGELOG.md", "LICENSE"}
+typesetfiles  = {"synaptic.dtx", "srcs/*.tex"}
+docfiles      = {"README.md", "CHANGELOG.md", "LICENSE", "docs/*.pdf"}
+demofiles     = {"examples/*.tex"}
 ctanpostdir   = "synaptic"
 packtdszip    = true
 
-dependencies  = {
-  "koma-script", "fontspec", "unicode-math", "mathtools",
-  "geometry", "hyperref", "bookmark", "microtype",
-  "amsthm", "thmtools", "tcolorbox", "setspace",
-  "caption", "enumitem", "seqsplit", "xcolor", "graphicx"
-}
+typesetexe    = "lualatex"
+typesetopts   = "-interaction=nonstopmode -halt-on-error"
+checkengines  = {"luatex"}
+stdengine     = "luatex"
+checkruns     = 2

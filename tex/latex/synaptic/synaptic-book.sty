@@ -1,5 +1,10 @@
 %% File: synaptic.dtx
 %% License: LPPL 1.3c or later
+%% Current Maintainer: synaptic project
+%% Copyright (C) 2025--2026 synaptic project
+%%
+%% This work consists of synaptic.dtx, synaptic.ins, the files generated
+%% from them, and the accompanying documentation and examples.
 %%
 %% synaptic -- Modern Academic Typesetting Framework
 %% A modular LaTeX3 design system for articles, books, and lecture notes.
@@ -12,11 +17,16 @@
 
 
 
+
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-book}{2026-06-05}{2.0.0}
+\ProvidesExplPackage{synaptic-book}{2026-08-13}{2.2.0}
   {Synaptic~Book~Mode}
 
-\RequirePackage{scrlayer-scrpage}
+\RequirePackage[singlespacing=true]{scrlayer-scrpage}
+\RequirePackage{needspace}
+
+\KOMAoptions{numbers=noendperiod,cleardoublepage=empty}
+\raggedbottom
 
 \AddToHook{begindocument/before}
   {
@@ -24,8 +34,8 @@
     \setkomafont{chapterprefix}{\normalfont\normalsize\sffamily\color{syn-primary!60}}
 
     \RedeclareSectionCommand[
-      beforeskip  = -2em,
-      afterskip   = 2em,
+      beforeskip  = -1.5em,
+      afterskip   = 1.8em,
       font        = \normalfont\Huge\bfseries\sffamily\color{syn-primary}
     ]{chapter}
 
@@ -38,45 +48,89 @@
 
 \clearpairofpagestyles
 
-\lehead{\pagemark}
-\rohead{\pagemark}
-\lefoot{\headmark}
-\rofoot{\headmark}
+\ohead{\headmark}
+\ofoot*{\pagemark}
 
 \automark[section]{chapter}
-\setkomafont{pagehead}{\normalfont\small\color{syn-text-dark!70}}
+\setkomafont{pageheadfoot}
+  {\normalfont\small\sffamily\color{syn-muted-text}}
+\pagestyle{scrheadings}
 
-\AddToHook{begindocument/before}
+\NewDocumentCommand{\SynapticFrontMatter}{}
   {
-    \newcommand{\synapticfrontmatter}{%
-      \frontmatter
-      \pagenumbering{roman}
-      \setkomafont{chapter}{\normalfont\large\bfseries\sffamily\color{syn-primary}}
-    }
-    \newcommand{\synapticmainmatter}{%
-      \mainmatter
-      \pagenumbering{arabic}
-      \setkomafont{chapter}{\normalfont\Huge\bfseries\sffamily\color{syn-primary}}
-    }
-    \newcommand{\synapticbackmatter}{%
-      \backmatter
-      \setkomafont{chapter}{\normalfont\large\bfseries\sffamily\color{syn-primary}}
-    }
+    \frontmatter
+    \markboth{}{}
+    \setkomafont{chapter}
+      {\normalfont\LARGE\bfseries\sffamily\color{syn-primary}}
+  }
+\NewDocumentCommand{\SynapticMainMatter}{}
+  {
+    \mainmatter
+    \markboth{}{}
+    \setkomafont{chapter}{\normalfont\Huge\bfseries\sffamily\color{syn-primary}}
+  }
+\NewDocumentCommand{\SynapticBackMatter}{}
+  {
+    \backmatter
+    \markboth{}{}
+    \setkomafont{chapter}
+      {\normalfont\LARGE\bfseries\sffamily\color{syn-primary}}
   }
 
+\ProvideDocumentCommand{\synapticfrontmatter}{}{\SynapticFrontMatter}
+\ProvideDocumentCommand{\synapticmainmatter}{}{\SynapticMainMatter}
+\ProvideDocumentCommand{\synapticbackmatter}{}{\SynapticBackMatter}
+
 \AddToHook{begindocument/before}
   {
-    \setkomafont{part}{\normalfont\huge\bfseries\sffamily\color{syn-primary}}
+    \renewcommand*{\raggedpart}{\raggedright}
+    \setkomafont{part}
+      {\normalfont\fontsize{32}{36}\selectfont\bfseries\sffamily\color{syn-primary}}
+    \setkomafont{partnumber}
+      {\normalfont\Large\bfseries\sffamily\color{syn-muted-text}}
+    \renewcommand*{\partformat}{%
+      {\usekomafont{partnumber}\partname\nobreakspace\thepart
+        \par\nobreak\vspace{0.8em}}%
+      \textcolor{syn-primary}{\rule{0.22\linewidth}{1.3pt}}\par\nobreak\vspace{0.9em}%
+    }
     \RedeclareSectionCommand[
-      beforeskip = 0pt,
-      afterskip  = 2em
+      beforeskip = -0.10\textheight,
+      afterskip  = 3em
     ]{part}
+    \setkomafont{chapterentry}{\normalfont\bfseries\sffamily}
+    \setkomafont{chapterentrypagenumber}
+      {\normalfont\bfseries\sffamily\color{syn-primary}}
   }
 
+\NewDocumentCommand{\SynapticBookContents}{}
+  { \tableofcontents\cleardoublepage }
 
+\NewDocumentCommand{\SynapticListOfFigures}{}
+  { \listoffigures\cleardoublepage }
 
+\NewDocumentCommand{\SynapticListOfTables}{}
+  { \listoftables\cleardoublepage }
 
+\NewDocumentCommand{\SynapticAppendices}{}
+  { \cleardoublepage\appendix }
 
+\NewDocumentCommand{\SynapticChapterSubtitle}{m}
+  {
+    \par\vspace{-1.1em}
+    {\large\sffamily\color{syn-muted-text}#1\par}
+    \vspace{1.4em}
+  }
 
-
-
+\NewDocumentCommand{\SynapticEpigraph}{m m}
+  {
+    \Needspace{7\baselineskip}
+    \begin{flushright}
+      \begin{minipage}{0.62\linewidth}
+        \raggedleft\synaptic_if_lang_zh:TF{\upshape}{\itshape}
+        \color{syn-text-dark}
+        #1\par\smallskip
+        {\normalfont\small\sffamily\color{syn-muted-text}#2}
+      \end{minipage}
+    \end{flushright}
+    \addvspace{1.2em}
+  }

@@ -1,0 +1,32 @@
+\input regression-test.tex
+\documentclass[11pt]{scrartcl}
+\newenvironment{example}{}{}
+\usepackage[mode=lecture,theme=forest,fontset=lm]{synaptic}
+\SynapticCourseCode{TEST 101}
+\SynapticCourse{Regression Design}
+\SynapticLectureNumber{4}
+\SynapticTitle{Lecture Regression}
+\SynapticInstructor{Test Lecturer}
+
+\begin{document}
+\START
+\ExplSyntaxOn
+\TYPE{mode=\synaptic_mode:}
+\ExplSyntaxOff
+\SynapticMakeTitle
+\begin{synlearninggoals}Test the teaching hierarchy.\end{synlearninggoals}
+\section{Lecture}
+\begin{example}\TYPE{generic-example-preserved=ok}\end{example}
+\begin{theorem}Theorems are boxed in lecture mode.\end{theorem}
+\begin{synexample}[Example][example]
+  Collision-resistant example environment.
+\end{synexample}
+\begin{synremark}[Remark]A semantic remark.\end{synremark}
+\begin{synwarning}[Warning]A semantic warning.\end{synwarning}
+\begin{synexercise}[Exercise]A semantic exercise.\end{synexercise}
+\begin{synbox}[Generic]A generic box.\end{synbox}
+\begin{synlecturesummary}A short summary.\end{synlecturesummary}
+\TYPE{shared-teaching-counter=\thetheorem}
+\TYPE{lecture-navigation-and-boxes=ok}
+\END
+\end{document}

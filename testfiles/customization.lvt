@@ -1,0 +1,21 @@
+\input regression-test.tex
+\documentclass[11pt]{scrartcl}
+\usepackage[mode=notes,theme=graphite,fontset=lm]{synaptic}
+
+\SynapticDefineTheme{regression}{red!70!black}{blue!70!black}[orange!80!black]
+\SynapticSetup{theme=paper,toc=false,toc-layout=page}
+\SynapticNewTheorem[remark]{observation}{Observation}
+
+\begin{document}
+\START
+\ExplSyntaxOn
+\TYPE{mode=\synaptic_mode:}
+\TYPE{theme=\synaptic_theme:}
+\TYPE{toc-layout=\synaptic_toc_layout:}
+\ExplSyntaxOff
+\SynapticSetup{mode=book}
+\section{Customization}
+\begin{observation}Custom theorem styles compile.\end{observation}
+\TYPE{custom-theme-and-theorem=ok}
+\END
+\end{document}

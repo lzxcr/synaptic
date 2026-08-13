@@ -1,0 +1,23 @@
+This is a generated file for the l3build validation system.
+Don't change this file in any respect.
+mode=journal
+theme=ocean
+Package hyperref Info: Option `unicode' set `true' on input line ....
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `LatinModernSans' (encoding: TU).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `LatinModernMath' (encoding: TU).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `LatinModernMono' (encoding: TU).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+Package tocbasic Info: character protrusion at toc deactivated on input line ....
+(journal.toc)
+\tf@toc=\write...
+Package hyperref Info: bookmark level for unknown theorem defaults to 0 on input line ....
+Package hyperref Info: bookmark level for unknown definition defaults to 0 on input line ....
+journal-inline-title-and-statements=ok

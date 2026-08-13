@@ -1,0 +1,30 @@
+\input regression-test.tex
+\documentclass[11pt,twoside]{scrbook}
+\usepackage[mode=book,theme=midnight,fontset=lm,toc=false]{synaptic}
+
+\SynapticTitle{Regression Book}
+\SynapticSubtitle{A long-form workflow test}
+\SynapticAuthor{Test Author}
+\SynapticPublisher{Test Press}
+\SynapticISBN{978-0-00-000000-0}
+\begin{abstract}A short book abstract.\end{abstract}
+
+\begin{document}
+\START
+\ExplSyntaxOn
+\TYPE{mode=\synaptic_mode:}
+\ExplSyntaxOff
+\SynapticMakeTitle
+\SynapticMainMatter
+\chapter{Chapter}
+\SynapticChapterSubtitle{A chapter subtitle}
+\section{Section}
+Book content.
+\begin{theorem}Book theorems use chapter-level numbering by default.\end{theorem}
+\TYPE{book-theorem-number=\thetheorem}
+\SynapticBackMatter
+\SynapticAcknowledgments*
+Acknowledgment text.
+\TYPE{book-title-matter-navigation=ok}
+\END
+\end{document}

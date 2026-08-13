@@ -2,20 +2,28 @@
 \documentclass[a4paper,11pt]{scrartcl}
 
 \usepackage[
-  lang       = zh,
-  theme      = ocean,
-  mode       = journal,
-  toc        = true,
-  toc-layout = inline
+  lang=zh,
+  mode=journal,
+  theme=graphite,
+  fontset=lm,
+  toc=true,
+  toc-layout=page
 ]{synaptic}
+\usepackage{booktabs,tabularx}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 
 \SynapticHeader{synaptic 技术参考}
-\SynapticTitle{\texttt{synaptic} --- 技术参考}
+\SynapticSubHeader{架构、不变量与发布流程}
+\SynapticPreprint{v2.2.0}
+\SynapticTitle{synaptic 技术参考}
 \SynapticAuthor{synaptic 项目}
-\SynapticAffiliation{CTAN 社区}
+\SynapticAffiliation{开源 LaTeX 社区}
+\SynapticSubject{synaptic 2.2.0 技术参考}
+\SynapticKeywords{LaTeX3, 架构, l3build, 回归测试}
 
 \begin{abstract}
-  synaptic v2 技术概览：模块架构、命名空间约定、Mode 分发与扩展点。
+  本文档说明 synaptic 的模块图、加载期不变量、命名空间规则、字体与颜色子系统、
+  扩展点、生成文件策略以及自动化验证流程。
 \end{abstract}
 
 \begin{document}
@@ -23,97 +31,147 @@
 
 \section{架构}
 
-\subsection{模块依赖图}
-
 \begin{verbatim}
-synaptic.sty (薄壳, RequirePackageWithOptions → base)
-  +-- synaptic-base.sty      引擎检查、选项解析
-  +-- synaptic-color.sty     主题配色系统（5 套主题）
-  +-- synaptic-fonts.sty     字体组合选择 + 中日韩支持
-  |     +-- synaptic-fonts.lua   Lua 字体自动检测
-  +-- synaptic-layout.sty    页面布局、微排印、标题样式
-  +-- synaptic-title.sty     标题页渲染（journal 模式）
-  +-- synaptic-theorem.sty   定理/证明环境
-  +-- synaptic-book.sty      书籍模式（章节、页眉）
-  +-- synaptic-lecture.sty   讲义模式（宽边距）
-  +-- synaptic-boxes.sty     tcolorbox 环境
-  +-- synaptic-lang-en.def   英文标签
-  +-- synaptic-lang-zh.def   中文标签
+synaptic.sty
+  `-- synaptic-base.sty
+      |-- synaptic-lang-{en,zh}.def
+      |-- synaptic-color.sty
+      |-- synaptic-fonts.sty
+      |-- synaptic-layout.sty
+      |-- synaptic-theorem.sty
+      |-- synaptic-title.sty       公共元数据与渲染器
+      `-- 模式模块
+          |-- synaptic-journal.sty     journal
+          |-- synaptic-book.sty        book
+          |-- synaptic-lecture.sty     lecture
+          |-- synaptic-boxes.sty       lecture
+          `-- synaptic-notes.sty       notes
 \end{verbatim}
 
-\subsection{Mode 分发表}
+薄封装层把用户选项转发给 \texttt{synaptic-base}，并定义少量不易冲突的便捷命令。
+基础模块负责检查引擎与文档类、解析选项、加载标签、验证书籍模式，然后分发核心
+模块和模式模块。
 
-\begin{tabular}{lll}
-  \hline
-  \textbf{mode} & \textbf{文档类} & \textbf{加载模块} \\
-  \hline
-  journal & scrartcl & base, color, fonts, layout, title, theorem \\
-  book    & scrbook  & journal 模块 + book \\
-  lecture & scrartcl / scrreprt & base, color, fonts, layout, theorem, lecture, boxes \\
-  notes   & scrartcl & base, color, fonts, layout, theorem \\
-  \hline
-\end{tabular}
+\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+  \toprule
+  \textbf{模式} & \textbf{文档类不变量} & \textbf{附加模块} \\
+  \midrule
+  journal & KOMA 文章/报告类 & journal \\
+  book & 含章和前文接口的 KOMA 类 & book \\
+  lecture & KOMA 文章/报告类 & lecture, boxes \\
+  notes & KOMA 文章/报告类 & notes \\
+  \bottomrule
+\end{tabularx}
 
-\subsection{命名空间约定}
+\section{配置生命周期}
 
-\begin{tabular}{lll}
-  \hline
+宏包级 \texttt{synaptic} 键系统在模块加载前执行。模式、语言、字体组、标题布局、
+版心尺度、密度、编号、输出颜色模式、数学扩展和断行策略因此成为结构不变量。
+运行时键系统只暴露无需重载宏包就能应用的
+\texttt{theme}、\texttt{toc} 和 \texttt{toc-layout}。冻结键与未知键会产生明确警告。
+
+书籍模式要求章和前文接口同时存在。LuaLaTeX 与 KOMA-Script 要求在不满足时立即给出
+致命诊断，而不是延迟到后续的未定义命令。
+
+\section{子系统}
+
+\subsection{颜色令牌}
+
+内置主题登记在全局属性表中。启用主题时，主色、辅色与强调色会映射到公开语义名，
+并派生表面、边框、分隔线、链接、可读弱化文字、装饰浅色与正文颜色。print 与 mono
+输出模式只改变派生角色，不改变组件代码。危险、警告和成功色是稳定的语义常量，不随
+品牌主色改变含义。
+
+\begin{verbatim}
+\SynapticDefineTheme{名称}{主色}{辅色}[强调色]
+\SynapticUseTheme{名称}
+\end{verbatim}
+
+参数是 xcolor 表达式。定义自定义主题时会同时登记并启用它。
+
+\subsection{字体选择}
+
+字体发现完全由 \verb|\IfFontExistsTF| 实现。每个候选项都是完整的衬线/无衬线/等宽/数学
+组合；自动选择不会启用缺少配套字体的家族。固定优先级为 XCharter、Libertinus、
+STIX Two、Latin Modern。显式选择不完整字体组时，报错会列出必需字体。
+
+\texttt{lang=zh} 会以无预设字体方案加载 ctex。Noto CJK SC 优先，Fandol 作为 TeX Live
+后备。仅在优先字体没有原生字形时，才使用受控的伪粗体或伪斜体。
+
+\subsection{版式与文档结构}
+
+页面布局结合模式默认值、版心尺度与密度档位。journal 与 lecture 优先适中行长，notes
+支持紧凑单栏/双栏，book 使用镜像内外边、装订补偿、外侧页眉和空白偶数页。孤行惩罚、
+垂直节奏、列表间距、行距与段首缩进都是明确配置，
+不再用全局方式隐藏坏盒子。
+
+KOMA 标题字体与间距在 \texttt{begindocument/before} 钩子中安装。hyperref、bookmark、
+microtype、图表标题标点、列表与模式化公式编号由布局模块统一配置。
+
+\subsection{标题与元数据}
+
+标题值保存在 expl3 词元表和序列中。作者与机构标记使用平行序列，机构与邮箱可重复。
+公共元数据分别驱动期刊内联标题、书籍扉页序列、课程信息条和紧凑笔记信息条。标题命令
+验证非空标题并控制可选目录位置，不再隐式重置用户页码。标准 LaTeX 元数据只是输入适配层，
+不会重定义 \verb|\maketitle|。
+
+PDF 信息以源词元传给 hyperref，由 hyperref 只执行一次 Unicode PDF 字符串转换。预先
+\verb|\pdfstringdef| 再传给 \verb|\hypersetup| 会导致双重编码，因此已禁止这种路径。
+
+\subsection{定理与盒子}
+
+thmtools 在 amsthm 之上定义 plain、definition 和 remark 三种样式。内置定理家族
+使用模式化共享计数器：书籍默认按章，其他模式默认按节。讲义模式用 tcolorbox 包装核心
+定理环境；例题与练习可共享定理计数器，警告与注记默认不编号。新公开短名使用
+\texttt{syn} 前缀；v2.0 通用名是有条件的兼容层。
+
+\section{命名空间规则}
+
+\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+  \toprule
   \textbf{范围} & \textbf{模式} & \textbf{示例} \\
-  \hline
-  用户 API        & \verb|\Synaptic*|      & \verb|\SynapticTitle| \\
-  用户环境        & \verb|synaptic*|       & \verb|synapticexample| \\
-  内部宏          & \verb|\__synaptic_*|   & \verb|\__synaptic_title_render:| \\
-  局部变量        & \verb|\l_synaptic_*|   & \verb|\l_synaptic_mode_tl| \\
-  标签常量        & \verb|\c_synaptic_label_*| & \verb|\c_synaptic_label_thm_tl| \\
-  \hline
-\end{tabular}
+  \midrule
+  公开命令 & \texttt{\textbackslash Synaptic\ldots} & \SynapticCmd{SynapticDefineTheme} \\
+  公开环境 & \texttt{syn...} & \texttt{synwarning} \\
+  内部函数 & \texttt{\textbackslash\_\_synaptic\_\ldots:} & 标题渲染辅助函数 \\
+  模块接口 & \texttt{\textbackslash synaptic\_\ldots:} & 模式访问器 \\
+  局部状态 & \texttt{\textbackslash l\_synaptic\_\ldots} & 当前主题词元表 \\
+  全局登记表 & \texttt{\textbackslash g\_synaptic\_\ldots} & 主题属性表 \\
+  标签常量 & \texttt{\textbackslash c\_synaptic\_label\_\ldots} & 定理标签 \\
+  \bottomrule
+\end{tabularx}
 
-\section{核心命令参考}
-
-\subsection{用户 API}
-
-\begin{description}
-  \item[\texttt{\textbackslash SynapticSetup\{key=val\}}] 运行时修改选项。
-  \item[\texttt{\textbackslash SynapticTitle\{文本\}}] 文档标题。
-  \item[\texttt{\textbackslash SynapticAuthor[标记]\{姓名\}}] 作者。
-  \item[\texttt{\textbackslash SynapticAffiliation[标记]\{文本\}}] 附属机构。
-  \item[\texttt{\textbackslash SynapticEmail\{地址\}}] 电子邮箱。
-  \item[\texttt{\textbackslash SynapticKeywords\{...\}}] 关键词。
-  \item[\texttt{\textbackslash SynapticArxiv\{编号\}}] arXiv 链接。
-  \item[\texttt{\textbackslash SynapticHeader\{文本\}}] 自定义投稿抬头。
-  \item[\texttt{\textbackslash SynapticSubHeader\{文本\}}] 子抬头。
-  \item[\texttt{\textbackslash SynapticPreprint\{编号\}}] 预印本标识。
-  \item[\texttt{\textbackslash SynapticDedicated\{文本\}}] 致辞文。
-  \item[\texttt{\textbackslash SynapticMakeTitle}] 渲染标题页。
-  \item[\texttt{\textbackslash SynapticNewTheorem\{环境\}\{名称\}}] 声明定理环境。
-  \item[\texttt{\textbackslash SynapticDefineTheme\{主色\}\{辅色\}}] 自定义主题。
-\end{description}
-
-\subsection{环境}
-
-\begin{description}
-  \item[abstract] 收集摘要文本用于标题页。
-  \item[theorem, lemma, proposition, definition] 定理环境（共享计数器，按节编号）。
-  \item[proof] 证明环境，含 QED 符号。
-  \item[example, remark, warning, exercise] tcolorbox 环境（lecture 模式）。
-  \item[synbox] 通用 tcolorbox 带可选标题。
-\end{description}
+新公开名应避免常见名词。兼容别名必须使用 \verb|\ProvideDocumentCommand| 或显式存在性检查。
 
 \section{扩展点}
 
 \begin{itemize}
-  \item \textbf{新语言} —— 复制 \texttt{synaptic-lang-en.def} 为 \texttt{synaptic-lang-fr.def} 并翻译各标签常量。
-  \item \textbf{新主题} —— 使用 \texttt{\textbackslash SynapticDefineTheme\{名\}\{主色\}\{辅色\}}。
-  \item \textbf{新字体组合} —— 在 \texttt{synaptic-fonts.sty} 的分发块中新增分支。
-  \item \textbf{新模式} —— 创建新的 \texttt{synaptic-*.sty} 并在 \texttt{synaptic-base.sty} 的 mode 分发中添加对应分支。
-  \item \textbf{字体自动检测} —— 编辑 \texttt{synaptic-fonts.lua} 修改检测优先级列表。
+  \item 在新的 \texttt{synaptic-lang-*.def} 中增加标签，再扩展语言键与定义文件分发。
+  \item 新字体组需同时增加完整性谓词、设置函数、显式分支，并明确其在自动链中的位置。
+  \item 新模式需扩展基础键系统、布局分发和模块加载器，并声明、测试必需的 KOMA 能力。
+  \item 视觉扩展应基于语义颜色令牌，而不是固定 RGB 值。
 \end{itemize}
 
-\section{版本历史}
+\section{源码与发布流程}
 
-\begin{description}
-  \item[v2.0] (2026-06-05) 完全模块化重构：mode 系统、theme 系统、fontset 抽象、Lua 字体检测、非侵入 API、tcolorbox 环境。
-  \item[v1.0] (2025) 初始单体版本：单个 \texttt{synaptic.sty} 含基础颜色/样式选项。
-\end{description}
+\texttt{synaptic.dtx} 是唯一源头。DocStrip 通过 \texttt{synaptic.ins} 生成可安装的
+\texttt{.sty} 和 \texttt{.def} 文件。\texttt{tex/latex/synaptic/} 下的生成副本为了零安装使用而
+提交，必须与新解包结果字节级一致。
+
+\begin{verbatim}
+l3build unpack
+l3build check
+l3build doc
+l3build ctan
+\end{verbatim}
+
+九组回归测试覆盖论文标题与声明、书籍前后文和章级编号、讲义导航与盒子、笔记卡和
+标准元数据、结构选项、自定义主题与中文排版。CI 同时构建源码文档、四份手册和所有示例。
+
+\section{兼容性说明}
+
+2.2 保留小写书籍前后文命令和讲义盒子通用名，但仅作为有条件的 v2.0 兼容别名。
+新文档应使用带命名空间的公开形式。已移除的 \texttt{style=} 和 \texttt{color=} 选项仍会报错，
+并提供迁移提示。
 
 \end{document}

@@ -1,0 +1,30 @@
+% !TEX program = lualatex
+\documentclass[11pt]{scrartcl}
+\usepackage[mode=journal,theme=ocean,fontset=lm,title-layout=inline]{synaptic}
+
+\SynapticTitle{A Minimal Journal Article}
+\SynapticShortTitle{Minimal Journal Article}
+\SynapticAuthor[1]{Ada Author}
+\SynapticAffiliation[1]{Department of Clear Typesetting}
+\SynapticEmail{ada@example.org}
+\SynapticCorrespondence{Ada Author, \texttt{ada@example.org}}
+\SynapticPublicationInfo{Preprint \textbullet\ 13 August 2026}
+\SynapticSubject{A compact synaptic journal-mode example}
+\SynapticKeywords{LaTeX, academic publishing, typography}
+
+\begin{abstract}
+  This document demonstrates journal metadata, mathematics, and theorem styles.
+\end{abstract}
+
+\begin{document}
+\SynapticMakeTitle
+\section{Introduction}
+Readable defaults should remain predictable across machines.
+\begin{theorem}[A small result]
+  If (a=b), then (a+c=b+c).
+\end{theorem}
+\begin{definition}
+  A definition uses upright body text.
+\end{definition}
+\SynapticStatement{Data availability}{No external data were used in this example.}
+\end{document}

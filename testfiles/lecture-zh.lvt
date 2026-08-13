@@ -1,0 +1,23 @@
+\input regression-test.tex
+\documentclass[11pt]{scrartcl}
+\usepackage[mode=lecture,lang=zh,fontset=lm]{synaptic}
+
+\SynapticCourseCode{数学 201}
+\SynapticCourse{数学分析}
+\SynapticLectureNumber{4}
+\SynapticTitle{连续性与紧致性}
+\SynapticInstructor{测试教师}
+
+\begin{document}
+\SynapticMakeTitle
+\begin{synlearninggoals}辨别逐点连续与一致连续。\end{synlearninggoals}
+\section{核心概念}
+\begin{theorem}中文讲义定理。\end{theorem}
+\begin{synexample}[例题]中文例题。\end{synexample}
+\begin{synwarning}[易错点]中文警告。\end{synwarning}
+\begin{synlecturesummary}本讲小结。\end{synlecturesummary}
+\START
+\TYPE{zh-lecture-counter=\thetheorem}
+\TYPE{zh-lecture-workflow=ok}
+\END
+\end{document}

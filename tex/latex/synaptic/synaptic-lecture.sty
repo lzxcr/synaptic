@@ -1,5 +1,10 @@
 %% File: synaptic.dtx
 %% License: LPPL 1.3c or later
+%% Current Maintainer: synaptic project
+%% Copyright (C) 2025--2026 synaptic project
+%%
+%% This work consists of synaptic.dtx, synaptic.ins, the files generated
+%% from them, and the accompanying documentation and examples.
 %%
 %% synaptic -- Modern Academic Typesetting Framework
 %% A modular LaTeX3 design system for articles, books, and lecture notes.
@@ -13,9 +18,13 @@
 
 
 
+
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-lecture}{2026-06-05}{2.0.0}
+\ProvidesExplPackage{synaptic-lecture}{2026-08-13}{2.2.0}
   {Synaptic~Lecture~Mode}
+
+\RequirePackage[singlespacing=true]{scrlayer-scrpage}
+\RequirePackage{needspace}
 
 \AddToHook{begindocument/before}
   {
@@ -33,30 +42,84 @@
   }
 
 \RequirePackage{tcolorbox}
-\tcbuselibrary{skins, breakable}
+\tcbuselibrary{skins, breakable, theorems}
 
-\newtcbtheorem[number within=section]{synapticlecturetheorem}{Theorem}
-  {
-    theoremname,
-    colback       = syn-faded!15,
-    colframe      = syn-primary,
-    coltitle      = white,
-    fonttitle     = \bfseries\sffamily,
+\tcbset{
+  synaptic/lecture theorem/.style={
+    enhanced,
+    breakable,
+    colback       = syn-surface,
+    frame~hidden,
     coltext       = syn-text-dark,
-    left          = 6pt,
-    right         = 6pt,
-    top           = 4pt,
-    bottom        = 4pt,
-    boxsep        = 4pt,
-    arc           = 2pt,
-    sharp corners = north,
-    breakable
-  }{th}
+    borderline~west = {2pt}{0pt}{syn-primary},
+    left          = 9pt,
+    right         = 7pt,
+    top           = 7pt,
+    bottom        = 7pt,
+    arc           = 0pt,
+    before~skip   = 9pt,
+    after~skip    = 9pt
+  }
+}
 
+\tcolorboxenvironment{theorem}{synaptic/lecture theorem}
+\tcolorboxenvironment{lemma}{synaptic/lecture theorem}
+\tcolorboxenvironment{proposition}{synaptic/lecture theorem}
+\tcolorboxenvironment{definition}{synaptic/lecture theorem}
 
+\AddToHook{env/theorem/before}{\Needspace{9\baselineskip}}
+\AddToHook{env/lemma/before}{\Needspace{8\baselineskip}}
+\AddToHook{env/proposition/before}{\Needspace{8\baselineskip}}
+\AddToHook{env/definition/before}{\Needspace{7\baselineskip}}
 
+\cs_new:Npn \__synaptic_lecture_running_left:
+  {
+    \tl_if_empty:NTF \l_synaptic_course_code_tl
+      { \l_synaptic_course_tl }
+      { \l_synaptic_course_code_tl }
+  }
 
+\cs_new:Npn \__synaptic_lecture_running_right:
+  {
+    \tl_if_empty:NF \l_synaptic_lecture_number_tl
+      { \c_synaptic_label_lecture_tl\nobreakspace\l_synaptic_lecture_number_tl
+        \synaptic_if_lang_zh:TF {~讲} {}\enspace }
+    \tl_if_empty:NTF \l_synaptic_short_title_tl
+      { \l_synaptic_title_tl }
+      { \l_synaptic_short_title_tl }
+  }
 
+\clearpairofpagestyles
+\ihead{\__synaptic_lecture_running_left:}
+\ohead{\__synaptic_lecture_running_right:}
+\ofoot*{\pagemark}
+\setkomafont{pageheadfoot}
+  {\normalfont\footnotesize\sffamily\color{syn-muted-text}}
+\pagestyle{scrheadings}
 
+\tcbset{
+  synaptic/learning-goals/.style={
+    enhanced,breakable,frame~hidden,
+    colback=syn-surface-strong,coltext=syn-text-dark,
+    borderline~west={2.4pt}{0pt}{syn-primary},
+    fonttitle=\bfseries\sffamily,coltitle=syn-primary,
+    attach~title~to~upper={\quad},
+    left=9pt,right=7pt,top=7pt,bottom=7pt,arc=0pt
+  },
+  synaptic/lecture-summary/.style={
+    enhanced,breakable,colback=syn-primary!7!white,colframe=syn-primary,
+    boxrule=0.5pt,fonttitle=\bfseries\sffamily,
+    colbacktitle=syn-primary,coltitle=syn-on-primary,
+    left=9pt,right=9pt,top=7pt,bottom=7pt,arc=1.5pt
+  }
+}
 
+\NewDocumentEnvironment{synlearninggoals}{}
+  {\begin{tcolorbox}[synaptic/learning-goals,
+      title={\c_synaptic_label_learning_goals_tl}]}
+  {\end{tcolorbox}}
 
+\NewDocumentEnvironment{synlecturesummary}{}
+  {\begin{tcolorbox}[synaptic/lecture-summary,
+      title={\c_synaptic_label_summary_tl}]}
+  {\end{tcolorbox}}

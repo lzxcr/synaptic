@@ -1,0 +1,21 @@
+\input regression-test.tex
+\documentclass[11pt]{scrartcl}
+\usepackage[mode=notes,lang=zh,fontset=lm]{synaptic}
+\SynapticTitle{中文笔记回归测试}
+\SynapticAuthor{测试作者}
+\SynapticDate{第三周}
+
+\begin{document}
+\SynapticMakeTitle
+\section{中文回归测试}
+中英文混排与标点。
+\begin{theorem}定理环境中的中文。\end{theorem}
+\begin{synkeyidea}中文知识卡与全角标点。\end{synkeyidea}
+\START
+\ExplSyntaxOn
+\TYPE{mode=\synaptic_mode:}
+\TYPE{language=\synaptic_lang:}
+\ExplSyntaxOff
+\TYPE{cjk-typesetting=ok}
+\END
+\end{document}

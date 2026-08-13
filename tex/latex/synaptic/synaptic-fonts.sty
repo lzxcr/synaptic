@@ -1,5 +1,10 @@
 %% File: synaptic.dtx
 %% License: LPPL 1.3c or later
+%% Current Maintainer: synaptic project
+%% Copyright (C) 2025--2026 synaptic project
+%%
+%% This work consists of synaptic.dtx, synaptic.ins, the files generated
+%% from them, and the accompanying documentation and examples.
 %%
 %% synaptic -- Modern Academic Typesetting Framework
 %% A modular LaTeX3 design system for articles, books, and lecture notes.
@@ -9,39 +14,57 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-fonts}{2026-06-05}{2.0.0}
+\ProvidesExplPackage{synaptic-fonts}{2026-08-13}{2.2.0}
   {Synaptic~Font~System}
 
 \RequirePackage{fontspec}
 \RequirePackage{mathtools}
-\RequirePackage[ warnings-off = { mathtools-colon, mathtools-over, mathtools-overbracket } ]
-  {unicode-math}
+\RequirePackage[
+  warnings-off = {
+    mathtools-colon,
+    mathtools-over,
+    mathtools-overbracket
+  }
+]{unicode-math}
 
-\directlua
+\cs_new_protected:Npn \__synaptic_fontset_xcharter_if_available:TF #1#2
   {
-    local path = kpse.find_file('synaptic-fonts.lua', 'lua')
-    if path then
-      dofile(path)
-    end
+    \IfFontExistsTF{XCharter}
+      { \IfFontExistsTF{Cabin}
+          { \IfFontExistsTF{Inconsolatazi4}
+              { \IfFontExistsTF{XCharter Math}{#1}{#2} }
+              {#2} }
+          {#2} }
+      {#2}
   }
 
-\cs_new:Npn \__synaptic_font_if_exist:n #1
+\cs_new_protected:Npn \__synaptic_fontset_libertinus_if_available:TF #1#2
   {
-    \directlua
-      {
-        if tex.synaptic then
-          tex.print(tex.synaptic.fonts.exists('#1') and 'true' or 'false')
-        else
-          tex.print('false')
-        end
-      }
+    \IfFontExistsTF{Libertinus Serif}
+      { \IfFontExistsTF{Libertinus Sans}
+          { \IfFontExistsTF{Libertinus Mono}
+              { \IfFontExistsTF{Libertinus Math}{#1}{#2} }
+              {#2} }
+          {#2} }
+      {#2}
+  }
+
+\cs_new_protected:Npn \__synaptic_fontset_stix_if_available:TF #1#2
+  {
+    \IfFontExistsTF{STIX Two Text}
+      { \IfFontExistsTF{TeX Gyre Heros}
+          { \IfFontExistsTF{Latin Modern Mono}
+              { \IfFontExistsTF{STIX Two Math}{#1}{#2} }
+              {#2} }
+          {#2} }
+      {#2}
   }
 
 \cs_new_protected:Npn \__synaptic_fontset_xcharter:
   {
     \setmainfont{XCharter}[
       Ligatures    = TeX,
-      Numbers      = {OldStyle,Proportional}
+      Numbers      = {Lining,Proportional}
     ]
     \setsansfont{Cabin}[
       Scale        = 0.94,
@@ -58,7 +81,7 @@
   {
     \setmainfont{Libertinus Serif}[
       Ligatures = TeX,
-      Numbers   = {OldStyle,Proportional}
+      Numbers   = {Lining,Proportional}
     ]
     \setsansfont{Libertinus Sans}[
       Scale = 0.95
@@ -72,12 +95,13 @@
 \cs_new_protected:Npn \__synaptic_fontset_stix2:
   {
     \setmainfont{STIX Two Text}[
-      Ligatures = TeX
+      Ligatures = TeX,
+      Numbers   = {Lining,Proportional}
     ]
-    \setsansfont{STIX Two Text}[
+    \setsansfont{TeX Gyre Heros}[
       Scale = 0.95
     ]
-    \setmonofont{STIX Two Text}[
+    \setmonofont{Latin Modern Mono}[
       Scale = MatchLowercase
     ]
     \setmathfont{STIX Two Math}
@@ -93,45 +117,13 @@
 
 \cs_new_protected:Npn \__synaptic_fontset_auto:
   {
-    \directlua
-      {
-        if kpse.find_file('synaptic-fonts.lua', 'lua') then
-          tex.print('lua')
-        else
-          tex.print('fallback')
-        end
-      }
-    \str_if_eq:VnTF \l_tmpa_tl { lua }
-      { \__synaptic_fontset_detect_lua: }
-      { \__synaptic_fontset_detect_fallback: }
-  }
-
-\cs_new_protected:Npn \__synaptic_fontset_detect_lua:
-  {
-    \directlua
-      {
-        local result = tex.synaptic.fonts.detect()
-        tex.print(result)
-      }
-    \tl_set:Nx \l_tmpa_tl { \synaptic_fontset: }
-    \str_case:Vn \l_tmpa_tl
-      {
-        { xcharter }   { \__synaptic_fontset_xcharter: }
-        { libertinus } { \__synaptic_fontset_libertinus: }
-        { stix2 }      { \__synaptic_fontset_stix2: }
-        { lm }         { \__synaptic_fontset_lm: }
-      }
-  }
-
-\cs_new_protected:Npn \__synaptic_fontset_detect_fallback:
-  {
-    \IfFontExistsTF{XCharter}
+    \__synaptic_fontset_xcharter_if_available:TF
       { \__synaptic_fontset_xcharter: }
       {
-        \IfFontExistsTF{Libertinus Serif}
+        \__synaptic_fontset_libertinus_if_available:TF
           { \__synaptic_fontset_libertinus: }
           {
-            \IfFontExistsTF{STIX Two Text}
+            \__synaptic_fontset_stix_if_available:TF
               { \__synaptic_fontset_stix2: }
               { \__synaptic_fontset_lm: }
           }
@@ -140,9 +132,27 @@
 
 \str_case:Vn \l_synaptic_fontset_tl
   {
-    { xcharter }   { \__synaptic_fontset_xcharter: }
-    { libertinus } { \__synaptic_fontset_libertinus: }
-    { stix2 }      { \__synaptic_fontset_stix2: }
+    { xcharter }
+      {
+        \__synaptic_fontset_xcharter_if_available:TF
+          { \__synaptic_fontset_xcharter: }
+          { \PackageError{synaptic-fonts}{Incomplete~XCharter~font~bundle}
+              {Install~XCharter,~Cabin,~Inconsolatazi4,~and~XCharter~Math.} }
+      }
+    { libertinus }
+      {
+        \__synaptic_fontset_libertinus_if_available:TF
+          { \__synaptic_fontset_libertinus: }
+          { \PackageError{synaptic-fonts}{Incomplete~Libertinus~font~bundle}
+              {Install~Libertinus~Serif,~Sans,~Mono,~and~Math.} }
+      }
+    { stix2 }
+      {
+        \__synaptic_fontset_stix_if_available:TF
+          { \__synaptic_fontset_stix2: }
+          { \PackageError{synaptic-fonts}{Incomplete~STIX~Two~font~bundle}
+              {Install~STIX~Two~Text/Math,~TeX~Gyre~Heros,~and~Latin~Modern~Mono.} }
+      }
     { lm }         { \__synaptic_fontset_lm: }
     { auto }       { \__synaptic_fontset_auto: }
   }
@@ -156,7 +166,7 @@
           UprightFont    = *~Regular,
           BoldFont       = *~Bold,
           ItalicFont     = *~Regular,
-          ItalicFeatures = {AutoFakeSlant=0.17},
+          BoldItalicFont = *~Bold,
           Scale          = 0.95
         ]
       }
@@ -166,8 +176,11 @@
             \PackageWarning{synaptic-fonts}
               {Noto~Serif~CJK~SC~not~found.~Falling~back~to~FandolSong.}
             \setCJKmainfont{FandolSong-Regular.otf}[
-              BoldFont = FandolSong-Bold.otf,
-              Scale    = 0.95
+              BoldFont       = FandolSong-Bold.otf,
+              ItalicFont     = FandolKai-Regular.otf,
+              BoldItalicFont = FandolKai-Regular.otf,
+              BoldItalicFeatures = {FakeBold=2},
+              Scale          = 0.95
             ]
           }
           {
@@ -179,20 +192,19 @@
       {
         \setCJKsansfont{Noto Sans CJK SC}[
           UprightFont    = *~Regular,
-          BoldFont       = *~Regular,
-          BoldFeatures   = {FakeBold=4},
+          BoldFont       = *~Bold,
           ItalicFont     = *~Regular,
-          ItalicFeatures = {AutoFakeSlant=0.17},
+          BoldItalicFont = *~Bold,
           Scale          = 0.95
         ]
-        \setCJKmonofont{Noto Sans CJK SC}[
-          UprightFont    = *~Regular,
-          BoldFont       = *~Regular,
-          BoldFeatures   = {FakeBold=4},
-          ItalicFont     = *~Regular,
-          ItalicFeatures = {AutoFakeSlant=0.17},
-          Scale          = 0.95
-        ]
+        \IfFontExistsTF{Noto Sans Mono CJK SC}
+          {
+            \setCJKmonofont{Noto Sans Mono CJK SC}[
+              BoldFeatures = {FakeBold=2},
+              Scale        = 0.95
+            ]
+          }
+          { \setCJKmonofont{Noto Sans CJK SC}[Scale=0.95] }
       }
       {
         \IfFontExistsTF{FandolHei-Regular.otf}
@@ -214,15 +226,3 @@
       }
   }
   { }
-
-
-
-
-
-
-
-
-
-
-
-

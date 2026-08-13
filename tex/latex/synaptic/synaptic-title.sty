@@ -1,5 +1,10 @@
 %% File: synaptic.dtx
 %% License: LPPL 1.3c or later
+%% Current Maintainer: synaptic project
+%% Copyright (C) 2025--2026 synaptic project
+%%
+%% This work consists of synaptic.dtx, synaptic.ins, the files generated
+%% from them, and the accompanying documentation and examples.
 %%
 %% synaptic -- Modern Academic Typesetting Framework
 %% A modular LaTeX3 design system for articles, books, and lecture notes.
@@ -12,29 +17,58 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-title}{2026-06-05}{2.0.0}
+\ProvidesExplPackage{synaptic-title}{2026-08-13}{2.2.0}
   {Synaptic~Title~Page}
 
 \tl_new:N   \l_synaptic_title_tl
+\tl_new:N   \l_synaptic_subtitle_tl
+\tl_new:N   \l_synaptic_short_title_tl
+\tl_new:N   \l_synaptic_date_tl
 \tl_new:N   \l_synaptic_abstract_tl
 \tl_new:N   \l_synaptic_header_tl
 \tl_new:N   \l_synaptic_subheader_tl
 \tl_new:N   \l_synaptic_preprint_tl
 \tl_new:N   \l_synaptic_keywords_tl
+\tl_new:N   \l_synaptic_subject_tl
 \tl_new:N   \l_synaptic_arxiv_tl
 \tl_new:N   \l_synaptic_dedicated_tl
+\tl_new:N   \l_synaptic_half_title_tl
+\tl_new:N   \l_synaptic_publisher_tl
+\tl_new:N   \l_synaptic_edition_tl
+\tl_new:N   \l_synaptic_isbn_tl
+\tl_new:N   \l_synaptic_copyright_tl
+\tl_new:N   \l_synaptic_course_tl
+\tl_new:N   \l_synaptic_course_code_tl
+\tl_new:N   \l_synaptic_lecture_number_tl
+\tl_new:N   \l_synaptic_instructor_tl
+\tl_new:N   \l_synaptic_semester_tl
+\tl_new:N   \l_synaptic_tags_tl
+\tl_new:N   \l_synaptic_publication_info_tl
+\tl_new:N   \l_synaptic_correspondence_tl
 \seq_new:N  \l_synaptic_authors_seq
 \seq_new:N  \l_synaptic_affils_seq
 \seq_new:N  \l_synaptic_emails_seq
 \seq_new:N  \l_synaptic_author_marks_seq
+\seq_new:N  \l_synaptic_author_notes_seq
 
 \NewDocumentCommand{\SynapticTitle}{m}
-  { \tl_set:Nn \l_synaptic_title_tl {#1} }
+  { \tl_gset:Nn \l_synaptic_title_tl {#1} }
+
+\NewDocumentCommand{\SynapticSubtitle}{m}
+  { \tl_gset:Nn \l_synaptic_subtitle_tl {#1} }
+
+\NewDocumentCommand{\SynapticShortTitle}{m}
+  { \tl_gset:Nn \l_synaptic_short_title_tl {#1} }
+
+\NewDocumentCommand{\SynapticDate}{m}
+  { \tl_gset:Nn \l_synaptic_date_tl {#1} }
 
 \NewDocumentCommand{\SynapticAuthor}{o m}
   {
-    \seq_gput_right:Nx \l_synaptic_authors_seq
-      { { \exp_not:n {#2} } { \IfValueTF {#1} { \exp_not:n {#1} } { } } }
+    \seq_gput_right:Nn \l_synaptic_authors_seq {#2}
+    \IfValueTF{#1}
+      { \seq_gput_right:Nn \l_synaptic_author_marks_seq {#1} }
+      { \seq_gput_right:Nn \l_synaptic_author_marks_seq { } }
   }
 
 \NewDocumentCommand{\SynapticAffiliation}{o m}
@@ -44,29 +78,82 @@
   }
 
 \NewDocumentCommand{\SynapticEmail}{m}
-  { \seq_gput_right:Nn \l_synaptic_emails_seq { \href{mailto:#1}{\texttt{#1}} } }
+  { \seq_gput_right:Nn \l_synaptic_emails_seq {#1} }
 
 \NewDocumentCommand{\SynapticKeywords}{m}
-  { \tl_set:Nn \l_synaptic_keywords_tl {#1} }
+  { \tl_gset:Nn \l_synaptic_keywords_tl {#1} }
+
+\NewDocumentCommand{\SynapticSubject}{m}
+  { \tl_gset:Nn \l_synaptic_subject_tl {#1} }
 
 \NewDocumentCommand{\SynapticArxiv}{m}
-  { \tl_set:Nn \l_synaptic_arxiv_tl {#1} }
+  { \tl_gset:Nn \l_synaptic_arxiv_tl {#1} }
 
 \NewDocumentCommand{\SynapticHeader}{m}
-  { \tl_set:Nn \l_synaptic_header_tl {#1} }
+  { \tl_gset:Nn \l_synaptic_header_tl {#1} }
 
 \NewDocumentCommand{\SynapticSubHeader}{m}
-  { \tl_set:Nn \l_synaptic_subheader_tl {#1} }
+  { \tl_gset:Nn \l_synaptic_subheader_tl {#1} }
 
 \NewDocumentCommand{\SynapticPreprint}{m}
-  { \tl_set:Nn \l_synaptic_preprint_tl { \hfill #1 } }
+  { \tl_gset:Nn \l_synaptic_preprint_tl {#1} }
 
 \NewDocumentCommand{\SynapticDedicated}{m}
-  { \tl_set:Nn \l_synaptic_dedicated_tl {#1} }
+  { \tl_gset:Nn \l_synaptic_dedicated_tl {#1} }
 
-\RenewDocumentEnvironment{abstract}{ +b }
-  { \tl_gset:Nn \l_synaptic_abstract_tl {#1} }
-  { }
+\NewDocumentCommand{\SynapticHalfTitle}{m}
+  { \tl_gset:Nn \l_synaptic_half_title_tl {#1} }
+
+\NewDocumentCommand{\SynapticPublisher}{m}
+  { \tl_gset:Nn \l_synaptic_publisher_tl {#1} }
+
+\NewDocumentCommand{\SynapticEdition}{m}
+  { \tl_gset:Nn \l_synaptic_edition_tl {#1} }
+
+\NewDocumentCommand{\SynapticISBN}{m}
+  { \tl_gset:Nn \l_synaptic_isbn_tl {#1} }
+
+\NewDocumentCommand{\SynapticCopyright}{m}
+  { \tl_gset:Nn \l_synaptic_copyright_tl {#1} }
+
+\NewDocumentCommand{\SynapticCourse}{m}
+  { \tl_gset:Nn \l_synaptic_course_tl {#1} }
+
+\NewDocumentCommand{\SynapticCourseCode}{m}
+  { \tl_gset:Nn \l_synaptic_course_code_tl {#1} }
+
+\NewDocumentCommand{\SynapticLectureNumber}{m}
+  { \tl_gset:Nn \l_synaptic_lecture_number_tl {#1} }
+
+\NewDocumentCommand{\SynapticInstructor}{m}
+  { \tl_gset:Nn \l_synaptic_instructor_tl {#1} }
+
+\NewDocumentCommand{\SynapticSemester}{m}
+  { \tl_gset:Nn \l_synaptic_semester_tl {#1} }
+
+\NewDocumentCommand{\SynapticTags}{m}
+  { \tl_gset:Nn \l_synaptic_tags_tl {#1} }
+
+\NewDocumentCommand{\SynapticPublicationInfo}{m}
+  { \tl_gset:Nn \l_synaptic_publication_info_tl {#1} }
+
+\NewDocumentCommand{\SynapticCorrespondence}{m}
+  { \tl_gset:Nn \l_synaptic_correspondence_tl {#1} }
+
+\NewDocumentCommand{\SynapticAuthorNote}{m}
+  { \seq_gput_right:Nn \l_synaptic_author_notes_seq {#1} }
+
+\cs_if_exist:NTF \abstract
+  {
+    \RenewDocumentEnvironment{abstract}{ +b }
+      { \tl_gset:Nn \l_synaptic_abstract_tl {#1} }
+      { }
+  }
+  {
+    \NewDocumentEnvironment{abstract}{ +b }
+      { \tl_gset:Nn \l_synaptic_abstract_tl {#1} }
+      { }
+  }
 
 
 \cs_new:Npn \__synaptic_render_author:nn #1 #2
@@ -76,6 +163,9 @@
       { #1 \textsuperscript{#2} \quad }
   }
 
+\cs_new:Npn \__synaptic_render_email:n #1
+  { \href{mailto:#1}{\texttt{#1}} }
+
 \cs_new:Npn \__synaptic_render_affil:nn #1 #2
   {
     \tl_if_empty:nTF {#1}
@@ -83,32 +173,102 @@
       { \item[$^{#1}$] #2 }
   }
 
+\tl_new:N \l_synaptic_pdf_author_tl
+
+\cs_new_protected:Npn \__synaptic_title_import_standard:
+  {
+    \tl_if_empty:NT \l_synaptic_title_tl
+      {
+        \cs_if_exist:cT { @title }
+          {
+            \tl_set:Nx \l_tmpa_tl { \exp_not:v { @title } }
+            % The kernel's unset title/author values are warning-producing
+            % token lists, not empty macros.  Never import those sentinels.
+            \tl_if_in:NnF \l_tmpa_tl { \@latex@warning@no@line }
+              {
+                \tl_if_empty:NF \l_tmpa_tl
+                  { \tl_gset_eq:NN \l_synaptic_title_tl \l_tmpa_tl }
+              }
+          }
+      }
+    \seq_if_empty:NT \l_synaptic_authors_seq
+      {
+        \cs_if_exist:cT { @author }
+          {
+            \tl_set:Nx \l_tmpa_tl { \exp_not:v { @author } }
+            \tl_if_in:NnF \l_tmpa_tl { \@latex@warning@no@line }
+              {
+                \tl_if_empty:NF \l_tmpa_tl
+                  {
+                    \seq_gput_right:NV \l_synaptic_authors_seq \l_tmpa_tl
+                    \seq_gput_right:Nn \l_synaptic_author_marks_seq { }
+                  }
+              }
+          }
+      }
+    \tl_if_empty:NT \l_synaptic_date_tl
+      {
+        \cs_if_exist:cT { @date }
+          { \tl_gset:Nx \l_synaptic_date_tl { \exp_not:v { @date } } }
+      }
+  }
+
+\cs_new_protected:Npn \__synaptic_title_apply_pdf_metadata:
+  {
+    % Let hyperref perform the PDF-string conversion exactly once.  Feeding a
+    % pre-converted \pdfstringdef result back into \hypersetup double-encodes
+    % Unicode metadata under LuaLaTeX.
+    \tl_set:Nx \l_synaptic_pdf_author_tl
+      { \seq_use:Nn \l_synaptic_authors_seq {;~} }
+    \tl_if_empty:NTF \l_synaptic_keywords_tl
+      { \tl_set_eq:NN \l_tmpa_tl \l_synaptic_tags_tl }
+      { \tl_set_eq:NN \l_tmpa_tl \l_synaptic_keywords_tl }
+    \hypersetup{
+      unicode     = true,
+      pdftitle    = {\l_synaptic_title_tl},
+      pdfauthor   = {\l_synaptic_pdf_author_tl},
+      pdfsubject  = {\l_synaptic_subject_tl},
+      pdfkeywords = {\l_tmpa_tl}
+    }
+  }
+
+\AddToHook{begindocument}{\__synaptic_title_apply_pdf_metadata:}
+
 \NewDocumentCommand{\SynapticMakeTitle}{}
   {
-    \pagenumbering{Alph}
+    \tl_if_empty:NT \l_synaptic_title_tl
+      {
+        \PackageError{synaptic-title}{Document~title~is~empty}
+          {Set~it~with~\string\SynapticTitle\{...\}~before~making~the~title.}
+      }
+    \__synaptic_title_apply_pdf_metadata:
+    \pagenumbering{roman}
     \thispagestyle{empty}
 
     \group_begin:
       \setstretch{1.1}
 
       % --- Submission header ---
+      \noindent
       \tl_if_empty:NTF \l_synaptic_header_tl
         {
-          \noindent
-          {\small\sffamily\bfseries\color{gray!80} \c_synaptic_label_header_tl}
+          \str_if_eq:VnT \l_synaptic_mode_tl { journal }
+            { {\small\sffamily\bfseries\color{syn-muted} \c_synaptic_label_header_tl} }
         }
         {
-          \noindent
-          {\small\sffamily\bfseries\color{gray!80} \l_synaptic_header_tl}
+          {\small\sffamily\bfseries\color{syn-muted} \l_synaptic_header_tl}
         }
-      \l_synaptic_preprint_tl \par
+      \tl_if_empty:NF \l_synaptic_preprint_tl
+        { \hfill \l_synaptic_preprint_tl }
+      \par
       \addvspace{8pt}
 
       % --- Sub-header ---
       \tl_if_empty:NF \l_synaptic_subheader_tl
         {
           \noindent
-          {\footnotesize\sffamily\bfseries\color{syn-primary} \l_synaptic_subheader_tl}\par
+          {\footnotesize\sffamily\bfseries\color{syn-primary}
+            \l_synaptic_subheader_tl}\par
         }
       \addvspace{24pt}
 
@@ -125,8 +285,11 @@
         {
           \group_begin:
             \large\bfseries\raggedright\sffamily
-            \seq_map_inline:Nn \l_synaptic_authors_seq
-              { \__synaptic_render_author:nn ##1 }
+            \seq_map_indexed_inline:Nn \l_synaptic_authors_seq
+              {
+                \__synaptic_render_author:nn {##2}
+                  { \seq_item:Nn \l_synaptic_author_marks_seq {##1} }
+              }
             \unskip
             \par
           \group_end:
@@ -149,10 +312,15 @@
       % --- Emails ---
       \seq_if_empty:NF \l_synaptic_emails_seq
         {
-          \noindent\hspace{0.3cm}
-          \begin{minipage}[t]{0.95\linewidth}
+          \noindent
+          \begin{minipage}[t]{\linewidth}
             \small\color{syn-text-dark}
-            \textit{\c_synaptic_label_email_tl} \c_colon_str ~ \seq_use:Nn \l_synaptic_emails_seq {,~}
+            \textit{\c_synaptic_label_email_tl} \c_colon_str ~
+            \seq_map_indexed_inline:Nn \l_synaptic_emails_seq
+              {
+                \int_compare:nNnT {##1} > {1} {,~}
+                \__synaptic_render_email:n {##2}
+              }
           \end{minipage}\par
           \addvspace{24pt}
         }
@@ -210,6 +378,7 @@
           \bool_if:NT \l_synaptic_toc_bool
             {
               \addvspace{20pt}
+              \pagebreak[2]
               \group_begin:
                 \hypersetup{linkcolor=black}
                 \tableofcontents
@@ -253,23 +422,447 @@
       }
 
     \setcounter{footnote}{0}
-    \pagenumbering{arabic}
+    \str_if_eq:VnF \l_synaptic_mode_tl { book }
+      { \pagenumbering{arabic} }
   }
 
 \newlist{synaffillist}{description}{1}
 \setlist[synaffillist]{
   leftmargin = 0.3cm,
   labelsep   = 4pt,
-  itemsep    = -2pt,
+  itemsep    = 2pt,
   topsep     = 2pt,
   parsep     = 0pt
 }
 
+\tl_new:N   \l__synaptic_title_layout_tl
+\bool_new:N \l__synaptic_title_verso_bool
 
+\cs_new_protected:Npn \__synaptic_title_resolve_layout:
+  {
+    \tl_set_eq:NN \l__synaptic_title_layout_tl \l_synaptic_title_layout_tl
+    \str_if_eq:VnT \l__synaptic_title_layout_tl { auto }
+      {
+        \str_case:Vn \l_synaptic_mode_tl
+          {
+            { journal } { \tl_set:Nn \l__synaptic_title_layout_tl { inline } }
+            { book }    { \tl_set:Nn \l__synaptic_title_layout_tl { cover } }
+            { lecture } { \tl_set:Nn \l__synaptic_title_layout_tl { compact } }
+            { notes }   { \tl_set:Nn \l__synaptic_title_layout_tl { compact } }
+          }
+      }
+  }
 
+\cs_new_protected:Npn \__synaptic_title_use_plain_style:
+  {
+    \cs_if_exist:cTF { ps@plain.scrheadings }
+      { \thispagestyle{plain.scrheadings} }
+      { \thispagestyle{plain} }
+  }
 
+\cs_new_protected:Npn \__synaptic_title_render_authors:
+  {
+    \seq_map_indexed_inline:Nn \l_synaptic_authors_seq
+      {
+        \int_compare:nNnT {##1} > {1} { \quad }
+        \__synaptic_render_author:nn {##2}
+          { \seq_item:Nn \l_synaptic_author_marks_seq {##1} }
+      }
+    \unskip
+  }
 
+\cs_new_protected:Npn \__synaptic_title_render_affiliations:
+  {
+    \seq_if_empty:NF \l_synaptic_affils_seq
+      {
+        \group_begin:
+          \small\synaptic_if_lang_zh:TF{\upshape}{\itshape}
+          \color{syn-text-dark}
+          \begin{synaffillist}
+            \seq_map_inline:Nn \l_synaptic_affils_seq
+              { \__synaptic_render_affil:nn ##1 }
+          \end{synaffillist}
+        \group_end:
+      }
+  }
 
+\cs_new_protected:Npn \__synaptic_title_render_contacts:
+  {
+    \seq_if_empty:NF \l_synaptic_emails_seq
+      {
+        \noindent
+        {\small\color{syn-muted-text}
+          \textit{\c_synaptic_label_email_tl}\c_synaptic_colon_tl\enspace
+          \seq_map_indexed_inline:Nn \l_synaptic_emails_seq
+            {
+              \int_compare:nNnT {##1} > {1} {,~}
+              \__synaptic_render_email:n {##2}
+            }}\par
+      }
+  }
 
+\cs_new_protected:Npn \__synaptic_title_render_abstract_keywords:
+  {
+    \tl_if_empty:NF \l_synaptic_abstract_tl
+      {
+        \par\addvspace{12pt}
+        \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.5pt}}\par
+        \addvspace{10pt}
+        \noindent
+        {\small\sffamily\bfseries\color{syn-primary}
+          \c_synaptic_label_abstract_tl\c_synaptic_colon_tl}\enspace
+        \group_begin:
+          \small\setstretch{1.18}\l_synaptic_abstract_tl\par
+        \group_end:
+      }
+    \tl_if_empty:NF \l_synaptic_keywords_tl
+      {
+        \par\addvspace{9pt}\noindent
+        {\small\sffamily\bfseries\color{syn-primary}
+          \c_synaptic_label_keywords_tl\c_synaptic_colon_tl}\enspace
+        {\small\l_synaptic_keywords_tl}\par
+      }
+    \tl_if_empty:NF \l_synaptic_arxiv_tl
+      {
+        \par\addvspace{8pt}\noindent
+        {\small\sffamily\bfseries\color{syn-primary}
+          \c_synaptic_label_arxiv_tl\c_synaptic_colon_tl}\enspace
+        \href{https://arxiv.org/abs/\l_synaptic_arxiv_tl}
+          {\small\texttt{\l_synaptic_arxiv_tl}}\par
+      }
+    \par\addvspace{10pt}
+    \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.5pt}}\par
+  }
 
+\cs_new_protected:Npn \__synaptic_title_render_journal_block:
+  {
+    \group_begin:
+      \setstretch{1.08}
+      \noindent
+      \tl_if_empty:NTF \l_synaptic_header_tl
+        { {\small\sffamily\bfseries\color{syn-muted-text}
+            \c_synaptic_label_header_tl} }
+        { {\small\sffamily\bfseries\color{syn-muted-text}
+            \l_synaptic_header_tl} }
+      \tl_if_empty:NF \l_synaptic_preprint_tl
+        { \hfill {\small\sffamily\l_synaptic_preprint_tl} }
+      \par
+      \tl_if_empty:NF \l_synaptic_subheader_tl
+        {
+          \addvspace{5pt}
+          {\footnotesize\sffamily\bfseries\color{syn-primary}
+            \l_synaptic_subheader_tl\par}
+        }
+      \str_if_eq:VnTF \l__synaptic_title_layout_tl { compact }
+        { \addvspace{14pt}{\Large\raggedright\bfseries\l_synaptic_title_tl\par} }
+        { \addvspace{22pt}{\LARGE\raggedright\bfseries\l_synaptic_title_tl\par} }
+      \tl_if_empty:NF \l_synaptic_subtitle_tl
+        {
+          \addvspace{7pt}
+          {\large\raggedright\color{syn-text-dark!86}
+            \l_synaptic_subtitle_tl\par}
+        }
+      \addvspace{13pt}
+      \noindent\textcolor{syn-primary}{\rule{\linewidth}{1.1pt}}\par
+      \seq_if_empty:NF \l_synaptic_authors_seq
+        {
+          \addvspace{15pt}
+          {\large\sffamily\bfseries\raggedright
+            \__synaptic_title_render_authors:\par}
+        }
+      \addvspace{6pt}
+      \__synaptic_title_render_affiliations:
+      \addvspace{5pt}
+      \__synaptic_title_render_contacts:
+      \tl_if_empty:NF \l_synaptic_correspondence_tl
+        {
+          \addvspace{5pt}
+          \noindent{\small\color{syn-text-dark}
+            \textit{\c_synaptic_label_correspondence_tl}\c_synaptic_colon_tl
+            \enspace\l_synaptic_correspondence_tl\par}
+        }
+      \seq_if_empty:NF \l_synaptic_author_notes_seq
+        {
+          \addvspace{4pt}
+          {\footnotesize\color{syn-muted-text}
+            \seq_map_inline:Nn \l_synaptic_author_notes_seq {##1\par}}
+        }
+      \tl_if_empty:NF \l_synaptic_publication_info_tl
+        {
+          \addvspace{5pt}
+          \noindent{\footnotesize\sffamily\color{syn-muted-text}
+            \l_synaptic_publication_info_tl\par}
+        }
+      \__synaptic_title_render_abstract_keywords:
+      \tl_if_empty:NF \l_synaptic_dedicated_tl
+        {
+          \addvspace{12pt}
+          {\raggedleft\small\synaptic_if_lang_zh:TF{\upshape}{\itshape}
+            \color{syn-muted-text}
+            \l_synaptic_dedicated_tl\par}
+        }
+    \group_end:
+  }
 
+\cs_new_protected:Npn \__synaptic_title_render_journal:
+  {
+    \str_if_eq:VnTF \l__synaptic_title_layout_tl { page }
+      {
+        \thispagestyle{empty}
+        \__synaptic_title_render_journal_block:
+        \clearpage
+      }
+      {
+        \__synaptic_title_use_plain_style:
+        \__synaptic_title_render_journal_block:
+        \addvspace{22pt}
+      }
+  }
+
+\cs_new_protected:Npn \__synaptic_title_render_book_half:
+  {
+    \tl_if_empty:NF \l_synaptic_half_title_tl
+      {
+        \thispagestyle{empty}\null\vfill
+        {\raggedright\Huge\bfseries\l_synaptic_half_title_tl\par}
+        \vfill\null
+        \cleardoublepage
+      }
+  }
+
+\cs_new_protected:Npn \__synaptic_title_render_book_formal:
+  {
+    \thispagestyle{empty}
+    \group_begin:
+      \noindent
+      {\small\sffamily\bfseries\color{syn-muted-text}
+        \l_synaptic_header_tl}\par
+      \tl_if_empty:NF \l_synaptic_subheader_tl
+        {
+          \addvspace{5pt}
+          {\small\sffamily\color{syn-primary}
+            \l_synaptic_subheader_tl\par}
+        }
+      \vspace*{0.13\textheight}
+      {\Huge\raggedright\bfseries\l_synaptic_title_tl\par}
+      \tl_if_empty:NF \l_synaptic_subtitle_tl
+        {
+          \addvspace{12pt}
+          {\Large\raggedright\color{syn-primary}
+            \l_synaptic_subtitle_tl\par}
+        }
+      \addvspace{18pt}
+      \noindent\textcolor{syn-primary}{\rule{0.32\linewidth}{1.4pt}}\par
+      \seq_if_empty:NF \l_synaptic_authors_seq
+        {
+          \addvspace{22pt}
+          {\Large\sffamily\bfseries\raggedright
+            \__synaptic_title_render_authors:\par}
+        }
+      \addvspace{8pt}
+      \__synaptic_title_render_affiliations:
+      \vfill
+      \tl_if_empty:NF \l_synaptic_edition_tl
+        { {\small\sffamily\color{syn-muted-text}\l_synaptic_edition_tl\par} }
+      \tl_if_empty:NF \l_synaptic_publisher_tl
+        {
+          \addvspace{6pt}
+          {\large\sffamily\bfseries\color{syn-text-dark}
+            \l_synaptic_publisher_tl\par}
+        }
+      \tl_if_empty:NF \l_synaptic_date_tl
+        { {\small\sffamily\color{syn-muted-text}\l_synaptic_date_tl\par} }
+    \group_end:
+    \clearpage
+  }
+
+\cs_new_protected:Npn \__synaptic_title_render_book_verso:
+  {
+    \bool_set_false:N \l__synaptic_title_verso_bool
+    \tl_if_empty:NF \l_synaptic_abstract_tl
+      { \bool_set_true:N \l__synaptic_title_verso_bool }
+    \tl_if_empty:NF \l_synaptic_copyright_tl
+      { \bool_set_true:N \l__synaptic_title_verso_bool }
+    \tl_if_empty:NF \l_synaptic_isbn_tl
+      { \bool_set_true:N \l__synaptic_title_verso_bool }
+    \bool_if:NT \l__synaptic_title_verso_bool
+      {
+        \thispagestyle{empty}
+        \tl_if_empty:NF \l_synaptic_abstract_tl
+          {
+            {\sffamily\bfseries\color{syn-primary}
+              \c_synaptic_label_about_book_tl\par}
+            \addvspace{10pt}
+            \group_begin:\small\setstretch{1.18}
+              \l_synaptic_abstract_tl\par
+            \group_end:
+          }
+        \vfill
+        \tl_if_empty:NF \l_synaptic_copyright_tl
+          { {\footnotesize\l_synaptic_copyright_tl\par} }
+        \tl_if_empty:NF \l_synaptic_isbn_tl
+          {
+            \addvspace{4pt}
+            {\footnotesize\sffamily ISBN\c_synaptic_colon_tl\enspace
+              \l_synaptic_isbn_tl\par}
+          }
+      }
+    \cleardoublepage
+    \tl_if_empty:NF \l_synaptic_dedicated_tl
+      {
+        \thispagestyle{empty}\null\vfill
+        {\raggedleft\large\synaptic_if_lang_zh:TF{\upshape}{\itshape}
+          \color{syn-muted-text}
+          \l_synaptic_dedicated_tl\par}
+        \vfill\null
+        \cleardoublepage
+      }
+  }
+
+\cs_new_protected:Npn \__synaptic_title_render_book:
+  {
+    \hypersetup{pageanchor=false}
+    \str_if_eq:VnTF \l__synaptic_title_layout_tl { page }
+      {
+        \__synaptic_title_render_book_formal:
+        \cleardoublepage
+      }
+      {
+        \__synaptic_title_render_book_half:
+        \__synaptic_title_render_book_formal:
+        \__synaptic_title_render_book_verso:
+      }
+    \hypersetup{pageanchor=true}
+  }
+
+\cs_new_protected:Npn \__synaptic_title_render_lecture_block:
+  {
+    \group_begin:
+      \noindent
+      {\small\sffamily\bfseries\color{syn-muted-text}
+        \l_synaptic_course_code_tl
+        \tl_if_empty:NF \l_synaptic_course_tl
+          {\tl_if_empty:NF \l_synaptic_course_code_tl {\enspace\textbullet\enspace}
+           \l_synaptic_course_tl}}
+      \hfill
+      {\small\sffamily\color{syn-muted-text}
+        \tl_if_empty:NF \l_synaptic_lecture_number_tl
+          {\c_synaptic_label_lecture_tl\nobreakspace\l_synaptic_lecture_number_tl
+           \synaptic_if_lang_zh:TF {~讲} {}}
+        \tl_if_empty:NF \l_synaptic_date_tl
+          {\tl_if_empty:NF \l_synaptic_lecture_number_tl {\enspace\textbullet\enspace}
+           \l_synaptic_date_tl}}
+      \par\addvspace{12pt}
+      {\LARGE\sffamily\bfseries\raggedright\l_synaptic_title_tl\par}
+      \tl_if_empty:NF \l_synaptic_subtitle_tl
+        {\addvspace{5pt}{\large\color{syn-text-dark!86}
+          \l_synaptic_subtitle_tl\par}}
+      \addvspace{8pt}
+      \tl_if_empty:NTF \l_synaptic_instructor_tl
+        {
+          \seq_if_empty:NF \l_synaptic_authors_seq
+            { {\small\sffamily\color{syn-muted-text}
+                \seq_use:Nn \l_synaptic_authors_seq {,~}\par} }
+        }
+        { {\small\sffamily\color{syn-muted-text}
+            \l_synaptic_instructor_tl\par} }
+      \tl_if_empty:NF \l_synaptic_semester_tl
+        { {\small\sffamily\color{syn-muted-text}
+            \l_synaptic_semester_tl\par} }
+      \addvspace{10pt}
+      \noindent\textcolor{syn-primary}{\rule{\linewidth}{1.1pt}}\par
+      \tl_if_empty:NF \l_synaptic_abstract_tl
+        {
+          \addvspace{9pt}
+          {\small\sffamily\bfseries\color{syn-primary}
+            \c_synaptic_label_overview_tl\c_synaptic_colon_tl}\enspace
+          {\small\l_synaptic_abstract_tl\par}
+        }
+      \addvspace{16pt}
+    \group_end:
+  }
+
+\cs_new_protected:Npn \__synaptic_title_render_lecture:
+  {
+    \str_if_eq:VnTF \l__synaptic_title_layout_tl { page }
+      { \thispagestyle{empty}\__synaptic_title_render_lecture_block:\clearpage }
+      { \__synaptic_title_use_plain_style:\__synaptic_title_render_lecture_block: }
+  }
+
+\cs_new_protected:Npn \__synaptic_title_render_notes_block:
+  {
+    \group_begin:
+      {\Large\sffamily\bfseries\raggedright\l_synaptic_title_tl\par}
+      \tl_if_empty:NF \l_synaptic_subtitle_tl
+        {\addvspace{3pt}{\normalsize\color{syn-text-dark!86}
+          \l_synaptic_subtitle_tl\par}}
+      \addvspace{7pt}
+      \noindent
+      {\small\sffamily\color{syn-muted-text}
+        \seq_if_empty:NF \l_synaptic_authors_seq
+          {\seq_use:Nn \l_synaptic_authors_seq {,~}}
+        \tl_if_empty:NF \l_synaptic_date_tl
+          {\seq_if_empty:NF \l_synaptic_authors_seq {\enspace\textbullet\enspace}
+           \l_synaptic_date_tl}}
+      \hfill
+      {\small\sffamily\color{syn-muted-text}\l_synaptic_tags_tl}\par
+      \addvspace{7pt}
+      \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.7pt}}\par
+      \tl_if_empty:NF \l_synaptic_abstract_tl
+        {\addvspace{7pt}{\small\l_synaptic_abstract_tl\par}}
+      \addvspace{12pt}
+    \group_end:
+  }
+
+\cs_new_protected:Npn \__synaptic_title_render_notes:
+  {
+    \str_if_eq:VnTF \l__synaptic_title_layout_tl { page }
+      {
+        \thispagestyle{empty}\null\vspace{0.12\textheight}
+        \__synaptic_title_render_notes_block:
+        \vfill\null\clearpage
+      }
+      {
+        \__synaptic_title_use_plain_style:
+        \legacy_if:nTF { @twocolumn }
+          { \twocolumn[{\__synaptic_title_render_notes_block:}] }
+          { \__synaptic_title_render_notes_block: }
+      }
+  }
+
+\cs_new_protected:Npn \__synaptic_title_render_toc:
+  {
+    \bool_if:NT \l_synaptic_toc_bool
+      {
+        \str_case:Vn \l_synaptic_toc_layout_tl
+          {
+            { inline }
+              { \addvspace{16pt}\tableofcontents\addvspace{16pt} }
+            { top }
+              { \addvspace{10pt}\tableofcontents\addvspace{18pt} }
+            { page }
+              { \clearpage\tableofcontents\clearpage }
+          }
+      }
+  }
+
+\RenewDocumentCommand{\SynapticMakeTitle}{}
+  {
+    \__synaptic_title_import_standard:
+    \tl_if_empty:NT \l_synaptic_title_tl
+      {
+        \PackageError{synaptic-title}{Document~title~is~empty}
+          {Set~it~with~\string\SynapticTitle\{...\}~or~\string\title\{...\}.}
+      }
+    \__synaptic_title_apply_pdf_metadata:
+    \__synaptic_title_resolve_layout:
+    \str_case:Vn \l_synaptic_mode_tl
+      {
+        { journal } { \__synaptic_title_render_journal: }
+        { book }    { \__synaptic_title_render_book: }
+        { lecture } { \__synaptic_title_render_lecture: }
+        { notes }   { \__synaptic_title_render_notes: }
+      }
+    \__synaptic_title_render_toc:
+    \setcounter{footnote}{0}
+  }

@@ -1,0 +1,34 @@
+% !TEX program = lualatex
+\documentclass[11pt,twoside]{scrbook}
+\usepackage[mode=book,theme=midnight,fontset=lm,toc=false]{synaptic}
+
+\SynapticTitle{A Minimal Synaptic Book}
+\SynapticHalfTitle{A Minimal Synaptic Book}
+\SynapticSubtitle{A compact demonstration of long-form structure}
+\SynapticAuthor{Ada Author}
+\SynapticPublisher{Synaptic Press}
+\SynapticEdition{First edition}
+\SynapticISBN{978-0-00-000000-0}
+\SynapticCopyright{Copyright \textcopyright\ 2026 Ada Author.}
+\SynapticDate{2026}
+\SynapticSubject{A compact synaptic book-mode example}
+\begin{abstract}
+  Book mode provides chapter styling, mirrored margins, and running heads.
+\end{abstract}
+
+\begin{document}
+\SynapticMakeTitle
+\SynapticFrontMatter
+\chapter{Preface}
+This short preface demonstrates unnumbered front matter at chapter scale.
+\SynapticBookContents
+\SynapticMainMatter
+\chapter{First Principles}
+\SynapticChapterSubtitle{Structure before decoration}
+\SynapticEpigraph{Good pages make difficult ideas easier to revisit.}{The editor}
+\section{A section}
+Book content begins here.
+\SynapticBackMatter
+\SynapticAcknowledgments
+Thanks to the readers.
+\end{document}

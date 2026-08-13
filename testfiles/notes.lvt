@@ -1,0 +1,24 @@
+\input regression-test.tex
+\documentclass[10pt,twocolumn]{scrartcl}
+\usepackage[mode=notes,theme=graphite,fontset=lm,density=compact]{synaptic}
+
+\title{Standard Metadata Notes}
+\author{Test Student}
+\date{Week 3}
+
+\begin{document}
+\START
+\ExplSyntaxOn
+\TYPE{mode=\synaptic_mode:}
+\TYPE{density=\synaptic_density:}
+\ExplSyntaxOff
+\SynapticMakeTitle
+\section{Notes}
+\begin{synkeyidea}[Invariant]A key idea.\end{synkeyidea}
+\begin{synquestion}A review question.\end{synquestion}
+\begin{syntodo}A follow-up task.\end{syntodo}
+\begin{synsummary}A compact summary.\end{synsummary}
+\SynapticBalanceColumns
+\TYPE{notes-standard-metadata-and-cards=ok}
+\END
+\end{document}

@@ -1,5 +1,10 @@
 %% File: synaptic.dtx
 %% License: LPPL 1.3c or later
+%% Current Maintainer: synaptic project
+%% Copyright (C) 2025--2026 synaptic project
+%%
+%% This work consists of synaptic.dtx, synaptic.ins, the files generated
+%% from them, and the accompanying documentation and examples.
 %%
 %% synaptic -- Modern Academic Typesetting Framework
 %% A modular LaTeX3 design system for articles, books, and lecture notes.
@@ -17,40 +22,33 @@
 
 
 
+
 %%
 %% synaptic-lang-zh.def
-%% Chinese label definitions (idempotent)
+%% Chinese label definitions
 %%
-\tl_new:N \c_synaptic_label_abstract_tl
-\tl_gset:Nn \c_synaptic_label_abstract_tl  { 摘~~要 }
-\tl_new:N \c_synaptic_label_keywords_tl
-\tl_gset:Nn \c_synaptic_label_keywords_tl  { 关键词 }
-\tl_new:N \c_synaptic_label_arxiv_tl
-\tl_gset:Nn \c_synaptic_label_arxiv_tl     { arXiv~电子文献 }
-\tl_new:N \c_synaptic_label_header_tl
-\tl_gset:Nn \c_synaptic_label_header_tl    { 专~供~学~术~期~刊~阅~读~与~评~审 }
-\tl_new:N \c_synaptic_label_thm_tl
-\tl_gset:Nn \c_synaptic_label_thm_tl       { 定理 }
-\tl_new:N \c_synaptic_label_lemma_tl
-\tl_gset:Nn \c_synaptic_label_lemma_tl     { 引理 }
-\tl_new:N \c_synaptic_label_prop_tl
-\tl_gset:Nn \c_synaptic_label_prop_tl      { 命题 }
-\tl_new:N \c_synaptic_label_def_tl
-\tl_gset:Nn \c_synaptic_label_def_tl       { 定义 }
-\tl_new:N \c_synaptic_label_proof_tl
-\tl_gset:Nn \c_synaptic_label_proof_tl     { 证明 }
-\tl_new:N \c_synaptic_label_example_tl
-\tl_gset:Nn \c_synaptic_label_example_tl   { 例题 }
-\tl_new:N \c_synaptic_label_remark_tl
-\tl_gset:Nn \c_synaptic_label_remark_tl    { 注记 }
-\tl_new:N \c_synaptic_label_warning_tl
-\tl_gset:Nn \c_synaptic_label_warning_tl   { 注意 }
-\tl_new:N \c_synaptic_label_exercise_tl
-\tl_gset:Nn \c_synaptic_label_exercise_tl  { 练习 }
-\tl_new:N \c_synaptic_label_acknowledgments_tl
-\tl_gset:Nn \c_synaptic_label_acknowledgments_tl { 致~~谢 }
-\tl_new:N \c_synaptic_label_email_tl
-\tl_gset:Nn \c_synaptic_label_email_tl     { 电子邮箱 }
-
-
-
+\tl_const:Nn \c_synaptic_label_abstract_tl       { 摘要 }
+\tl_const:Nn \c_synaptic_label_keywords_tl       { 关键词 }
+\tl_const:Nn \c_synaptic_label_arxiv_tl          { arXiv~电子文献 }
+\tl_const:Nn \c_synaptic_label_header_tl         { 学术论文预印本 }
+\tl_const:Nn \c_synaptic_label_thm_tl            { 定理 }
+\tl_const:Nn \c_synaptic_label_lemma_tl          { 引理 }
+\tl_const:Nn \c_synaptic_label_prop_tl           { 命题 }
+\tl_const:Nn \c_synaptic_label_def_tl            { 定义 }
+\tl_const:Nn \c_synaptic_label_proof_tl          { 证明 }
+\tl_const:Nn \c_synaptic_label_example_tl        { 例题 }
+\tl_const:Nn \c_synaptic_label_remark_tl         { 注记 }
+\tl_const:Nn \c_synaptic_label_warning_tl        { 注意 }
+\tl_const:Nn \c_synaptic_label_exercise_tl       { 练习 }
+\tl_const:Nn \c_synaptic_label_acknowledgments_tl { 致谢 }
+\tl_const:Nn \c_synaptic_label_email_tl          { 电子邮箱 }
+\tl_const:Nn \c_synaptic_label_correspondence_tl { 通讯信息 }
+\tl_const:Nn \c_synaptic_label_about_book_tl     { 内容简介 }
+\tl_const:Nn \c_synaptic_label_lecture_tl        { 第 }
+\tl_const:Nn \c_synaptic_label_overview_tl       { 本讲概要 }
+\tl_const:Nn \c_synaptic_label_learning_goals_tl { 学习目标 }
+\tl_const:Nn \c_synaptic_label_summary_tl        { 小结 }
+\tl_const:Nn \c_synaptic_label_key_idea_tl       { 核心要点 }
+\tl_const:Nn \c_synaptic_label_question_tl       { 问题 }
+\tl_const:Nn \c_synaptic_label_todo_tl           { 待办 }
+\tl_const:Nn \c_synaptic_colon_tl                { ： }

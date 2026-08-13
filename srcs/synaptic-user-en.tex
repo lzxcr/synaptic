@@ -2,180 +2,228 @@
 \documentclass[a4paper,11pt]{scrartcl}
 
 \usepackage[
-  lang          = en,
-  theme         = ocean,
-  mode          = journal,
-  extra-math    = true,
-  toc           = true,
-  toc-layout    = inline,
-  fine-breaking = false
+  lang=en,
+  mode=journal,
+  theme=ocean,
+  fontset=lm,
+  extra-math=true,
+  toc=true,
+  toc-layout=page
 ]{synaptic}
+\usepackage{booktabs,tabularx}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 
-\DeclareMathOperator{\GL}{GL}
-\SynapticNewTheorem{example}{Example}
-\SynapticNewTheorem{remark}{Remark}
-
-\SynapticHeader{Synaptic User Guide}
-\SynapticSubHeader{Feature Showcase}
-\SynapticPreprint{v2.0}
-\SynapticTitle{The \texttt{synaptic} Package\\User Guide}
+\SynapticNewTheorem[remark]{observation}{Observation}
+\SynapticHeader{Synaptic User Manual}
+\SynapticSubHeader{Reliable academic typesetting with LuaLaTeX}
+\SynapticPreprint{v2.2.0}
+\SynapticTitle{The synaptic Package: User Manual}
 \SynapticAuthor{synaptic project}
-\SynapticAffiliation{CTAN Community}
+\SynapticAffiliation{Open-source LaTeX community}
 \SynapticEmail{synaptic@example.com}
-\SynapticKeywords{synaptic, user guide, LaTeX, LuaLaTeX}
-\SynapticArxiv{2605.54321}
-\SynapticDedicated{To the elegance of structured typesetting.}
+\SynapticSubject{User manual for synaptic version 2.2.0}
+\SynapticKeywords{synaptic, LaTeX3, LuaLaTeX, academic typesetting}
 
 \begin{abstract}
-  \textbf{synaptic} is a modular \LaTeX3 design system for academic articles,
-  books, lecture notes, and technical reports. It requires \texttt{LuaLaTeX}
-  with a \texttt{KOMA-Script} document class. This guide covers installation,
-  options, and usage.
+  \textbf{synaptic} is a modular LaTeX3 design system for journal articles,
+  books, lecture material, and compact notes. This manual describes its
+  requirements, safe configuration model, metadata API, theorem system, and
+  mode-specific features.
 \end{abstract}
 
 \begin{document}
 \SynapticMakeTitle
 
-\section{Installation}
+\section{Getting started}
 
-Clone the repository and add \texttt{tex/latex/synaptic/} to your \texttt{TEXINPUTS}:
+The package requires LuaLaTeX and a KOMA-Script class. The repository ships
+generated package files, so a local checkout can be used without installation:
 
 \begin{verbatim}
-git clone https://github.com/lzxcr/synaptic
 export TEXINPUTS=/path/to/synaptic/tex/latex/synaptic//:$TEXINPUTS
+lualatex document.tex
 \end{verbatim}
 
-Or install via \texttt{l3build}:
+A minimal article is:
 
 \begin{verbatim}
-cd synaptic
-lualatex synaptic.ins   # extract .sty files
-l3build install          # install to TEXMFHOME
+\documentclass{scrartcl}
+\usepackage[mode=journal]{synaptic}
+\SynapticTitle{A Short Article}
+\SynapticAuthor{Ada Author}
+\begin{abstract}Summary.\end{abstract}
+\begin{document}
+\SynapticMakeTitle
+\section{Introduction}
+Text.
+\end{document}
 \end{verbatim}
 
-\section{Options}
+Use \texttt{scrbook} for book mode. The selected class controls the paper size;
+synaptic does not silently force A4.
 
-All options are passed via \texttt{\string\usepackage[key=val,...]\{synaptic\}}.
-Runtime changes use \texttt{\string\SynapticSetup\{key=val\}}.
+\section{Configuration}
 
-\subsection{Publication Modes (\texttt{mode=})}
+\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+  \toprule
+  \textbf{Key} & \textbf{Default} & \textbf{Values and purpose} \\
+  \midrule
+  \texttt{mode} & journal & journal, book, lecture, or notes \\
+  \texttt{theme} & ocean & ocean, graphite, forest, midnight, or paper \\
+  \texttt{lang} & en & en or zh; selects labels and CJK support \\
+  \texttt{fontset} & auto & auto, xcharter, libertinus, stix2, or lm \\
+  \texttt{toc} & false & whether the title workflow prints a TOC \\
+  \texttt{toc-layout} & top & top, inline, or page \\
+  \texttt{title-layout} & auto & inline, compact, page, cover, or mode default \\
+  \texttt{numbering} & auto & section, chapter, continuous, none, or mode default \\
+  \texttt{box-numbering} & shared & shared, separate, or none \\
+  \texttt{color-mode} & screen & screen, print, or mono \\
+  \texttt{density} & balanced & compact, balanced, or airy \\
+  \texttt{measure} & auto & narrow, standard, wide, or mode default \\
+  \texttt{binding-offset} & 0pt & additional book binding correction \\
+  \texttt{extra-math} & false & convenience Unicode math alphabets \\
+  \texttt{fine-breaking} & true & moderate emergency stretch and tolerance \\
+  \bottomrule
+\end{tabularx}
 
-\begin{tabular}{lp{0.7\textwidth}}
-  \hline
-  \textbf{Value} & \textbf{Description} \\
-  \hline
-  \texttt{journal} & Academic paper. Submission header, abstract, keywords, arXiv. \\
-  \texttt{book}    & Monograph or thesis. Chapter headings, running headers, front/back matter. \\
-  \texttt{lecture} & Lecture notes. Wide margins, large headings, tcolorbox environments. \\
-  \texttt{notes}   & Personal notes. Compact layout, minimal extras. \\
-  \hline
-\end{tabular}
+Only \texttt{theme}, \texttt{toc}, and \texttt{toc-layout} are safe runtime
+settings:
 
-\subsection{Colour Themes (\texttt{theme=})}
+\begin{verbatim}
+\SynapticSetup{theme=paper,toc=false,toc-layout=page}
+\end{verbatim}
 
-\begin{tabular}{lll}
-  \hline
-  \textbf{Theme} & \textbf{Primary} & \textbf{Secondary} \\
-  \hline
-  \texttt{ocean}    & Blue (0,106,176)   & Dark blue-grey (46,64,83) \\
-  \texttt{graphite} & Grey (75,86,99)    & Dark grey (45,52,62) \\
-  \texttt{forest}   & Green (30,115,80)  & Dark green (56,68,60) \\
-  \texttt{midnight} & Navy (25,55,109)   & Deep dark (30,35,50) \\
-  \texttt{paper}    & Dark grey (55,58,62) & Near-black (45,48,52) \\
-  \hline
-\end{tabular}
+Mode, language, font, and load-time typography options are frozen after package
+loading. Attempts to change them issue a warning instead of producing a
+half-reconfigured document.
 
-\noindent Custom themes: \verb|\SynapticDefineTheme{mytheme}{RGB:...}{RGB:...}|.
+\subsection{Modes}
 
-\subsection{Font Sets (\texttt{fontset=})}
+\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+  \toprule
+  \textbf{Mode} & \textbf{Class} & \textbf{Purpose} \\
+  \midrule
+  journal & scrartcl & Inline article title, metadata, running heads, statements \\
+  book & scrbook & Book title sequence, parts, chapters, duplex navigation \\
+  lecture & scrartcl/scrreprt & Course masthead and semantic teaching system \\
+  notes & scrartcl & Compact masthead and lightweight knowledge cards \\
+  \bottomrule
+\end{tabularx}
 
-\begin{tabular}{llll}
-  \hline
-  \textbf{Value} & \textbf{Roman} & \textbf{Sans} & \textbf{Math} \\
-  \hline
-  \texttt{auto}      & Auto-detect    & Auto-detect & Auto-detect \\
-  \texttt{xcharter}  & XCharter       & Cabin       & XCharter Math \\
-  \texttt{libertinus}& Libertinus Serif & Libertinus Sans & Libertinus Math \\
-  \texttt{stix2}     & STIX Two Text  & STIX Two Text & STIX Two Math \\
-  \texttt{lm}        & Latin Modern   & Latin Modern Sans & Latin Modern Math \\
-  \hline
-\end{tabular}
+\subsection{Fonts}
 
-\subsection{Other Options}
+The \texttt{auto} setting chooses the first \emph{complete} installed bundle:
+XCharter, Libertinus, STIX Two, then Latin Modern. An explicit choice reports a
+clear error if a required companion font is absent. Chinese documents prefer
+Noto Serif/Sans CJK SC and fall back to the Fandol fonts distributed with TeX
+Live.
 
-\begin{tabular}{llp{0.5\textwidth}}
-  \hline
-  \textbf{Key} & \textbf{Type} & \textbf{Description} \\
-  \hline
-  \texttt{lang} & choice (en, zh) & Language for labels and CJK fonts. \\
-  \texttt{toc} & bool (true) & Show table of contents. \\
-  \texttt{toc-layout} & choice (top, inline, page) & TOC position. \\
-  \texttt{extra-math} & bool (false) & Enable $\symbb{A}$, $\symcal{A}$, $\symfrak{A}$. \\
-  \texttt{fine-breaking} & bool (true) & Micro-typographic line breaking. \\
-  \hline
-\end{tabular}
+\section{Title and PDF metadata}
 
-\section{User API}
+All four modes share the metadata model and render it differently:
 
-\subsection{Metadata Commands}
+\noindent\begin{tabularx}{\textwidth}{@{}l Y@{}}
+  \toprule
+  \textbf{Command} & \textbf{Meaning} \\
+  \midrule
+  \SynapticCmd{SynapticTitle} & Required printed title and PDF title \\
+  \SynapticCmd{SynapticSubtitle} & Optional display subtitle \\
+  \SynapticCmd{SynapticShortTitle} & Running-head title \\
+  \SynapticCmd{SynapticDate} & Explicit date \\
+  \SynapticCmd{SynapticAuthor} & Repeatable author and optional affiliation mark \\
+  \SynapticCmd{SynapticAffiliation} & Repeatable affiliation \\
+  \SynapticCmd{SynapticEmail} & Repeatable clickable contact address \\
+  \SynapticCmd{SynapticSubject} & PDF subject \\
+  \SynapticCmd{SynapticKeywords} & Printed and PDF keywords \\
+  \SynapticCmd{SynapticHeader} & Submission header override \\
+  \SynapticCmd{SynapticSubHeader} & Secondary header \\
+  \SynapticCmd{SynapticPreprint} & Preprint identifier \\
+  \SynapticCmd{SynapticArxiv} & Linked arXiv identifier \\
+  \SynapticCmd{SynapticDedicated} & Dedication \\
+  \SynapticCmd{SynapticMakeTitle} & Validate and render all title data \\
+  \bottomrule
+\end{tabularx}
 
-\verb|\SynapticTitle{text}| --- document title (replaces \verb|\title|).
+Journal mode accepts publication information, correspondence, and author notes;
+book mode accepts half-title, publisher, edition, ISBN, and copyright fields;
+lecture mode accepts course, code, lecture number, instructor, and semester.
+Use \verb|\SynapticStatement{heading}{body}| for journal funding, data, ethics,
+or conflict statements; the starred form omits its table-of-contents entry.
+Standard \verb|\title|, \verb|\author|, and \verb|\date| are imported when the
+Synaptic field is empty. PDF metadata receives one Unicode-safe conversion.
 
-\verb|\SynapticAuthor[mark]{name}| --- author with optional affiliation mark.
+\section{Theorems and mathematics}
 
-\verb|\SynapticAffiliation[mark]{text}| --- affiliation.
+The built-in \texttt{theorem}, \texttt{lemma}, \texttt{proposition}, and
+\texttt{definition} environments share one counter. Books use chapter scope by
+default; shorter modes use sections. Definitions use upright body text;
+proposition-style statements use italics in English and upright CJK text.
 
-\verb|\SynapticEmail{addr}|, \verb|\SynapticKeywords{...}|,
-\verb|\SynapticArxiv{ID}| --- email, keywords, arXiv link.
-
-\verb|\SynapticHeader{text}|, \verb|\SynapticSubHeader{text}|,
-\verb|\SynapticPreprint{ID}|, \verb|\SynapticDedicated{text}| --- custom header fields.
-
-\verb|\SynapticMakeTitle| --- render the title page.
-
-\subsection{Customisation}
-
-\verb|\SynapticSetup{key=val}| --- change options after loading.
-
-\verb|\SynapticNewTheorem{env}{Name}| --- declare theorem-like environment.
-
-\verb|\SynapticDefineTheme{A}{B}| --- custom colour theme.
-
-\section{Mathematics}
-
-\begin{theorem}[Euler's Identity]
-  For any real number \(x\), \(e^{i\pi} + 1 = 0\).
+\begin{theorem}[Gaussian integral]
+  The integral satisfies
+  \[
+    \int_0^\infty e^{-x^2}\,\mathrm{d}x=\frac{\sqrt{\pi}}{2}.
+  \]
 \end{theorem}
 
 \begin{proof}
-  Follows from the definition of complex exponentials.
+  Square the integral, change to polar coordinates, and evaluate the radial
+  integral.
 \end{proof}
 
-\[
-  \int_{0}^{\infty} e^{-x^2}\,dx = \frac{\sqrt{\pi}}{2}
-\]
+New theorem types accept a style:
 
-With \texttt{extra-math}: \(\symbb{N} \subset \symbb{Z} \subset \symbb{R} \subset \symbb{C}\)
-and \(\mathcal{A} \xrightarrow{\sim} \mathfrak{B}\).
+\begin{verbatim}
+\SynapticNewTheorem[remark]{observation}{Observation}
+\end{verbatim}
 
-\section{List and Caption Styling}
+The available styles are \texttt{plain}, \texttt{definition}, and
+\texttt{remark}.
 
-\begin{enumerate}
-  \item First item with some content to show spacing.
-  \item Second item
-    \begin{itemize}
-      \item Sub-item one
-      \item Sub-item two
-    \end{itemize}
-  \item Third item concludes the list.
-\end{enumerate}
+\begin{observation}
+  With \texttt{extra-math=true}, commands such as \(\symbb{R}\),
+  \(\symcal{F}\), and \(\symfrak{g}\) are available.
+\end{observation}
 
-\begin{figure}[h]
-  \centering \rule{0.3\textwidth}{0.15\textwidth}
-  \caption{A sample figure with styled caption.}
-\end{figure}
+\section{Themes and lecture boxes}
 
-\acknowledgments
-The synaptic project thanks the \LaTeX3 Team for \texttt{expl3}.
+Themes may be switched with \verb|\SynapticUseTheme{name}|. A custom theme is
+defined and activated using xcolor expressions:
+
+\begin{verbatim}
+\SynapticDefineTheme{brand}{blue!70!black}{gray!80!black}[orange]
+\end{verbatim}
+
+Lecture mode adds the collision-resistant environments \SynapticPkg{synexample},
+\SynapticPkg{synremark}, \SynapticPkg{synwarning}, \SynapticPkg{synexercise},
+and \SynapticPkg{synbox}. Examples and exercises share the theorem counter by
+default; remarks and warnings are unnumbered. The first optional argument is a
+title and the second is a label. The generic v2.0 aliases are created only when
+their names are free. Course units may also use \texttt{synlearninggoals} and
+\texttt{synlecturesummary}.
+
+\section{Book workflow and acknowledgments}
+
+Use \SynapticCmd{SynapticFrontMatter}, \SynapticCmd{SynapticMainMatter}, and
+\SynapticCmd{SynapticBackMatter} around the corresponding parts of a book.
+\SynapticCmd{SynapticBookContents}, chapter subtitles, epigraphs, and
+list/appendix helpers complete the long-form workflow. Notes mode provides
+\texttt{synkeyidea}, \texttt{synquestion}, \texttt{syntodo}, and
+\texttt{synsummary}; class-level two-column layouts are supported. The
+\SynapticCmd{SynapticAcknowledgments} command creates a chapter in book mode and
+a section in other modes. Its starred form suppresses the TOC entry.
+
+\section{Development commands}
+
+\begin{verbatim}
+l3build unpack   # regenerate .sty and .def files from synaptic.dtx
+l3build check    # run the LuaLaTeX regression suite
+l3build doc      # build the documented source and manuals
+l3build ctan     # create release archives
+\end{verbatim}
+
+\SynapticAcknowledgments*
+The project acknowledges the LaTeX3, KOMA-Script, fontspec, and broader TeX
+communities.
 
 \end{document}

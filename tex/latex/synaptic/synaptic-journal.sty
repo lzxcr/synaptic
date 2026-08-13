@@ -1,0 +1,52 @@
+%% File: synaptic.dtx
+%% License: LPPL 1.3c or later
+%% Current Maintainer: synaptic project
+%% Copyright (C) 2025--2026 synaptic project
+%%
+%% This work consists of synaptic.dtx, synaptic.ins, the files generated
+%% from them, and the accompanying documentation and examples.
+%%
+%% synaptic -- Modern Academic Typesetting Framework
+%% A modular LaTeX3 design system for articles, books, and lecture notes.
+%% Requires LuaLaTeX + KOMA-Script.
+%%
+
+
+
+
+
+
+
+\NeedsTeXFormat{LaTeX2e}[2023/11/01]
+\ProvidesExplPackage{synaptic-journal}{2026-08-13}{2.2.0}
+  {Synaptic~Journal~Mode}
+
+\RequirePackage[singlespacing=true]{scrlayer-scrpage}
+
+\cs_new:Npn \__synaptic_journal_running_author:
+  {
+    \seq_if_empty:NF \l_synaptic_authors_seq
+      { \seq_item:Nn \l_synaptic_authors_seq {1} }
+  }
+
+\cs_new:Npn \__synaptic_journal_running_title:
+  {
+    \tl_if_empty:NTF \l_synaptic_short_title_tl
+      { \l_synaptic_title_tl }
+      { \l_synaptic_short_title_tl }
+  }
+
+\clearpairofpagestyles
+\ihead{\__synaptic_journal_running_author:}
+\ohead{\__synaptic_journal_running_title:}
+\ofoot*{\pagemark}
+\setkomafont{pageheadfoot}
+  {\normalfont\footnotesize\sffamily\color{syn-muted-text}}
+\pagestyle{scrheadings}
+
+\NewDocumentCommand{\SynapticStatement}{s m +m}
+  {
+    \section*{#2}
+    \IfBooleanF{#1}{\addcontentsline{toc}{section}{#2}}
+    #3\par
+  }
