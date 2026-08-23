@@ -1,0 +1,45 @@
+\input regression-test.tex
+\documentclass[11pt]{scrartcl}
+\usepackage[mode=journal,theme=ocean,fontset=lm]{synaptic}
+
+\SynapticTitle{Theme Regression}
+\SynapticAuthor{Test Author}
+
+\begin{document}
+\START
+\ExplSyntaxOn
+\TYPE{theme-initial=\synaptic_theme:}
+\ExplSyntaxOff
+\SynapticMakeTitle
+\SynapticUseTheme{graphite}
+\section{Graphite}
+\ExplSyntaxOn
+\TYPE{theme-graphite=\synaptic_theme:}
+\ExplSyntaxOff
+\SynapticUseTheme{forest}
+\section{Forest}
+\ExplSyntaxOn
+\TYPE{theme-forest=\synaptic_theme:}
+\ExplSyntaxOff
+\SynapticUseTheme{midnight}
+\section{Midnight}
+\ExplSyntaxOn
+\TYPE{theme-midnight=\synaptic_theme:}
+\ExplSyntaxOff
+\SynapticUseTheme{paper}
+\section{Paper}
+\ExplSyntaxOn
+\TYPE{theme-paper=\synaptic_theme:}
+\ExplSyntaxOff
+\SynapticDefineTheme{regression}{purple!70!black}{teal!70!black}[orange!80!black]
+\section{Defined}
+\ExplSyntaxOn
+\TYPE{theme-defined=\synaptic_theme:}
+\ExplSyntaxOff
+\SynapticSetup{theme=ocean}
+\ExplSyntaxOn
+\TYPE{theme-restored=\synaptic_theme:}
+\ExplSyntaxOff
+\TYPE{theme-cycling=ok}
+\END
+\end{document}

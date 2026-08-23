@@ -21,7 +21,7 @@
 \hfuzz=6pt
 \AtBeginDocument{\hypersetup{pdftitle={synaptic bundle},
   linkcolor=blue!60!black,urlcolor=teal}}
-\ProvidesFile{synaptic.dtx}[2026-08-13 v2.2.0 synaptic documented source]
+\ProvidesFile{synaptic.dtx}[2026-08-23 v2.3.0 synaptic documented source]
 \EnableCrossrefs\CodelineIndex\RecordChanges
 \begin{document}
 \DocInput{synaptic.dtx}
@@ -41,6 +41,10 @@
 % \changes{v2.2.0}{2026-08-13}{Completed the four mode-specific design
 % systems, added responsive title and navigation renderers, and refined
 % book, lecture, notes, colour, numbering, and bilingual typography.}
+% \changes{v2.3.0}{2026-08-23}{Removed the superseded monolithic title
+% renderer, added a hairline running-head separator in every mode, an
+% editorial double rule beneath journal titles, unified the card corner
+% treatment, and expanded the regression suite to eighteen test groups.}
 % \textbf{synaptic} is a modular \LaTeX3 design system for academic documents.
 % It provides a clean, non-invasive API with mode-aware module loading
 % and deterministic font-bundle auto-detection through \textsf{fontspec}.
@@ -59,22 +63,68 @@
 % \texttt{theme}=ocean, graphite, forest, midnight, or paper;
 % \texttt{lang}=en or zh;
 % \texttt{fontset}=auto, xcharter, libertinus, stix2, or lm;
+% \texttt{toc-layout}=top, inline, or page;
 % \texttt{title-layout}=auto, inline, compact, page, or cover;
+% \texttt{numbering}=auto, section, chapter, continuous, or none;
+% \texttt{box-numbering}=shared, separate, or none;
+% \texttt{color-mode}=screen, print, or mono;
 % \texttt{density}=compact, balanced, or airy;
-% \texttt{color-mode}=screen, print, or mono.
+% \texttt{measure}=auto, narrow, standard, or wide;
+% \texttt{extra-math} and \texttt{fine-breaking} are booleans.
+% Structural keys are frozen after loading; only \texttt{theme},
+% \texttt{toc}, and \texttt{toc-layout} may change at runtime through
+% \texttt{\string\SynapticSetup}.
+%
+% \section{Module map}
+% The bundle extracts to one shell, one core module, one data pair, and four
+% mode modules:
+% \begin{itemize}\raggedright
+% \item \texttt{synaptic-base.sty}: engine and class checks, key parsing,
+%   \texttt{\string\SynapticSetup}, mode dispatch.
+% \item \texttt{synaptic-lang-en.def} and \texttt{synaptic-lang-zh.def}:
+%   bilingual label constants loaded before any module.
+% \item \texttt{synaptic-color.sty}: theme registry and semantic colour
+%   tokens, print and monochrome delivery.
+% \item \texttt{synaptic-fonts.sty}: complete font bundles, deterministic
+%   auto-selection, CJK fonts.
+% \item \texttt{synaptic-layout.sty}: geometry, paragraph typography,
+%   headings, running-head hairline, equation numbering.
+% \item \texttt{synaptic-theorem.sty}: theorem styles and environments,
+%   proofs, optional math alphabets.
+% \item \texttt{synaptic-title.sty}: shared metadata model and the four
+%   mode-aware title renderers.
+% \item \texttt{synaptic-journal.sty}, \texttt{synaptic-book.sty},
+%   \texttt{synaptic-lecture.sty} (with \texttt{synaptic-boxes.sty}), and
+%   \texttt{synaptic-notes.sty}: mode-specific design and navigation layers.
+% \end{itemize}
 %
 % \section{User API}
-% \begin{itemize}\raggedright
-% \item Metadata: \texttt{\string\SynapticTitle},
-%   \texttt{\string\SynapticAuthor},
-%   \texttt{\string\SynapticAffiliation}, and
-%   \texttt{\string\SynapticSubject}.
-% \item Rendering and configuration: \texttt{\string\SynapticMakeTitle}
-%   and \texttt{\string\SynapticSetup}.
-% \item Extensions: \texttt{\string\SynapticNewTheorem},
-%   \texttt{\string\SynapticDefineTheme}, and
-%   \texttt{\string\SynapticUseTheme}.
-% \end{itemize}
+% \DescribeMacro{\SynapticTitle} Sets the document title, which is required
+% before \texttt{\string\SynapticMakeTitle}.
+% \DescribeMacro{\SynapticSubtitle} Sets an optional display subtitle.
+% \DescribeMacro{\SynapticAuthor} Appends an author; the optional argument is
+%   an affiliation mark. Repeatable.
+% \DescribeMacro{\SynapticAffiliation} Appends an affiliation; the optional
+%   argument is the matching mark. Repeatable.
+% \DescribeMacro{\SynapticEmail} Appends a clickable contact address.
+%   Repeatable.
+% \DescribeMacro{\SynapticKeywords} Sets printed and PDF keywords.
+% \DescribeMacro{\SynapticMakeTitle} Validates the stored metadata and renders
+%   the mode-specific title sequence and optional table of contents.
+% \DescribeMacro{\SynapticSetup} Applies runtime-safe keys:
+%   \texttt{theme}, \texttt{toc}, \texttt{toc-layout}. Frozen keys warn.
+% \DescribeMacro{\SynapticNewTheorem} Declares a custom theorem environment
+%   with style \texttt{plain}, \texttt{definition}, or \texttt{remark}.
+% \DescribeMacro{\SynapticDefineTheme} Defines and activates a custom theme
+%   from xcolor expressions: primary, secondary, optional accent.
+% \DescribeMacro{\SynapticUseTheme} Activates a built-in or defined theme.
+% \DescribeMacro{\SynapticStatement} Journal declaration block; the starred
+%   form omits the table-of-contents entry.
+% \DescribeMacro{\SynapticAcknowledgments} Chapter-scale (book) or
+%   section-scale acknowledgments; the starred form omits the TOC entry.
+% \DescribeMacro{\SynapticFrontMatter} \DescribeMacro{\SynapticMainMatter}
+% \DescribeMacro{\SynapticBackMatter} Book-matter switches that restore the
+%   appropriate chapter scale and clear running marks.
 %
 % \StopEventually{\PrintChanges\PrintIndex}
 %
@@ -90,7 +140,7 @@
 %    \begin{macrocode}
 %<*base>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-base}{2026-08-13}{2.2.0}
+\ProvidesExplPackage{synaptic-base}{2026-08-23}{2.3.0}
   {Synaptic~Core~Infrastructure}
 
 \msg_new:nnn { synaptic } { luatex-required }
@@ -415,7 +465,7 @@
 %    \begin{macrocode}
 %<*color>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-color}{2026-08-13}{2.2.0}
+\ProvidesExplPackage{synaptic-color}{2026-08-23}{2.3.0}
   {Synaptic~Theme~Colour~System}
 
 \RequirePackage{xcolor}
@@ -531,7 +581,7 @@
 %    \begin{macrocode}
 %<*fonts>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-fonts}{2026-08-13}{2.2.0}
+\ProvidesExplPackage{synaptic-fonts}{2026-08-23}{2.3.0}
   {Synaptic~Font~System}
 
 \RequirePackage{fontspec}
@@ -767,7 +817,7 @@
 %    \begin{macrocode}
 %<*layout>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-layout}{2026-08-13}{2.2.0}
+\ProvidesExplPackage{synaptic-layout}{2026-08-23}{2.3.0}
   {Synaptic~Page~Layout}
 
 \RequirePackage{geometry}
@@ -980,6 +1030,17 @@
 \str_if_eq:VnT \l_synaptic_mode_tl { notes }   { \raggedbottom }
 
 % ---------------------------------------------------------------------------
+% Running-head separator line.  The mode modules load scrlayer-scrpage first
+% and then call this helper, so the KOMA option is registered by then; the
+% dedicated KOMA font keeps the hairline lighter than the head text.
+% ---------------------------------------------------------------------------
+\cs_new_protected:Npn \__synaptic_layout_headsepline:
+  {
+    \KOMAoptions{headsepline=0.4pt}
+    \setkomafont{headsepline}{\color{syn-rule}}
+  }
+
+% ---------------------------------------------------------------------------
 % Caption
 % ---------------------------------------------------------------------------
 \captionsetup{
@@ -1070,7 +1131,7 @@
 %    \begin{macrocode}
 %<*theorem>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-theorem}{2026-08-13}{2.2.0}
+\ProvidesExplPackage{synaptic-theorem}{2026-08-23}{2.3.0}
   {Synaptic~Theorem~Environments}
 
 \RequirePackage{amsthm}
@@ -1266,7 +1327,7 @@
 %    \begin{macrocode}
 %<*title>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-title}{2026-08-13}{2.2.0}
+\ProvidesExplPackage{synaptic-title}{2026-08-23}{2.3.0}
   {Synaptic~Title~Page}
 
 % ---------------------------------------------------------------------------
@@ -1504,201 +1565,6 @@
 \AddToHook{begindocument}{\__synaptic_title_apply_pdf_metadata:}
 
 % ---------------------------------------------------------------------------
-% \SynapticMakeTitle
-% ---------------------------------------------------------------------------
-\NewDocumentCommand{\SynapticMakeTitle}{}
-  {
-    \tl_if_empty:NT \l_synaptic_title_tl
-      {
-        \PackageError{synaptic-title}{Document~title~is~empty}
-          {Set~it~with~\string\SynapticTitle\{...\}~before~making~the~title.}
-      }
-    \__synaptic_title_apply_pdf_metadata:
-    \pagenumbering{roman}
-    \thispagestyle{empty}
-
-    \group_begin:
-      \setstretch{1.1}
-
-      % --- Submission header ---
-      \noindent
-      \tl_if_empty:NTF \l_synaptic_header_tl
-        {
-          \str_if_eq:VnT \l_synaptic_mode_tl { journal }
-            { {\small\sffamily\bfseries\color{syn-muted} \c_synaptic_label_header_tl} }
-        }
-        {
-          {\small\sffamily\bfseries\color{syn-muted} \l_synaptic_header_tl}
-        }
-      \tl_if_empty:NF \l_synaptic_preprint_tl
-        { \hfill \l_synaptic_preprint_tl }
-      \par
-      \addvspace{8pt}
-
-      % --- Sub-header ---
-      \tl_if_empty:NF \l_synaptic_subheader_tl
-        {
-          \noindent
-          {\footnotesize\sffamily\bfseries\color{syn-primary}
-            \l_synaptic_subheader_tl}\par
-        }
-      \addvspace{24pt}
-
-      % --- Title ---
-      { \LARGE\raggedright\normalfont\bfseries \l_synaptic_title_tl \par }
-      \addvspace{16pt}
-
-      % --- Rule ---
-      \noindent\textcolor{syn-primary!80}{\rule{\linewidth}{1.2pt}}\par
-      \addvspace{20pt}
-
-      % --- Authors ---
-      \seq_if_empty:NF \l_synaptic_authors_seq
-        {
-          \group_begin:
-            \large\bfseries\raggedright\sffamily
-            \seq_map_indexed_inline:Nn \l_synaptic_authors_seq
-              {
-                \__synaptic_render_author:nn {##2}
-                  { \seq_item:Nn \l_synaptic_author_marks_seq {##1} }
-              }
-            \unskip
-            \par
-          \group_end:
-          \addvspace{10pt}
-        }
-
-      % --- Affiliations ---
-      \seq_if_empty:NF \l_synaptic_affils_seq
-        {
-          \group_begin:
-            \itshape\small\color{syn-text-dark}
-            \begin{synaffillist}
-              \seq_map_inline:Nn \l_synaptic_affils_seq
-                { \__synaptic_render_affil:nn ##1 }
-            \end{synaffillist}
-          \group_end:
-          \addvspace{12pt}
-        }
-
-      % --- Emails ---
-      \seq_if_empty:NF \l_synaptic_emails_seq
-        {
-          \noindent
-          \begin{minipage}[t]{\linewidth}
-            \small\color{syn-text-dark}
-            \textit{\c_synaptic_label_email_tl} \c_colon_str ~
-            \seq_map_indexed_inline:Nn \l_synaptic_emails_seq
-              {
-                \int_compare:nNnT {##1} > {1} {,~}
-                \__synaptic_render_email:n {##2}
-              }
-          \end{minipage}\par
-          \addvspace{24pt}
-        }
-
-      % --- Abstract ---
-      \tl_if_empty:NF \l_synaptic_abstract_tl
-        {
-          \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.5pt}}\par
-          \addvspace{12pt}
-          \noindent
-          {\small\sffamily\bfseries\color{syn-primary} \c_synaptic_label_abstract_tl
-            \c_colon_str}~
-          \group_begin:
-            \small\setstretch{1.2}
-            \l_synaptic_abstract_tl\par
-          \group_end:
-          \addvspace{12pt}
-        }
-
-      % --- Keywords ---
-      \tl_if_empty:NF \l_synaptic_keywords_tl
-        {
-          \noindent
-          {\small\sffamily\bfseries\color{syn-primary} \c_synaptic_label_keywords_tl
-            \c_colon_str}~
-          {\small\l_synaptic_keywords_tl}\par
-          \addvspace{10pt}
-        }
-
-      % --- arXiv ---
-      \tl_if_empty:NF \l_synaptic_arxiv_tl
-        {
-          \noindent
-          {\small\sffamily\bfseries\color{syn-primary} \c_synaptic_label_arxiv_tl
-            \c_colon_str}~
-          \href{https://arxiv.org/abs/\l_synaptic_arxiv_tl}
-               {\small\texttt{\l_synaptic_arxiv_tl}}\par
-          \addvspace{12pt}
-        }
-
-      % --- Bottom rule ---
-      \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.5pt}}\par
-
-      % --- Dedicated ---
-      \tl_if_empty:NF \l_synaptic_dedicated_tl
-        {
-          \addvspace{20pt}
-          \vbox{\raggedleft\small\itshape\color{syn-text-dark!80}
-            \l_synaptic_dedicated_tl}
-        }
-
-      % --- TOC (inline) ---
-      \str_if_eq:VnT \l_synaptic_toc_layout_tl { inline }
-        {
-          \bool_if:NT \l_synaptic_toc_bool
-            {
-              \addvspace{20pt}
-              \pagebreak[2]
-              \group_begin:
-                \hypersetup{linkcolor=black}
-                \tableofcontents
-              \group_end:
-              \addvspace{15pt}
-              \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.5pt}}
-            }
-        }
-    \group_end:
-
-    \clearpage
-
-    % --- TOC (page) ---
-    \str_if_eq:VnT \l_synaptic_toc_layout_tl { page }
-      {
-        \bool_if:NT \l_synaptic_toc_bool
-          {
-            \group_begin:
-              \hypersetup{linkcolor=black}
-              \tableofcontents
-            \group_end:
-            \addvspace{15pt}
-            \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.5pt}}
-            \clearpage
-          }
-      }
-
-    % --- TOC (top) ---
-    \str_if_eq:VnT \l_synaptic_toc_layout_tl { top }
-      {
-        \bool_if:NT \l_synaptic_toc_bool
-          {
-            \group_begin:
-              \hypersetup{linkcolor=black}
-              \tableofcontents
-            \group_end:
-            \addvspace{20pt}
-            \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.5pt}}
-            \addvspace{20pt}
-          }
-      }
-
-    \setcounter{footnote}{0}
-    \str_if_eq:VnF \l_synaptic_mode_tl { book }
-      { \pagenumbering{arabic} }
-  }
-
-% ---------------------------------------------------------------------------
 % Affillist environment
 % ---------------------------------------------------------------------------
 \newlist{synaffillist}{description}{1}
@@ -1711,7 +1577,7 @@
 }
 
 % ---------------------------------------------------------------------------
-% v2.2 mode-aware title renderers
+% Mode-aware title renderers
 % ---------------------------------------------------------------------------
 \tl_new:N   \l__synaptic_title_layout_tl
 \bool_new:N \l__synaptic_title_verso_bool
@@ -1841,7 +1707,11 @@
             \l_synaptic_subtitle_tl\par}
         }
       \addvspace{13pt}
+      % Classic double rule: a strong primary bar over a hairline gives the
+      % journal header a precise, editorial finish without extra decoration.
       \noindent\textcolor{syn-primary}{\rule{\linewidth}{1.1pt}}\par
+      \vspace{2.5pt}
+      \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.35pt}}\par
       \seq_if_empty:NF \l_synaptic_authors_seq
         {
           \addvspace{15pt}
@@ -2124,7 +1994,10 @@
       }
   }
 
-\RenewDocumentCommand{\SynapticMakeTitle}{}
+% ---------------------------------------------------------------------------
+% Mode-aware title renderer (single source of truth for \SynapticMakeTitle)
+% ---------------------------------------------------------------------------
+\NewDocumentCommand{\SynapticMakeTitle}{}
   {
     \__synaptic_title_import_standard:
     \tl_if_empty:NT \l_synaptic_title_tl
@@ -2155,7 +2028,7 @@
 %    \begin{macrocode}
 %<*journal>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-journal}{2026-08-13}{2.2.0}
+\ProvidesExplPackage{synaptic-journal}{2026-08-23}{2.3.0}
   {Synaptic~Journal~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -2180,6 +2053,7 @@
 \setkomafont{pageheadfoot}
   {\normalfont\footnotesize\sffamily\color{syn-muted-text}}
 \pagestyle{scrheadings}
+\__synaptic_layout_headsepline:
 
 % A restrained generic back-matter statement avoids imposing a particular
 % publisher's vocabulary while covering funding, data, ethics, and conflicts.
@@ -2200,7 +2074,7 @@
 %    \begin{macrocode}
 %<*book>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-book}{2026-08-13}{2.2.0}
+\ProvidesExplPackage{synaptic-book}{2026-08-23}{2.3.0}
   {Synaptic~Book~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -2242,6 +2116,7 @@
 \setkomafont{pageheadfoot}
   {\normalfont\small\sffamily\color{syn-muted-text}}
 \pagestyle{scrheadings}
+\__synaptic_layout_headsepline:
 
 % ---------------------------------------------------------------------------
 % Front/back matter styling
@@ -2342,7 +2217,7 @@
 %    \begin{macrocode}
 %<*lecture>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-lecture}{2026-08-13}{2.2.0}
+\ProvidesExplPackage{synaptic-lecture}{2026-08-23}{2.3.0}
   {Synaptic~Lecture~Mode}
 
 % ---------------------------------------------------------------------------
@@ -2428,6 +2303,7 @@
 \setkomafont{pageheadfoot}
   {\normalfont\footnotesize\sffamily\color{syn-muted-text}}
 \pagestyle{scrheadings}
+\__synaptic_layout_headsepline:
 
 \tcbset{
   synaptic/learning-goals/.style={
@@ -2442,7 +2318,7 @@
     enhanced,breakable,colback=syn-primary!7!white,colframe=syn-primary,
     boxrule=0.5pt,fonttitle=\bfseries\sffamily,
     colbacktitle=syn-primary,coltitle=syn-on-primary,
-    left=9pt,right=9pt,top=7pt,bottom=7pt,arc=1.5pt
+    left=9pt,right=9pt,top=7pt,bottom=7pt,arc=0pt
   }
 }
 
@@ -2466,7 +2342,7 @@
 %    \begin{macrocode}
 %<*boxes>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-boxes}{2026-08-13}{2.2.0}
+\ProvidesExplPackage{synaptic-boxes}{2026-08-23}{2.3.0}
   {Synaptic~Box~Environments}
 
 \RequirePackage{tcolorbox}
@@ -2477,7 +2353,7 @@
     enhanced,breakable,
     fonttitle=\bfseries\sffamily,
     coltext=syn-text-dark,
-    boxrule=0.4pt,left=9pt,right=8pt,top=7pt,bottom=7pt,arc=1.5pt,
+    boxrule=0.4pt,left=9pt,right=8pt,top=7pt,bottom=7pt,arc=0pt,
     before~skip=9pt,after~skip=9pt
   },
   synaptic/example/.style={
@@ -2609,7 +2485,7 @@
       top           = 4pt,
       bottom        = 4pt,
       boxsep        = 4pt,
-      arc           = 2pt,
+      arc           = 0pt,
       breakable
     ]
   }
@@ -2627,7 +2503,7 @@
 %    \begin{macrocode}
 %<*notes>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-notes}{2026-08-13}{2.2.0}
+\ProvidesExplPackage{synaptic-notes}{2026-08-23}{2.3.0}
   {Synaptic~Notes~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -2666,6 +2542,7 @@
 \setkomafont{pageheadfoot}
   {\normalfont\footnotesize\sffamily\color{syn-muted-text}}
 \pagestyle{scrheadings}
+\__synaptic_layout_headsepline:
 
 \tcbset{
   synaptic/note-base/.style={
@@ -2804,7 +2681,7 @@
 %    \begin{macrocode}
 %<*package>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic}{2026-08-13}{2.2.0}
+\ProvidesExplPackage{synaptic}{2026-08-23}{2.3.0}
   {Modern~Academic~Typesetting~Framework}
 
 % Forward all user options to synaptic-base

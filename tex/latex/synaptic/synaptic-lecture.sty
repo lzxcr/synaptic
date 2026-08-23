@@ -20,7 +20,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-lecture}{2026-08-13}{2.2.0}
+\ProvidesExplPackage{synaptic-lecture}{2026-08-23}{2.3.0}
   {Synaptic~Lecture~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -96,6 +96,7 @@
 \setkomafont{pageheadfoot}
   {\normalfont\footnotesize\sffamily\color{syn-muted-text}}
 \pagestyle{scrheadings}
+\__synaptic_layout_headsepline:
 
 \tcbset{
   synaptic/learning-goals/.style={
@@ -110,7 +111,7 @@
     enhanced,breakable,colback=syn-primary!7!white,colframe=syn-primary,
     boxrule=0.5pt,fonttitle=\bfseries\sffamily,
     colbacktitle=syn-primary,coltitle=syn-on-primary,
-    left=9pt,right=9pt,top=7pt,bottom=7pt,arc=1.5pt
+    left=9pt,right=9pt,top=7pt,bottom=7pt,arc=0pt
   }
 }
 

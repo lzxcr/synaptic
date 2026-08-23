@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.3.0] — 2026-08-23
+
+### Added
+
+- Added a hairline separator beneath running heads in every mode
+  (`headsepline`, coloured through the dedicated KOMA font), giving the
+  journal, book, lecture, and notes navigation a precise editorial finish.
+- Added an editorial double rule (strong bar over hairline) beneath journal
+  titles.
+- Expanded the regression suite from nine to eighteen groups: theme cycling
+  and custom themes, print colour delivery, book layout profiles
+  (density/measure/binding offset), TOC layouts, standalone title pages, the
+  complete book workflow, continuous+separate numbering, extra mathematics
+  alphabets, and a Chinese journal test.
+
+### Changed
+
+- Removed the superseded monolithic `\SynapticMakeTitle` implementation from
+  `synaptic-title`; the mode-aware title renderers are now the single source
+  of truth.
+- Unified all teaching and notes card corner radii to square, matching the
+  theorem boxes for a consistent card language.
+
 ## [2.2.0] — 2026-08-13
 
 ### Added

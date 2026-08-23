@@ -217,7 +217,13 @@ l3build ctan     # create a TDS/CTAN release archive
 
 `synaptic.dtx` is the source of truth. Generated `.sty` and `.def` files under
 `tex/latex/synaptic/` are committed so the repository can be used directly.
-CI runs the regression suite and compiles the documentation and examples.
+CI runs the eighteen-group regression suite and compiles the documentation and
+examples.
+
+The regression suite exercises all four modes in English and Chinese, every
+built-in theme plus custom themes, both colour-delivery alternatives, TOC and
+title layouts, numbering profiles, the full book title sequence, and the
+optional mathematics alphabets.
 
 ## Documentation
 

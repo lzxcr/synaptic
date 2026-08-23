@@ -17,7 +17,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-title}{2026-08-13}{2.2.0}
+\ProvidesExplPackage{synaptic-title}{2026-08-23}{2.3.0}
   {Synaptic~Title~Page}
 
 \tl_new:N   \l_synaptic_title_tl
@@ -234,198 +234,6 @@
 
 \AddToHook{begindocument}{\__synaptic_title_apply_pdf_metadata:}
 
-\NewDocumentCommand{\SynapticMakeTitle}{}
-  {
-    \tl_if_empty:NT \l_synaptic_title_tl
-      {
-        \PackageError{synaptic-title}{Document~title~is~empty}
-          {Set~it~with~\string\SynapticTitle\{...\}~before~making~the~title.}
-      }
-    \__synaptic_title_apply_pdf_metadata:
-    \pagenumbering{roman}
-    \thispagestyle{empty}
-
-    \group_begin:
-      \setstretch{1.1}
-
-      % --- Submission header ---
-      \noindent
-      \tl_if_empty:NTF \l_synaptic_header_tl
-        {
-          \str_if_eq:VnT \l_synaptic_mode_tl { journal }
-            { {\small\sffamily\bfseries\color{syn-muted} \c_synaptic_label_header_tl} }
-        }
-        {
-          {\small\sffamily\bfseries\color{syn-muted} \l_synaptic_header_tl}
-        }
-      \tl_if_empty:NF \l_synaptic_preprint_tl
-        { \hfill \l_synaptic_preprint_tl }
-      \par
-      \addvspace{8pt}
-
-      % --- Sub-header ---
-      \tl_if_empty:NF \l_synaptic_subheader_tl
-        {
-          \noindent
-          {\footnotesize\sffamily\bfseries\color{syn-primary}
-            \l_synaptic_subheader_tl}\par
-        }
-      \addvspace{24pt}
-
-      % --- Title ---
-      { \LARGE\raggedright\normalfont\bfseries \l_synaptic_title_tl \par }
-      \addvspace{16pt}
-
-      % --- Rule ---
-      \noindent\textcolor{syn-primary!80}{\rule{\linewidth}{1.2pt}}\par
-      \addvspace{20pt}
-
-      % --- Authors ---
-      \seq_if_empty:NF \l_synaptic_authors_seq
-        {
-          \group_begin:
-            \large\bfseries\raggedright\sffamily
-            \seq_map_indexed_inline:Nn \l_synaptic_authors_seq
-              {
-                \__synaptic_render_author:nn {##2}
-                  { \seq_item:Nn \l_synaptic_author_marks_seq {##1} }
-              }
-            \unskip
-            \par
-          \group_end:
-          \addvspace{10pt}
-        }
-
-      % --- Affiliations ---
-      \seq_if_empty:NF \l_synaptic_affils_seq
-        {
-          \group_begin:
-            \itshape\small\color{syn-text-dark}
-            \begin{synaffillist}
-              \seq_map_inline:Nn \l_synaptic_affils_seq
-                { \__synaptic_render_affil:nn ##1 }
-            \end{synaffillist}
-          \group_end:
-          \addvspace{12pt}
-        }
-
-      % --- Emails ---
-      \seq_if_empty:NF \l_synaptic_emails_seq
-        {
-          \noindent
-          \begin{minipage}[t]{\linewidth}
-            \small\color{syn-text-dark}
-            \textit{\c_synaptic_label_email_tl} \c_colon_str ~
-            \seq_map_indexed_inline:Nn \l_synaptic_emails_seq
-              {
-                \int_compare:nNnT {##1} > {1} {,~}
-                \__synaptic_render_email:n {##2}
-              }
-          \end{minipage}\par
-          \addvspace{24pt}
-        }
-
-      % --- Abstract ---
-      \tl_if_empty:NF \l_synaptic_abstract_tl
-        {
-          \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.5pt}}\par
-          \addvspace{12pt}
-          \noindent
-          {\small\sffamily\bfseries\color{syn-primary} \c_synaptic_label_abstract_tl
-            \c_colon_str}~
-          \group_begin:
-            \small\setstretch{1.2}
-            \l_synaptic_abstract_tl\par
-          \group_end:
-          \addvspace{12pt}
-        }
-
-      % --- Keywords ---
-      \tl_if_empty:NF \l_synaptic_keywords_tl
-        {
-          \noindent
-          {\small\sffamily\bfseries\color{syn-primary} \c_synaptic_label_keywords_tl
-            \c_colon_str}~
-          {\small\l_synaptic_keywords_tl}\par
-          \addvspace{10pt}
-        }
-
-      % --- arXiv ---
-      \tl_if_empty:NF \l_synaptic_arxiv_tl
-        {
-          \noindent
-          {\small\sffamily\bfseries\color{syn-primary} \c_synaptic_label_arxiv_tl
-            \c_colon_str}~
-          \href{https://arxiv.org/abs/\l_synaptic_arxiv_tl}
-               {\small\texttt{\l_synaptic_arxiv_tl}}\par
-          \addvspace{12pt}
-        }
-
-      % --- Bottom rule ---
-      \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.5pt}}\par
-
-      % --- Dedicated ---
-      \tl_if_empty:NF \l_synaptic_dedicated_tl
-        {
-          \addvspace{20pt}
-          \vbox{\raggedleft\small\itshape\color{syn-text-dark!80}
-            \l_synaptic_dedicated_tl}
-        }
-
-      % --- TOC (inline) ---
-      \str_if_eq:VnT \l_synaptic_toc_layout_tl { inline }
-        {
-          \bool_if:NT \l_synaptic_toc_bool
-            {
-              \addvspace{20pt}
-              \pagebreak[2]
-              \group_begin:
-                \hypersetup{linkcolor=black}
-                \tableofcontents
-              \group_end:
-              \addvspace{15pt}
-              \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.5pt}}
-            }
-        }
-    \group_end:
-
-    \clearpage
-
-    % --- TOC (page) ---
-    \str_if_eq:VnT \l_synaptic_toc_layout_tl { page }
-      {
-        \bool_if:NT \l_synaptic_toc_bool
-          {
-            \group_begin:
-              \hypersetup{linkcolor=black}
-              \tableofcontents
-            \group_end:
-            \addvspace{15pt}
-            \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.5pt}}
-            \clearpage
-          }
-      }
-
-    % --- TOC (top) ---
-    \str_if_eq:VnT \l_synaptic_toc_layout_tl { top }
-      {
-        \bool_if:NT \l_synaptic_toc_bool
-          {
-            \group_begin:
-              \hypersetup{linkcolor=black}
-              \tableofcontents
-            \group_end:
-            \addvspace{20pt}
-            \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.5pt}}
-            \addvspace{20pt}
-          }
-      }
-
-    \setcounter{footnote}{0}
-    \str_if_eq:VnF \l_synaptic_mode_tl { book }
-      { \pagenumbering{arabic} }
-  }
-
 \newlist{synaffillist}{description}{1}
 \setlist[synaffillist]{
   leftmargin = 0.3cm,
@@ -563,7 +371,11 @@
             \l_synaptic_subtitle_tl\par}
         }
       \addvspace{13pt}
+      % Classic double rule: a strong primary bar over a hairline gives the
+      % journal header a precise, editorial finish without extra decoration.
       \noindent\textcolor{syn-primary}{\rule{\linewidth}{1.1pt}}\par
+      \vspace{2.5pt}
+      \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.35pt}}\par
       \seq_if_empty:NF \l_synaptic_authors_seq
         {
           \addvspace{15pt}
@@ -846,7 +658,7 @@
       }
   }
 
-\RenewDocumentCommand{\SynapticMakeTitle}{}
+\NewDocumentCommand{\SynapticMakeTitle}{}
   {
     \__synaptic_title_import_standard:
     \tl_if_empty:NT \l_synaptic_title_tl

@@ -16,18 +16,18 @@
 \SynapticNewTheorem[remark]{observation}{观察}
 \SynapticHeader{synaptic 用户手册}
 \SynapticSubHeader{面向 LuaLaTeX 的稳定学术排版}
-\SynapticPreprint{v2.2.0}
+\SynapticPreprint{v2.3.0}
 \SynapticTitle{synaptic 宏包用户手册}
 \SynapticAuthor{synaptic 项目}
 \SynapticAffiliation{开源 LaTeX 社区}
 \SynapticEmail{synaptic@example.com}
-\SynapticSubject{synaptic 2.2.0 用户手册}
+\SynapticSubject{synaptic 2.3.0 用户手册}
 \SynapticKeywords{synaptic, LaTeX3, LuaLaTeX, 学术排版}
 
 \begin{abstract}
   \textbf{synaptic} 是一套模块化 LaTeX3 学术文档设计系统，适用于期刊
-  论文、书籍、讲义与笔记。本手册介绍它的环境要求、安全配置模型、元数据
-  API、定理系统和各模式功能。
+  论文、书籍、讲义与笔记。本手册介绍它的安装方式、环境要求、安全配置
+  模型、排版系统、元数据 API、定理体系、主题与自定义工具以及各模式功能。
 \end{abstract}
 
 \begin{document}
@@ -35,15 +35,8 @@
 
 \section{快速开始}
 
-宏包要求 LuaLaTeX 和 KOMA-Script 文档类。仓库已包含生成好的宏包文件，
-因此可直接使用本地副本：
-
-\begin{verbatim}
-export TEXINPUTS=/path/to/synaptic/tex/latex/synaptic//:$TEXINPUTS
-lualatex document.tex
-\end{verbatim}
-
-最小论文示例：
+宏包要求 LuaLaTeX 和 KOMA-Script 文档类。宏包已安装到 TeX 目录树时，
+文档只需：
 
 \begin{verbatim}
 \documentclass{scrartcl}
@@ -60,9 +53,45 @@ lualatex document.tex
 
 书籍模式应使用 \texttt{scrbook}。纸张尺寸由文档类决定，synaptic 不会强制 A4。
 
+\subsection{不安装直接使用仓库副本}
+
+仓库已包含生成好的宏包文件，可将 \texttt{TEXINPUTS} 指向它们：
+
+\begin{verbatim}
+export TEXINPUTS=/path/to/synaptic/tex/latex/synaptic//:$TEXINPUTS
+lualatex document.tex
+\end{verbatim}
+
+\subsection{安装到系统}
+
+TeX Live 用户可在仓库根目录安装（版本更新时可直接替换）：
+
+\begin{verbatim}
+l3build install     # 复制到用户 texmf 目录树
+l3build uninstall   # 移除旧版本
+l3build ctan        # 生成 TDS/CTAN 压缩包
+\end{verbatim}
+
+任何标准 \texttt{texmf} 目录树均可；生成文件应位于
+\texttt{tex/latex/synaptic/}。\texttt{l3build ctan} 生成的压缩包可直接解压到
+同样的目录结构。
+
+\subsection{环境要求}
+
+\begin{itemize}
+  \item LuaLaTeX；pdfLaTeX 与 XeLaTeX 会被明确拒绝。
+  \item KOMA-Script 文档类（\texttt{scrartcl}、\texttt{scrreprt} 或
+    \texttt{scrbook}）。
+  \item 较新的 TeX 发行版，包含 \texttt{expl3}、\texttt{fontspec}、
+    \texttt{unicode-math}、\texttt{geometry}、\texttt{microtype}、
+    \texttt{thmtools} 等标准依赖。
+  \item 教学与笔记卡片需要 \texttt{tcolorbox} 与 PGF；\texttt{lang=zh}
+    需要 \texttt{ctex} 与中文字体。
+\end{itemize}
+
 \section{配置}
 
-\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+\noindent{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
   \toprule
   \textbf{键} & \textbf{默认值} & \textbf{可选值与作用} \\
   \midrule
@@ -82,7 +111,7 @@ lualatex document.tex
   \texttt{extra-math} & false & 便捷 Unicode 数学字母命令 \\
   \texttt{fine-breaking} & true & 适度放宽断行容忍度 \\
   \bottomrule
-\end{tabularx}
+\end{tabularx}}
 
 仅 \texttt{theme}、\texttt{toc} 和 \texttt{toc-layout} 可在加载后安全修改：
 
@@ -95,7 +124,7 @@ lualatex document.tex
 
 \subsection{模式}
 
-\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+\noindent{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
   \toprule
   \textbf{模式} & \textbf{建议文档类} & \textbf{用途} \\
   \midrule
@@ -104,7 +133,19 @@ lualatex document.tex
   lecture & scrartcl/scrreprt & 课程信息条与语义教学系统 \\
   notes & scrartcl & 紧凑信息条与轻量知识卡 \\
   \bottomrule
-\end{tabularx}
+\end{tabularx}}
+
+\textbf{journal} 在第一页渲染内联论文标题。运行页眉显示第一作者与短标题，
+标题区支持摘要、关键词、arXiv、通讯、出版信息与投稿声明。
+
+\textbf{book} 依次渲染半扉页、正式扉页、版权页与可选献词页，并提供前后文、
+部分页、章副标题、题词与镜像双面页眉辅助命令。
+
+\textbf{lecture} 渲染课程信息条（课程代码、标题、教师、学期、讲次），并以
+简洁卡片系统包裹定理与例题。学习目标与课程小结界定每个教学单元。
+
+\textbf{notes} 渲染紧凑信息条（可选标签行），支持文档类级双栏排版与末页
+栏平衡。
 
 \subsection{字体}
 
@@ -112,9 +153,54 @@ lualatex document.tex
 Latin Modern。显式选择字体组时，如果缺少必要的配套字体，宏包会清晰报错。
 中文优先使用 Noto CJK SC，并以 TeX Live 自带的 Fandol 作为后备。
 
+\section{排版系统}
+
+synaptic 的默认外观是确定的而非装饰性的。以下设计原则贯穿所有模式。
+
+\subsection{色彩交付}
+
+{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+  \toprule
+  \textbf{color-mode} & \textbf{用途} & \textbf{效果} \\
+  \midrule
+  screen & 屏幕阅读 & 完整主题色，彩色链接 \\
+  print & 纸面输出 & 主题色，暗色（适合打印）链接 \\
+  mono & 单色交付 & 仅黑灰令牌；语义色映射为灰度 \\
+  \bottomrule
+\end{tabularx}}
+
+\subsection{密度与栏宽}
+
+\textbf{density} 分三档调节行距：\texttt{compact} 适合密集资料汇编，
+\texttt{balanced} 为按模式调整的默认值，\texttt{airy} 适合讲义与幻灯片式
+材料。\textbf{measure} 覆盖模式默认栏宽：\texttt{narrow} 适合长篇正文，
+\texttt{standard} 适合期刊排版，\texttt{wide} 适合设计驱动版面。书籍模式下
+\texttt{measure} 调整镜像内外边距，保持双面版式对称。
+
+\subsection{标题构成}
+
+\textbf{title-layout} 决定各模式标题区的渲染方式。\texttt{auto} 解析为
+journal 的 \texttt{inline}、book 的 \texttt{cover} 以及 lecture 与 notes 的
+\texttt{compact}。\texttt{page} 生成整页标题；\texttt{inline} 强制第一页
+内联构成。期刊标题下方使用编辑部风格的双重规则；书籍标题置于短主色条之上；
+讲义与笔记信息条使用随主题着色的单一规则。
+
+\subsection{导航}
+
+所有模式在运行页眉下方绘制一条发丝线。发丝线使用独立的装饰性浅色令牌，
+使导航保持安静。页码居中于页脚；书籍模式还遵循外侧页眉与双面空白页。
+
+\subsection{卡片与规则}
+
+教学与笔记卡片共享同一视觉语言：直角、着语义色（主色、次级、警告或成功色）
+的左侧色条、浅色表面与可读标题颜色。规则与发丝线由主题主色的低浓度混合
+推导，装饰永不与正文争抢。
+
 \section{标题与 PDF 元数据}
 
-\noindent\begin{tabularx}{\textwidth}{@{}l Y@{}}
+四种模式共享元数据，但采用不同标题渲染器：
+
+\noindent{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l Y@{}}
   \toprule
   \textbf{命令} & \textbf{含义} \\
   \midrule
@@ -134,13 +220,12 @@ Latin Modern。显式选择字体组时，如果缺少必要的配套字体，�
   \SynapticCmd{SynapticDedicated} & 献词 \\
   \SynapticCmd{SynapticMakeTitle} & 验证并输出标题信息 \\
   \bottomrule
-\end{tabularx}
+\end{tabularx}}
 
-四种模式共享元数据，但采用不同标题渲染器。journal 支持出版信息、通讯信息与作者注；
-book 支持半扉页、出版社、版次、ISBN 与版权；lecture 支持课程、课程代码、讲次、教师与
-学期。论文的基金、数据、伦理或利益冲突声明可用
-\verb|\SynapticStatement{标题}{正文}|，其星号形式不写入目录。未设置 Synaptic 字段时，
-\verb|\title|、\verb|\author| 和 \verb|\date| 可被导入。
+journal 支持出版信息、通讯信息与作者注；book 支持半扉页、出版社、版次、ISBN 与
+版权；lecture 支持课程、课程代码、讲次、教师与学期。论文的基金、数据、伦理或
+利益冲突声明可用 \verb|\SynapticStatement{标题}{正文}|，其星号形式不写入目录。
+未设置 Synaptic 字段时，\verb|\title|、\verb|\author| 和 \verb|\date| 可被导入。
 PDF 字符串只进行一次 Unicode 安全转换。
 
 \section{定理与数学}
@@ -170,7 +255,7 @@ PDF 字符串只进行一次 Unicode 安全转换。
   \(\symfrak{g}\) 等命令。
 \end{observation}
 
-\section{主题与讲义盒子}
+\section{主题与自定义}
 
 使用 \verb|\SynapticUseTheme{名称}| 切换主题。下列命令使用 xcolor 颜色表达式
 定义并立即启用自定义主题：
@@ -179,10 +264,39 @@ PDF 字符串只进行一次 Unicode 安全转换。
 \SynapticDefineTheme{brand}{blue!70!black}{gray!80!black}[orange]
 \end{verbatim}
 
-讲义模式增加 \texttt{synexample}、\texttt{synremark}、\texttt{synwarning}、
-\texttt{synexercise} 和 \texttt{synbox}。例题与练习默认共享定理计数器，注记与警告
-默认不编号；第一个可选参数是标题，第二个是标签。课程单元还可使用
-\texttt{synlearninggoals} 与 \texttt{synlecturesummary}。
+参数依次为主色、次级色与可选强调色。以下语义令牌始终可用于扩展，并始终
+由当前主题推导：
+
+{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+  \toprule
+  \textbf{令牌} & \textbf{角色} & \textbf{用途} \\
+  \midrule
+  \texttt{syn-primary} & 品牌色 & 标题、标题规则、强调 \\
+  \texttt{syn-secondary} & 墨色 & 弱化文字、注记色调 \\
+  \texttt{syn-accent} & 强调色 & 可选强调 \\
+  \texttt{syn-text-dark} & 正文墨色 & 可读正文 \\
+  \texttt{syn-muted-text} & 可读弱化 & 辅助标签 \\
+  \texttt{syn-surface} & 卡片底色 & 盒子与表面 \\
+  \texttt{syn-border} & 卡片边框 & 盒子边框 \\
+  \texttt{syn-rule} & 装饰发丝线 & 分隔线 \\
+  \texttt{syn-danger} & 语义危险 & 红色警示 \\
+  \texttt{syn-warning} & 语义警告 & 琥珀色警示 \\
+  \texttt{syn-success} & 语义成功 & 练习与待办 \\
+  \bottomrule
+\end{tabularx}}
+
+讲义模式增加抗冲突的教学环境。每个环境接受可选标题与可选标签：
+
+\begin{itemize}\itemsep0pt
+  \item \SynapticPkg{synexample} --- 例题，默认与定理共享计数器
+  \item \SynapticPkg{synremark} --- 注记，默认不编号
+  \item \SynapticPkg{synwarning} --- 警告，默认不编号
+  \item \SynapticPkg{synexercise} --- 练习，默认与定理共享计数器
+  \item \SynapticPkg{synbox} --- 通用盒子，可选标题
+\end{itemize}
+
+通用 v2.0 别名仅在原名空闲时创建。课程单元还可使用 \texttt{synlearninggoals}
+与 \texttt{synlecturesummary}。
 
 \section{书籍流程与致谢}
 
@@ -192,11 +306,53 @@ notes 模式提供 \texttt{synkeyidea}、\texttt{synquestion}、\texttt{syntodo}
 \texttt{synsummary}，并兼容文档类的双栏布局。\SynapticCmd{SynapticAcknowledgments} 在书籍模式中生成章，
 其他模式中生成节；带星号的形式不加入目录。
 
+\section{常见问题}
+
+\begin{itemize}
+  \item \textbf{``The synaptic package requires LuaLaTeX''} --- 您正在使用
+    pdfLaTeX 或 XeLaTeX；其他引擎会被有意拒绝。
+  \item \textbf{``requires a KOMA-Script document class''} --- 请在
+    \texttt{scrartcl}、\texttt{scrreprt} 或 \texttt{scrbook} 下加载宏包。
+  \item \textbf{``mode=book requires a chapter-based class''} --- 请使用
+    \texttt{scrbook}（或其他定义了 \texttt{chapter} 与 \texttt{frontmatter}
+    的 KOMA 文档类）。
+  \item \textbf{``Incomplete ... font bundle''} --- 显式指定的 \texttt{fontset}
+    缺少配套字体。请安装完整组合，或改用 \texttt{fontset=auto} 自动回退。
+  \item \textbf{选项在加载后冻结} --- \texttt{mode}、\texttt{lang}、
+    \texttt{fontset} 等为结构性选项，请在 \verb|\usepackage| 中设定。
+  \item \textbf{未找到中文字体} --- 请安装 Noto CJK SC 或 TeX Live 自带的
+    Fandol 字体。
+  \item \textbf{``Document title is empty''} --- 请在
+    \verb|\SynapticMakeTitle| 前设置 \verb|\SynapticTitle|（或 \verb|\title|）。
+  \item \textbf{纸张尺寸不符} --- 宏包不会覆盖文档类的纸张设定，请在文档类
+    选项中指定。
+\end{itemize}
+
+\section{从旧版本迁移}
+
+2.x 系列替换了 v1 的选项与命令表面。已移除的 \texttt{style=} 与
+\texttt{color=} 选项仍会明确报错并附带迁移提示。
+
+{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l Y@{}}
+  \toprule
+  \textbf{v1} & \textbf{v2.3} \\
+  \midrule
+  \texttt{color=ocean} & \texttt{theme=ocean} \\
+  \texttt{style=modern/minimal} & \texttt{mode=journal/notes} \\
+  \texttt{\textbackslash title} & \SynapticCmd{SynapticTitle} \\
+  \texttt{\textbackslash author} & \SynapticCmd{SynapticAuthor} \\
+  \texttt{\textbackslash maketitle} & \SynapticCmd{SynapticMakeTitle} \\
+  \bottomrule
+\end{tabularx}}
+
+v2.3 的公开 API 与 v2.2 一致。小写书籍前后文命令和讲义盒子通用名仍作为有条件的
+v2.0 兼容别名保留；新文档应使用带命名空间的公开形式。
+
 \section{开发命令}
 
 \begin{verbatim}
 l3build unpack   # 从 synaptic.dtx 重新生成宏包文件
-l3build check    # 运行 LuaLaTeX 回归测试
+l3build check    # 运行 LuaLaTeX 回归测试（18 组）
 l3build doc      # 生成源码文档与手册
 l3build ctan     # 创建发布压缩包
 \end{verbatim}

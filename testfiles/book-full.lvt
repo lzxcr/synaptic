@@ -1,0 +1,49 @@
+\input regression-test.tex
+\documentclass[11pt,twoside]{scrbook}
+\usepackage[mode=book,theme=midnight,fontset=lm,toc=false]{synaptic}
+
+\SynapticTitle{A Complete Book Workflow}
+\SynapticHalfTitle{Complete Book Workflow}
+\SynapticSubtitle{Every book-matter helper in one document}
+\SynapticAuthor[1]{First Author}
+\SynapticAuthor[2]{Second Author}
+\SynapticAffiliation[1]{First Institute}
+\SynapticAffiliation[2]{Second Institute}
+\SynapticPublisher{Regression Press}
+\SynapticEdition{Regression edition}
+\SynapticISBN{978-0-00-000000-0}
+\SynapticCopyright{Copyright \textcopyright\ 2026 Regression Press.}
+\SynapticDedicated{For the regression suite.}
+\begin{abstract}This book exercises the full title sequence and matter helpers.\end{abstract}
+
+\begin{document}
+\START
+\ExplSyntaxOn
+\TYPE{mode=\synaptic_mode:}
+\ExplSyntaxOff
+\SynapticMakeTitle
+\SynapticFrontMatter
+\chapter{Preface}
+Front matter at chapter scale.
+\SynapticBookContents
+\SynapticListOfFigures
+\SynapticMainMatter
+\part{Foundations}
+\chapter{First Principles}
+\SynapticChapterSubtitle{Structure before decoration}
+\SynapticEpigraph{Good pages make difficult ideas easier to revisit.}{The editor}
+\section{A Section}
+\begin{figure}[htbp]
+  \rule{\linewidth}{1.5cm}
+  \caption{A regression figure.}
+\end{figure}
+\begin{theorem}Chapter-level numbering applies.\end{theorem}
+\begin{equation}E = mc^2\end{equation}
+\SynapticAppendices
+\chapter{Appendix Material}
+\SynapticBackMatter
+\SynapticAcknowledgments
+Thanks to the readers.
+\TYPE{book-full-workflow=ok}
+\END
+\end{document}

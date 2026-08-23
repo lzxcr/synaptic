@@ -1,0 +1,33 @@
+\input regression-test.tex
+\documentclass[11pt]{scrartcl}
+\usepackage[mode=journal,lang=zh,theme=ocean,fontset=lm]{synaptic}
+
+\SynapticTitle{中文期刊回归测试}
+\SynapticShortTitle{中文期刊}
+\SynapticAuthor[1]{测试作者}
+\SynapticAffiliation[1]{测试研究所}
+\SynapticEmail{test@example.org}
+\SynapticSubject{中文期刊模式回归测试}
+\SynapticKeywords{回归测试, 中文排版}
+
+\begin{abstract}
+  本文件验证中文期刊模式的标题、摘要、定理与声明排版。
+\end{abstract}
+
+\begin{document}
+\START
+\ExplSyntaxOn
+\TYPE{mode=\synaptic_mode:}
+\TYPE{language=\synaptic_lang:}
+\ExplSyntaxOff
+\SynapticMakeTitle
+\section{中文回归测试}
+中英文混排与全角标点：定理、引理与证明。
+\begin{theorem}定理环境中的中文正文。\end{theorem}
+\begin{definition}定义使用直立正文。\end{definition}
+\SynapticStatement{数据可用性}{本测试未使用外部数据。}
+\SynapticAcknowledgments
+感谢所有测试读者。
+\TYPE{journal-zh=ok}
+\END
+\end{document}

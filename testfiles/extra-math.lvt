@@ -1,0 +1,21 @@
+\input regression-test.tex
+\documentclass[11pt]{scrartcl}
+\usepackage[mode=journal,theme=ocean,fontset=lm,extra-math=true,
+  fine-breaking=false]{synaptic}
+
+\SynapticTitle{Extra Mathematics Regression}
+\SynapticAuthor{Test Author}
+
+\begin{document}
+\START
+\ExplSyntaxOn
+\TYPE{extra-math=\bool_if:NTF\l_synaptic_extra_math_bool{true}{false}}
+\ExplSyntaxOff
+\SynapticMakeTitle
+\section{Alphabets}
+The blackboard bold letter \(\symbb{R}\) and the calligraphic \(\symcal{F}\)
+together with a fraktur \(\symfrak{g}\) are available without naming conflicts.
+\begin{equation}\symbb{N}\subset\symbb{Z}\subset\symbb{Q}\end{equation}
+\TYPE{extra-math-alphabets=ok}
+\END
+\end{document}

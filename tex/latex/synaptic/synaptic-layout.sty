@@ -15,7 +15,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-layout}{2026-08-13}{2.2.0}
+\ProvidesExplPackage{synaptic-layout}{2026-08-23}{2.3.0}
   {Synaptic~Page~Layout}
 
 \RequirePackage{geometry}
@@ -212,6 +212,12 @@
   }
 \str_if_eq:VnT \l_synaptic_mode_tl { lecture } { \raggedbottom }
 \str_if_eq:VnT \l_synaptic_mode_tl { notes }   { \raggedbottom }
+
+\cs_new_protected:Npn \__synaptic_layout_headsepline:
+  {
+    \KOMAoptions{headsepline=0.4pt}
+    \setkomafont{headsepline}{\color{syn-rule}}
+  }
 
 \captionsetup{
   font      = small,

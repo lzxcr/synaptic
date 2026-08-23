@@ -1,0 +1,23 @@
+\input regression-test.tex
+\documentclass[11pt,twoside]{scrbook}
+\usepackage[mode=book,theme=paper,fontset=lm,density=airy,measure=wide,
+  binding-offset=8pt]{synaptic}
+
+\SynapticTitle{Layout Profile Regression}
+\SynapticAuthor{Test Author}
+
+\begin{document}
+\START
+\ExplSyntaxOn
+\TYPE{density=\synaptic_density:}
+\TYPE{measure=\synaptic_measure:}
+\TYPE{binding-offset=\dim_use:N\l_synaptic_binding_offset_dim}
+\ExplSyntaxOff
+\SynapticMakeTitle
+\SynapticMainMatter
+\chapter{Layout}
+The airy density profile relaxes the line spacing for wide-measure books.
+\SynapticBackMatter
+\TYPE{layout-profiles=ok}
+\END
+\end{document}

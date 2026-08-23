@@ -14,17 +14,17 @@
 
 \SynapticHeader{Synaptic Technical Reference}
 \SynapticSubHeader{Architecture, invariants, and release workflow}
-\SynapticPreprint{v2.2.0}
+\SynapticPreprint{v2.3.0}
 \SynapticTitle{synaptic Technical Reference}
 \SynapticAuthor{synaptic project}
 \SynapticAffiliation{Open-source LaTeX community}
-\SynapticSubject{Technical reference for synaptic version 2.2.0}
+\SynapticSubject{Technical reference for synaptic version 2.3.0}
 \SynapticKeywords{LaTeX3, architecture, l3build, regression testing}
 
 \begin{abstract}
   This reference describes synaptic's module graph, load-time invariants,
   namespace rules, font and colour subsystems, extension points, generated-file
-  policy, and automated verification workflow.
+  policy, automated verification workflow, and packaging details.
 \end{abstract}
 
 \begin{document}
@@ -52,9 +52,32 @@ synaptic.sty
 The thin shell forwards user options to \texttt{synaptic-base} and defines a
 small set of collision-resistant convenience commands. The base module checks
 the engine and class, parses options, loads labels, validates book mode, and
-dispatches core and mode-specific modules.
+dispatches core and mode-specific modules. Language definition files are loaded
+before any module so every label constant is available everywhere.
 
-\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+\subsection{Module responsibilities}
+
+\noindent{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+  \toprule
+  \textbf{Module} & \textbf{Kind} & \textbf{Responsibility} \\
+  \midrule
+  \texttt{synaptic.sty} & shell & option forwarding, doc helpers, acknowledgments \\
+  \texttt{synaptic-base.sty} & core & engine/class checks, keys, dispatch, setup \\
+  \texttt{synaptic-lang-*.def} & data & bilingual label constants \\
+  \texttt{synaptic-color.sty} & core & theme registry, semantic tokens, delivery \\
+  \texttt{synaptic-fonts.sty} & core & font bundles, auto selection, CJK fonts \\
+  \texttt{synaptic-layout.sty} & core & geometry, typography, headings, numbering \\
+  \texttt{synaptic-theorem.sty} & core & theorem styles, environments, proofs \\
+  \texttt{synaptic-title.sty} & core & metadata model and four title renderers \\
+  \texttt{synaptic-journal.sty} & mode & journal navigation and statements \\
+  \texttt{synaptic-book.sty} & mode & chapter/part style, matter helpers \\
+  \texttt{synaptic-lecture.sty} & mode & masthead, teaching cards, navigation \\
+  \texttt{synaptic-boxes.sty} & mode & example/remark/warning/exercise cards \\
+  \texttt{synaptic-notes.sty} & mode & notes masthead and knowledge cards \\
+  \bottomrule
+\end{tabularx}}
+
+\noindent{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
   \toprule
   \textbf{Mode} & \textbf{Class invariant} & \textbf{Extra modules} \\
   \midrule
@@ -63,7 +86,7 @@ dispatches core and mode-specific modules.
   lecture & KOMA article/report & lecture, boxes \\
   notes & KOMA article/report & notes \\
   \bottomrule
-\end{tabularx}
+\end{tabularx}}
 
 \section{Configuration lifecycle}
 
@@ -78,6 +101,27 @@ produce diagnostic warnings.
 Book mode is rejected unless both chapter and front-matter interfaces exist.
 LuaLaTeX and KOMA-Script requirements are fatal diagnostics rather than delayed
 undefined-control-sequence failures.
+
+\section{Design invariants}
+
+The following properties are deliberately asserted by the implementation and
+protected by the regression suite.
+
+\begin{itemize}
+  \item \textbf{Deterministic typography.} Font auto-selection and theme
+    derivation never depend on the machine beyond installed fonts; line
+    spacing, measure, and heading sizes are explicit.
+  \item \textbf{No global bad-box suppression.} Emergencystretch and tolerance
+    are tuned; overfull and underfull warnings remain visible for the author.
+  \item \textbf{No forced paper size or page-number reset.} Geometry follows
+    the class; journal titles do not silently restart numbering.
+  \item \textbf{One Unicode conversion.} PDF metadata is passed to hyperref as
+    source tokens; pre-conversion would double-encode.
+  \item \textbf{Collision-resistant public names.} Generic aliases are
+    installed only when free.
+  \item \textbf{Semantic colour architecture.} Components consume semantic
+    tokens; themes and delivery modes change tokens, never component logic.
+\end{itemize}
 
 \section{Subsystems}
 
@@ -123,6 +167,9 @@ explicit rather than hidden behind global bad-box suppression.
 KOMA heading fonts and skips are installed in the
 \texttt{begindocument/before} hook. Hyperref, bookmark, microtype, captions,
 lists, caption punctuation, and mode-aware equation numbering are configured centrally.
+A hairline running-head separator (\texttt{headsepline}) is installed by the
+mode modules through a shared helper and coloured by the dedicated KOMA
+\texttt{headsepline} font, keeping decoration lighter than head text.
 
 \subsection{Titles and metadata}
 
@@ -146,10 +193,12 @@ books and section scope elsewhere by default. Lecture mode wraps core theorem
 environments with tcolorbox; examples and exercises can share that counter,
 while warning and remark cards remain unnumbered by default. Public short names use the
 \texttt{syn} prefix; v2.0 generic aliases are conditional compatibility shims.
+In the separate numbering profile, tcolorbox theorem counters follow the
+\texttt{tcb@cnt@<environment>} naming convention.
 
 \section{Namespace policy}
 
-\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+\noindent{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
   \toprule
   \textbf{Scope} & \textbf{Pattern} & \textbf{Example} \\
   \midrule
@@ -161,7 +210,7 @@ while warning and remark cards remain unnumbered by default. Public short names 
   Global registry & \texttt{\textbackslash g\_synaptic\_\ldots} & theme property list \\
   Label constant & \texttt{\textbackslash c\_synaptic\_label\_\ldots} & theorem label \\
   \bottomrule
-\end{tabularx}
+\end{tabularx}}
 
 New public names should avoid common nouns. Compatibility aliases must use
 \verb|\ProvideDocumentCommand| or an explicit existence check.
@@ -177,9 +226,11 @@ New public names should avoid common nouns. Compatibility aliases must use
     loader. State the required KOMA class capability and test it.
   \item Build visual extensions from semantic colour tokens rather than fixed
     RGB values.
+  \item Add tests along with every extension; the suite is the guard for the
+    invariants above.
 \end{itemize}
 
-\section{Source and release workflow}
+\section{Automated verification}
 
 \texttt{synaptic.dtx} is the source of truth. DocStrip uses
 \texttt{synaptic.ins} to generate the installable \texttt{.sty} and
@@ -187,24 +238,55 @@ New public names should avoid common nouns. Compatibility aliases must use
 \texttt{tex/latex/synaptic/} are committed for zero-install use and must remain
 byte-identical to fresh extraction.
 
+The eighteen-group regression suite is organised as follows:
+
+{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l Y@{}}
+  \toprule
+  \textbf{Group} & \textbf{Coverage} \\
+  \midrule
+  \texttt{journal}, \texttt{lecture}, \texttt{notes}, \texttt{book} & core
+  mode behaviour, navigation, and defaults \\
+  \texttt{book-zh}, \texttt{lecture-zh}, \texttt{journal-zh},
+  \texttt{language-zh} & Chinese labels, CJK fonts, and bilingual layering \\
+  \texttt{themes} & cycling all five themes and a custom theme \\
+  \texttt{color-mode-print}, \texttt{options} & print and monochrome delivery \\
+  \texttt{customization} & runtime setup, custom theorems \\
+  \texttt{toc-layouts}, \texttt{title-layouts} & TOC and title compositions \\
+  \texttt{layout-profiles} & density, measure, binding offset \\
+  \texttt{book-full} & complete title sequence and matter workflow \\
+  \texttt{lecture-continuous} & continuous and separate numbering profiles \\
+  \texttt{extra-math} & optional Unicode math alphabets \\
+  \bottomrule
+\end{tabularx}}
+
+Each group typesets a document with the standard engine and compares the
+normalised log against its committed expectation file. CI runs the suite and
+additionally builds the documented source, four manuals, and all examples,
+failing on warnings, overfull boxes, or missing characters.
+
+\section{Source and release workflow}
+
 \begin{verbatim}
-l3build unpack
-l3build check
-l3build doc
-l3build ctan
+l3build unpack     # regenerate .sty/.def into build/local
+l3build check      # run the regression suite
+l3build doc        # build the documented source, manuals
+l3build ctan       # create TDS and CTAN archives
+l3build install   # copy package files into the texmf tree
+l3build uninstall # remove a previous installation
 \end{verbatim}
 
-The nine-group regression suite covers journal titles and statements, book
-matter and chapter numbering, lecture navigation and boxes, notes cards and
-standard metadata, structural options, custom themes, and Chinese typesetting. CI also builds
-the documented source, four manuals, and all examples.
+The \texttt{ctan} target emits \texttt{synaptic-ctan.zip} (the source tree
+plus generated documentation and examples) together with the nested
+\texttt{synaptic.tds.zip} in TDS layout. Installation replaces the previous
+version in place; because the generated file set is stable,
+\texttt{l3build install} is safe to rerun after every release.
 
 \section{Compatibility notes}
 
-Version 2.2 retains lower-case book matter helpers and generic lecture box names
-as conditional v2.0 aliases. The former \texttt{theme} key remains the palette
-selection interface. New documents should use the namespaced public
-forms. Removed \texttt{style=} and \texttt{color=} options remain explicit
-errors with migration hints.
+Version 2.3 retains the v2.2 API unchanged. Lower-case book matter helpers and
+generic lecture box names remain conditional v2.0 aliases, the \texttt{theme}
+key remains the palette selection interface, and new documents should use the
+namespaced public forms. Removed \texttt{style=} and \texttt{color=} options
+remain explicit errors with migration hints.
 
 \end{document}

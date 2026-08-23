@@ -14,11 +14,11 @@
 
 \SynapticHeader{synaptic 技术参考}
 \SynapticSubHeader{架构、不变量与发布流程}
-\SynapticPreprint{v2.2.0}
+\SynapticPreprint{v2.3.0}
 \SynapticTitle{synaptic 技术参考}
 \SynapticAuthor{synaptic 项目}
 \SynapticAffiliation{开源 LaTeX 社区}
-\SynapticSubject{synaptic 2.2.0 技术参考}
+\SynapticSubject{synaptic 2.3.0 技术参考}
 \SynapticKeywords{LaTeX3, 架构, l3build, 回归测试}
 
 \begin{abstract}
@@ -50,9 +50,31 @@ synaptic.sty
 
 薄封装层把用户选项转发给 \texttt{synaptic-base}，并定义少量不易冲突的便捷命令。
 基础模块负责检查引擎与文档类、解析选项、加载标签、验证书籍模式，然后分发核心
-模块和模式模块。
+模块和模式模块。语言定义文件先于所有模块加载，保证标签常量随处可用。
 
-\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+\subsection{模块职责}
+
+\noindent{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+  \toprule
+  \textbf{模块} & \textbf{类别} & \textbf{职责} \\
+  \midrule
+  \texttt{synaptic.sty} & 封装 & 选项转发、文档辅助命令、致谢 \\
+  \texttt{synaptic-base.sty} & 核心 & 引擎/文档类检查、键系统、分发 \\
+  \texttt{synaptic-lang-*.def} & 数据 & 双语标签常量 \\
+  \texttt{synaptic-color.sty} & 核心 & 主题登记、语义令牌、交付模式 \\
+  \texttt{synaptic-fonts.sty} & 核心 & 字体组合、自动选择、CJK 字体 \\
+  \texttt{synaptic-layout.sty} & 核心 & 页面几何、排版、标题、编号 \\
+  \texttt{synaptic-theorem.sty} & 核心 & 定理样式、环境、证明 \\
+  \texttt{synaptic-title.sty} & 核心 & 元数据模型与四种标题渲染器 \\
+  \texttt{synaptic-journal.sty} & 模式 & 期刊导航与声明 \\
+  \texttt{synaptic-book.sty} & 模式 & 章/部分样式、前后文命令 \\
+  \texttt{synaptic-lecture.sty} & 模式 & 信息条、教学卡片、导航 \\
+  \texttt{synaptic-boxes.sty} & 模式 & 例题/注记/警告/练习卡片 \\
+  \texttt{synaptic-notes.sty} & 模式 & 笔记信息条与知识卡 \\
+  \bottomrule
+\end{tabularx}}
+
+\noindent{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
   \toprule
   \textbf{模式} & \textbf{文档类不变量} & \textbf{附加模块} \\
   \midrule
@@ -61,7 +83,7 @@ synaptic.sty
   lecture & KOMA 文章/报告类 & lecture, boxes \\
   notes & KOMA 文章/报告类 & notes \\
   \bottomrule
-\end{tabularx}
+\end{tabularx}}
 
 \section{配置生命周期}
 
@@ -72,6 +94,24 @@ synaptic.sty
 
 书籍模式要求章和前文接口同时存在。LuaLaTeX 与 KOMA-Script 要求在不满足时立即给出
 致命诊断，而不是延迟到后续的未定义命令。
+
+\section{设计不变量}
+
+以下性质由实现有意保证，并由回归套件守护。
+
+\begin{itemize}
+  \item \textbf{确定性排版}。字体自动选择与主题派生只依赖已安装字体；行距、
+    版心与标题尺寸全部显式。
+  \item \textbf{不全局屏蔽坏盒子}。emergencystretch 与 tolerance 经过调校，
+    溢出与欠满警告保留给作者。
+  \item \textbf{不强制纸张、不重置页码}。几何布局跟随文档类；期刊标题不会
+    悄悄重新开始页码。
+  \item \textbf{只做一次 Unicode 转换}。PDF 元数据以源词元交给 hyperref；
+    预先转换会造成双重编码。
+  \item \textbf{公开名抗冲突}。通用名仅在空闲时安装。
+  \item \textbf{语义颜色架构}。组件只消费语义令牌；主题与交付模式只改变
+    令牌，不改变组件逻辑。
+\end{itemize}
 
 \section{子系统}
 
@@ -106,7 +146,9 @@ STIX Two、Latin Modern。显式选择不完整字体组时，报错会列出必
 不再用全局方式隐藏坏盒子。
 
 KOMA 标题字体与间距在 \texttt{begindocument/before} 钩子中安装。hyperref、bookmark、
-microtype、图表标题标点、列表与模式化公式编号由布局模块统一配置。
+microtype、图表标题标点、列表与模式化公式编号由布局模块统一配置。各模式模块通过共享
+辅助函数安装页眉发丝线（\texttt{headsepline}），并用专用的 KOMA
+\texttt{headsepline} 字体着色，使装饰线比页眉文字更浅。
 
 \subsection{标题与元数据}
 
@@ -123,11 +165,12 @@ PDF 信息以源词元传给 hyperref，由 hyperref 只执行一次 Unicode PDF
 thmtools 在 amsthm 之上定义 plain、definition 和 remark 三种样式。内置定理家族
 使用模式化共享计数器：书籍默认按章，其他模式默认按节。讲义模式用 tcolorbox 包装核心
 定理环境；例题与练习可共享定理计数器，警告与注记默认不编号。新公开短名使用
-\texttt{syn} 前缀；v2.0 通用名是有条件的兼容层。
+\texttt{syn} 前缀；v2.0 通用名是有条件的兼容层。独立编号档案中的 tcolorbox
+定理计数器遵循 \texttt{tcb@cnt@<环境名>} 命名约定。
 
 \section{命名空间规则}
 
-\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+\noindent{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
   \toprule
   \textbf{范围} & \textbf{模式} & \textbf{示例} \\
   \midrule
@@ -139,7 +182,7 @@ thmtools 在 amsthm 之上定义 plain、definition 和 remark 三种样式。�
   全局登记表 & \texttt{\textbackslash g\_synaptic\_\ldots} & 主题属性表 \\
   标签常量 & \texttt{\textbackslash c\_synaptic\_label\_\ldots} & 定理标签 \\
   \bottomrule
-\end{tabularx}
+\end{tabularx}}
 
 新公开名应避免常见名词。兼容别名必须使用 \verb|\ProvideDocumentCommand| 或显式存在性检查。
 
@@ -150,28 +193,58 @@ thmtools 在 amsthm 之上定义 plain、definition 和 remark 三种样式。�
   \item 新字体组需同时增加完整性谓词、设置函数、显式分支，并明确其在自动链中的位置。
   \item 新模式需扩展基础键系统、布局分发和模块加载器，并声明、测试必需的 KOMA 能力。
   \item 视觉扩展应基于语义颜色令牌，而不是固定 RGB 值。
+  \item 每项扩展都应同步增加回归测试；测试套件是上述不变量的守护者。
 \end{itemize}
 
-\section{源码与发布流程}
+\section{自动化验证}
 
 \texttt{synaptic.dtx} 是唯一源头。DocStrip 通过 \texttt{synaptic.ins} 生成可安装的
 \texttt{.sty} 和 \texttt{.def} 文件。\texttt{tex/latex/synaptic/} 下的生成副本为了零安装使用而
 提交，必须与新解包结果字节级一致。
 
+十八组回归测试的组织方式如下：
+
+{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l Y@{}}
+  \toprule
+  \textbf{测试组} & \textbf{覆盖内容} \\
+  \midrule
+  \texttt{journal}、\texttt{lecture}、\texttt{notes}、\texttt{book} & 核心模式
+  行为、导航与默认值 \\
+  \texttt{book-zh}、\texttt{lecture-zh}、\texttt{journal-zh}、
+  \texttt{language-zh} & 中文标签、CJK 字体与双语层次 \\
+  \texttt{themes} & 五种内置主题与自定义主题循环 \\
+  \texttt{color-mode-print}、\texttt{options} & 打印与单色交付模式 \\
+  \texttt{customization} & 运行时设置与自定义定理 \\
+  \texttt{toc-layouts}、\texttt{title-layouts} & 目录与标题构成 \\
+  \texttt{layout-profiles} & 密度、版心尺度、装订偏移 \\
+  \texttt{book-full} & 完整标题序列与前后文流程 \\
+  \texttt{lecture-continuous} & 连续与独立编号档案 \\
+  \texttt{extra-math} & 可选 Unicode 数学字母表 \\
+  \bottomrule
+\end{tabularx}}
+
+每组使用标准引擎排版一份文档，并将规范化日志与已提交的期望文件比较。
+CI 运行套件并额外构建源码文档、四份手册和所有示例，出现警告、溢出盒子或缺字符即失败。
+
+\section{源码与发布流程}
+
 \begin{verbatim}
-l3build unpack
-l3build check
-l3build doc
-l3build ctan
+l3build unpack     # 重新生成 .sty/.def 到 build/local
+l3build check      # 运行十八组回归套件
+l3build doc        # 构建源码文档、手册与示例
+l3build ctan       # 生成 TDS 与 CTAN 压缩包
+l3build install    # 复制宏包文件到用户 texmf 目录树
+l3build uninstall  # 移除先前安装
 \end{verbatim}
 
-九组回归测试覆盖论文标题与声明、书籍前后文和章级编号、讲义导航与盒子、笔记卡和
-标准元数据、结构选项、自定义主题与中文排版。CI 同时构建源码文档、四份手册和所有示例。
+\texttt{ctan} 目标生成 \texttt{synaptic-ctan.zip}（源码树与生成文档、示例）以及内嵌的
+\texttt{synaptic.tds.zip}（TDS 布局）。安装会就地替换旧版本；由于生成文件集合稳定，
+每次发布后重复执行 \texttt{l3build install} 都是安全的。
 
 \section{兼容性说明}
 
-2.2 保留小写书籍前后文命令和讲义盒子通用名，但仅作为有条件的 v2.0 兼容别名。
-新文档应使用带命名空间的公开形式。已移除的 \texttt{style=} 和 \texttt{color=} 选项仍会报错，
-并提供迁移提示。
+2.3 保持 2.2 的公开 API 不变。小写书籍前后文命令和讲义盒子通用名仍作为有条件的
+v2.0 兼容别名保留，\texttt{theme} 键仍是调色板选择接口，新文档应使用带命名空间的
+公开形式。已移除的 \texttt{style=} 和 \texttt{color=} 选项仍会报错，并提供迁移提示。
 
 \end{document}

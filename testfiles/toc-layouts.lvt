@@ -1,0 +1,23 @@
+\input regression-test.tex
+\documentclass[11pt]{scrartcl}
+\usepackage[mode=journal,theme=ocean,fontset=lm,toc=true,toc-layout=top]{synaptic}
+
+\SynapticTitle{TOC Layout Regression}
+\SynapticAuthor{Test Author}
+
+\begin{document}
+\START
+\ExplSyntaxOn
+\TYPE{toc=\synaptic_if_toc:TF{true}{false}}
+\TYPE{toc-layout=\synaptic_toc_layout:}
+\ExplSyntaxOff
+\SynapticMakeTitle
+\section{First}
+\section{Second}
+\subsection{Detail}
+\ExplSyntaxOn
+\TYPE{toc-final=\synaptic_toc_layout:}
+\ExplSyntaxOff
+\TYPE{top-toc=ok}
+\END
+\end{document}

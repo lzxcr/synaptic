@@ -16,18 +16,19 @@
 \SynapticNewTheorem[remark]{observation}{Observation}
 \SynapticHeader{Synaptic User Manual}
 \SynapticSubHeader{Reliable academic typesetting with LuaLaTeX}
-\SynapticPreprint{v2.2.0}
+\SynapticPreprint{v2.3.0}
 \SynapticTitle{The synaptic Package: User Manual}
 \SynapticAuthor{synaptic project}
 \SynapticAffiliation{Open-source LaTeX community}
 \SynapticEmail{synaptic@example.com}
-\SynapticSubject{User manual for synaptic version 2.2.0}
+\SynapticSubject{User manual for synaptic version 2.3.0}
 \SynapticKeywords{synaptic, LaTeX3, LuaLaTeX, academic typesetting}
 
 \begin{abstract}
   \textbf{synaptic} is a modular LaTeX3 design system for journal articles,
   books, lecture material, and compact notes. This manual describes its
-  requirements, safe configuration model, metadata API, theorem system, and
+  installation, requirements, safe configuration model, typographic system,
+  metadata API, theorem system, theme and customization tools, and
   mode-specific features.
 \end{abstract}
 
@@ -36,15 +37,8 @@
 
 \section{Getting started}
 
-The package requires LuaLaTeX and a KOMA-Script class. The repository ships
-generated package files, so a local checkout can be used without installation:
-
-\begin{verbatim}
-export TEXINPUTS=/path/to/synaptic/tex/latex/synaptic//:$TEXINPUTS
-lualatex document.tex
-\end{verbatim}
-
-A minimal article is:
+The package requires LuaLaTeX and a KOMA-Script class. If the package is
+installed in your TeX tree, a document needs nothing more than:
 
 \begin{verbatim}
 \documentclass{scrartcl}
@@ -62,9 +56,46 @@ Text.
 Use \texttt{scrbook} for book mode. The selected class controls the paper size;
 synaptic does not silently force A4.
 
+\subsection{Using a checkout without installation}
+
+The repository ships generated package files. Point \texttt{TEXINPUTS} at them:
+
+\begin{verbatim}
+export TEXINPUTS=/path/to/synaptic/tex/latex/synaptic//:$TEXINPUTS
+lualatex document.tex
+\end{verbatim}
+
+\subsection{System installation}
+
+A TeX Live installation can install (and, when versions change, replace) the
+bundle from the repository root:
+
+\begin{verbatim}
+l3build install   # copy into the user's texmf tree
+l3build uninstall # remove a previous installation
+l3build ctan      # produce TDS/CTAN archives
+\end{verbatim}
+
+Any standard \texttt{texmf} tree works; the generated files belong in
+\texttt{tex/latex/synaptic/}. Archives from \texttt{l3build ctan} unpack
+directly into the same structure.
+
+\subsection{Requirements}
+
+\begin{itemize}
+  \item LuaLaTeX; pdfLaTeX and XeLaTeX are rejected with an explicit error.
+  \item A KOMA-Script class (\texttt{scrartcl}, \texttt{scrreprt}, or
+    \texttt{scrbook}).
+  \item A recent TeX distribution with \texttt{expl3}, \texttt{fontspec},
+    \texttt{unicode-math}, \texttt{geometry}, \texttt{microtype},
+    \texttt{thmtools}, and the other standard dependencies.
+  \item \texttt{tcolorbox} and PGF for teaching and notes cards; \texttt{ctex}
+    and a CJK font for \texttt{lang=zh}.
+\end{itemize}
+
 \section{Configuration}
 
-\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+\noindent{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
   \toprule
   \textbf{Key} & \textbf{Default} & \textbf{Values and purpose} \\
   \midrule
@@ -84,7 +115,7 @@ synaptic does not silently force A4.
   \texttt{extra-math} & false & convenience Unicode math alphabets \\
   \texttt{fine-breaking} & true & moderate emergency stretch and tolerance \\
   \bottomrule
-\end{tabularx}
+\end{tabularx}}
 
 Only \texttt{theme}, \texttt{toc}, and \texttt{toc-layout} are safe runtime
 settings:
@@ -99,7 +130,7 @@ half-reconfigured document.
 
 \subsection{Modes}
 
-\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+\noindent{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
   \toprule
   \textbf{Mode} & \textbf{Class} & \textbf{Purpose} \\
   \midrule
@@ -108,7 +139,23 @@ half-reconfigured document.
   lecture & scrartcl/scrreprt & Course masthead and semantic teaching system \\
   notes & scrartcl & Compact masthead and lightweight knowledge cards \\
   \bottomrule
-\end{tabularx}
+\end{tabularx}}
+
+\textbf{journal} renders an inline article heading on the first page. The
+running head carries the first author and short title, and the block supports
+abstract, keywords, arXiv, correspondence, publication information, and
+statement sections for journal submissions.
+
+\textbf{book} renders a half title, formal title page, verso block, and
+optional dedication, then provides front/main/back matter helpers, part pages,
+chapter subtitles, epigraphs, and mirrored duplex running heads.
+
+\textbf{lecture} renders a course masthead (course code, title, lecturer,
+semester, lecture number) and wraps theorems and examples in a sharp card
+system. Learning goals and lecture summaries frame each teaching unit.
+
+\textbf{notes} renders a compact masthead with an optional tag line and
+supports class-level two-column composition with balanced final columns.
 
 \subsection{Fonts}
 
@@ -118,11 +165,64 @@ clear error if a required companion font is absent. Chinese documents prefer
 Noto Serif/Sans CJK SC and fall back to the Fandol fonts distributed with TeX
 Live.
 
+\section{The typographic system}
+
+Synaptic's default appearance is deterministic rather than decorative. A
+handful of design decisions repeat throughout every mode.
+
+\subsection{Colour delivery}
+
+{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+  \toprule
+  \textbf{color-mode} & \textbf{Use} & \textbf{Effect} \\
+  \midrule
+  screen & on-screen reading & full theme colours, coloured links \\
+  print & paper output & theme colours, dark (print-safe) links \\
+  mono & monochrome delivery & black-grey tokens only; semantic colours map
+  to greys \\
+  \bottomrule
+\end{tabularx}}
+
+\subsection{Density and measure}
+
+\textbf{density} tunes line spacing in three steps: \texttt{compact} for dense
+reference material, \texttt{balanced} as the mode-aware default, and
+\texttt{airy} for slide-like handouts. \textbf{measure} overrides the
+mode-default column width: \texttt{narrow} for long prose, \texttt{standard}
+for journals, \texttt{wide} for design-driven layouts. In book mode, measure
+adjusts the mirrored inner/outer margins instead of breaking duplex
+symmetry.
+
+\subsection{Title composition}
+
+\textbf{title-layout} selects how each mode renders its title area. The
+\texttt{auto} value resolves to \texttt{inline} (journal), \texttt{cover}
+(book), and \texttt{compact} (lecture, notes). \texttt{page} dedicates a
+full title page and \texttt{inline} forces the first-page composition.
+Journal titles are underlined by an editorial double rule; book titles rest
+on a short primary bar; lecture and notes mastheads use a single rule whose
+colour follows the theme.
+
+\subsection{Navigation}
+
+Every mode draws a hairline beneath its running heads. The hairline uses a
+separate, deliberately lighter decorative token so navigation stays quiet.
+Page numbers sit centred in the footer; book mode additionally respects outer
+running heads and duplex blank pages.
+
+\subsection{Cards and rules}
+
+Teaching and notes cards share one visual language: square corners, a west
+accent bar tinted with the semantic colour of the card (primary, secondary,
+warning, or success), and a light surface with a readable title colouring.
+Rules and hairlines derive from the theme's primary colour at low tint, so
+decoration never competes with text.
+
 \section{Title and PDF metadata}
 
 All four modes share the metadata model and render it differently:
 
-\noindent\begin{tabularx}{\textwidth}{@{}l Y@{}}
+\noindent{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l Y@{}}
   \toprule
   \textbf{Command} & \textbf{Meaning} \\
   \midrule
@@ -142,7 +242,7 @@ All four modes share the metadata model and render it differently:
   \SynapticCmd{SynapticDedicated} & Dedication \\
   \SynapticCmd{SynapticMakeTitle} & Validate and render all title data \\
   \bottomrule
-\end{tabularx}
+\end{tabularx}}
 
 Journal mode accepts publication information, correspondence, and author notes;
 book mode accepts half-title, publisher, edition, ISBN, and copyright fields;
@@ -185,7 +285,7 @@ The available styles are \texttt{plain}, \texttt{definition}, and
   \(\symcal{F}\), and \(\symfrak{g}\) are available.
 \end{observation}
 
-\section{Themes and lecture boxes}
+\section{Themes and customization}
 
 Themes may be switched with \verb|\SynapticUseTheme{name}|. A custom theme is
 defined and activated using xcolor expressions:
@@ -194,13 +294,42 @@ defined and activated using xcolor expressions:
 \SynapticDefineTheme{brand}{blue!70!black}{gray!80!black}[orange]
 \end{verbatim}
 
-Lecture mode adds the collision-resistant environments \SynapticPkg{synexample},
-\SynapticPkg{synremark}, \SynapticPkg{synwarning}, \SynapticPkg{synexercise},
-and \SynapticPkg{synbox}. Examples and exercises share the theorem counter by
-default; remarks and warnings are unnumbered. The first optional argument is a
-title and the second is a label. The generic v2.0 aliases are created only when
-their names are free. Course units may also use \texttt{synlearninggoals} and
-\texttt{synlecturesummary}.
+The definition arguments are primary, secondary, and optional accent colours.
+The semantic tokens below are always available for extensions and always
+derive from the active theme:
+
+{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
+  \toprule
+  \textbf{Token} & \textbf{Role} & \textbf{Use} \\
+  \midrule
+  \texttt{syn-primary} & brand colour & headings, title rules, accents \\
+  \texttt{syn-secondary} & ink colour & muted text, remark tones \\
+  \texttt{syn-accent} & accent colour & optional emphasis \\
+  \texttt{syn-text-dark} & body ink & readable text \\
+  \texttt{syn-muted-text} & readable muted & auxiliary labels \\
+  \texttt{syn-surface} & card background & boxes and surfaces \\
+  \texttt{syn-border} & card border & box frames \\
+  \texttt{syn-rule} & decorative hairline & separators \\
+  \texttt{syn-danger} & semantic danger & warnings on the red side \\
+  \texttt{syn-warning} & semantic warning & warnings on the amber side \\
+  \texttt{syn-success} & semantic success & exercises, todo lists \\
+  \bottomrule
+\end{tabularx}}
+
+Lecture mode adds collision-resistant teaching environments. Each takes an
+optional title and an optional label:
+
+\begin{itemize}\itemsep0pt
+  \item \SynapticPkg{synexample} --- worked examples, share the theorem
+    counter by default
+  \item \SynapticPkg{synremark} --- remarks, unnumbered by default
+  \item \SynapticPkg{synwarning} --- warnings, unnumbered by default
+  \item \SynapticPkg{synexercise} --- exercises, share the theorem counter
+  \item \SynapticPkg{synbox} --- generic box with an optional title
+\end{itemize}
+
+The generic v2.0 aliases are created only when their names are free. Course
+units may also use \texttt{synlearninggoals} and \texttt{synlecturesummary}.
 
 \section{Book workflow and acknowledgments}
 
@@ -213,11 +342,57 @@ list/appendix helpers complete the long-form workflow. Notes mode provides
 \SynapticCmd{SynapticAcknowledgments} command creates a chapter in book mode and
 a section in other modes. Its starred form suppresses the TOC entry.
 
+\section{Troubleshooting}
+
+\begin{itemize}
+  \item \textbf{``The synaptic package requires LuaLaTeX''} --- you are running
+    pdfLaTeX or XeLaTeX. Engines other than LuaLaTeX are rejected on purpose.
+  \item \textbf{``requires a KOMA-Script document class''} --- load the package
+    with \texttt{scrartcl}, \texttt{scrreprt}, or \texttt{scrbook}.
+  \item \textbf{``mode=book requires a chapter-based class''} --- use
+    \texttt{scrbook} (or another KOMA class defining \texttt{chapter} and
+    \texttt{frontmatter}).
+  \item \textbf{``Incomplete XCharter/Libertinus/STIX Two font bundle''} --- the
+    explicit \texttt{fontset} is missing a companion font. Install the bundle,
+    or use \texttt{fontset=auto} to fall back automatically.
+  \item \textbf{Options frozen after loading} --- \texttt{mode}, \texttt{lang},
+    \texttt{fontset}, and typography keys are structural. Re-select them in
+    \verb|\usepackage|; do not attempt runtime changes.
+  \item \textbf{No CJK font found} --- install Noto CJK SC or the Fandol fonts
+    used as the TeX Live fallback.
+  \item \textbf{``Document title is empty''} --- set \verb|\SynapticTitle| (or
+    \verb|\title|) before calling \verb|\SynapticMakeTitle|.
+  \item \textbf{Paper size unwanted} --- the package never overrides the class
+    paper size; select it in the class options.
+\end{itemize}
+
+\section{Migrating from earlier versions}
+
+Version 2.x replaced the v1 option and command surface. The removed
+\texttt{style=} and \texttt{color=} options remain explicit errors with
+migration hints.
+
+{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l Y@{}}
+  \toprule
+  \textbf{v1} & \textbf{v2.3} \\
+  \midrule
+  \texttt{color=ocean} & \texttt{theme=ocean} \\
+  \texttt{style=modern/minimal} & \texttt{mode=journal/notes} \\
+  \texttt{\textbackslash title} & \SynapticCmd{SynapticTitle} \\
+  \texttt{\textbackslash author} & \SynapticCmd{SynapticAuthor} \\
+  \texttt{\textbackslash maketitle} & \SynapticCmd{SynapticMakeTitle} \\
+  \bottomrule
+\end{tabularx}}
+
+The v2.3 API is unchanged from v2.2. Lower-case book matter helpers and generic
+lecture box names remain conditional v2.0 compatibility aliases; new documents
+should use the namespaced public forms.
+
 \section{Development commands}
 
 \begin{verbatim}
 l3build unpack   # regenerate .sty and .def files from synaptic.dtx
-l3build check    # run the LuaLaTeX regression suite
+l3build check    # run the LuaLaTeX regression suite (18 groups)
 l3build doc      # build the documented source and manuals
 l3build ctan     # create release archives
 \end{verbatim}

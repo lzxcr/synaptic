@@ -1,0 +1,88 @@
+This is a generated file for the l3build validation system.
+Don't change this file in any respect.
+mode=journal
+language=zh
+Package hyperref Info: Option `unicode' set `true' on input line ....
+LaTeX Font Info:    Font shape `LTJY3/NotoSerifCJKSC(0)/m/n' will be
+(Font)              scaled to size 9.49997pt on input line ....
+Package fontspec Info: 
+(fontspec)             NotoSansCJKSC Regular scale = 0.95.
+Package fontspec Info: 
+(fontspec)             NotoSansCJKSC Regular scale = 0.95.
+(load cache: extra_notosanscjksc-bold.luc)
+Package fontspec Info: 
+(fontspec)             NotoSansCJKSC Bold scale = 0.95.
+Package fontspec Info: 
+(fontspec)             NotoSansCJKSC Regular scale = 0.95.
+Package fontspec Info: 
+(fontspec)             NotoSansCJKSC Bold scale = 0.95.
+Package fontspec Info: 
+(fontspec)             Font family 'NotoSansCJKSC(0)' created for font 'NotoSansCJKSC' with options [NFSSEncoding=LTJY3,JFM=zh_CN/quanjiao,UprightFont={* Regular},BoldFont={* Bold},ItalicFont={* Regular},BoldItalicFont={* Bold},Scale={0.95},LTJFONTUID=2].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.: <->s*[0.95]"name:NotoSansCJKSC Regular:mode=node;script=latn;language=dflt;jfm=zh_CN/quanjiao;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.: <->s*[0.95]"name:NotoSansCJKSC Bold:mode=node;script=latn;language=dflt;jfm=zh_CN/quanjiao;"
+(fontspec)             - 'italic' (m/it) with NFSS spec.: <->s*[0.95]"name:NotoSansCJKSC Regular:mode=node;script=latn;language=dflt;jfm=zh_CN/quanjiao;"
+(fontspec)             - 'bold italic' (b/it) with NFSS spec.: <->s*[0.95]"name:NotoSansCJKSC Bold:mode=node;script=latn;language=dflt;jfm=zh_CN/quanjiao;"
+LaTeX Font Info:    Font shape `LTJY3/NotoSansCJKSC(0)/m/n' will be
+(Font)              scaled to size 9.49997pt on input line ....
+LaTeX Font Info:    Font shape `LTJY3/NotoSansCJKSC(0)/b/n' will be
+(Font)              scaled to size 9.49997pt on input line ....
+(load cache: extra_lmroman17-regular.luc)
+LaTeX Font Info:    Font shape `LTJY3/NotoSerifCJKSC(0)/m/n' will be
+(Font)              scaled to size 16.41594pt on input line ....
+(load cache: extra_lmroman12-bold.luc)
+LaTeX Font Info:    Font shape `LTJY3/NotoSerifCJKSC(0)/b/n' will be
+(Font)              scaled to size 16.41594pt on input line ....
+(load cache: extra_lmroman12-regular.luc)
+LaTeX Font Info:    Font shape `LTJY3/NotoSerifCJKSC(0)/m/n' will be
+(Font)              scaled to size 11.39996pt on input line ....
+(load cache: extra_lmsans12-regular.luc)
+LaTeX Font Info:    Font shape `LTJY3/NotoSansCJKSC(0)/m/n' will be
+(Font)              scaled to size 11.39996pt on input line ....
+LaTeX Font Info:    Font shape `LTJY3/NotoSansCJKSC(0)/b/n' will be
+(Font)              scaled to size 11.39996pt on input line ....
+LaTeX Font Info:    Font shape `LTJY3/NotoSerifCJKSC(0)/m/n' will be
+(Font)              scaled to size 7.59998pt on input line ....
+LaTeX Font Info:    Font shape `LTJY3/NotoSerifCJKSC(0)/m/n' will be
+(Font)              scaled to size 5.69998pt on input line ....
+LaTeX Font Info:    Font shape `LTJY3/NotoSansCJKSC(0)/b/n' will be
+(Font)              scaled to size 7.59998pt on input line ....
+LaTeX Font Info:    Font shape `LTJY3/NotoSerifCJKSC(0)/m/n' will be
+(Font)              scaled to size 6.64998pt on input line ....
+LaTeX Font Info:    Font shape `LTJY3/NotoSerifCJKSC(0)/m/n' will be
+(Font)              scaled to size 4.74998pt on input line ....
+LaTeX Font Info:    Font shape `LTJY3/NotoSerifCJKSC(0)/m/it' will be
+(Font)              scaled to size 9.49997pt on input line ....
+Package fontspec Info: 
+(fontspec)             NotoSansMonoCJKSC scale = 0.95.
+Package fontspec Info: 
+(fontspec)             Could not resolve font "NotoSansMonoCJKSC/BI" (it probably doesn't exist).
+(load cache: extra_notosansmonocjksc-bold.luc)
+Package fontspec Info: 
+(fontspec)             Could not resolve font "NotoSansMonoCJKSC/I" (it probably doesn't exist).
+Package fontspec Info: 
+(fontspec)             NotoSansMonoCJKSC scale = 0.95.
+Package fontspec Info: 
+(fontspec)             NotoSansMonoCJKSC/B scale = 0.95.
+Package fontspec Info: 
+(fontspec)             Font family 'NotoSansMonoCJKSC(0)' created for font 'NotoSansMonoCJKSC' with options [NFSSEncoding=LTJY3,JFM=zh_CN/quanjiao,BoldFeatures={FakeBold=2},Scale={0.95},LTJFONTUID=3].
+(fontspec)              
+(fontspec)              This font family consists of the following NFSS series/shapes:
+(fontspec)              
+(fontspec)             - 'normal' (m/n) with NFSS spec.: <->s*[0.95]"name:NotoSansMonoCJKSC:mode=node;script=latn;language=dflt;jfm=zh_CN/quanjiao;"
+(fontspec)             - 'bold' (b/n) with NFSS spec.: <->s*[0.95]"name:NotoSansMonoCJKSC/B:mode=node;script=latn;language=dflt;jfm=zh_CN/quanjiao;embolden=2;"
+LaTeX Font Info:    Font shape `LTJY3/NotoSansMonoCJKSC(0)/m/n' will be
+(Font)              scaled to size 9.49997pt on input line ....
+LaTeX Font Info:    Font shape `LTJY3/NotoSansCJKSC(0)/m/n' will be
+(Font)              scaled to size 10.40245pt on input line ....
+LaTeX Font Info:    Font shape `LTJY3/NotoSansCJKSC(0)/b/n' will be
+(Font)              scaled to size 10.40245pt on input line ....
+LaTeX Font Info:    Font shape `LTJY3/NotoSerifCJKSC(0)/b/n' will be
+(Font)              scaled to size 11.39996pt on input line ....
+LaTeX Font Info:    Font shape `LTJY3/NotoSerifCJKSC(0)/b/n' will be
+(Font)              scaled to size 10.40245pt on input line ....
+Package hyperref Info: bookmark level for unknown theorem defaults to 0 on input line ....
+Package hyperref Info: bookmark level for unknown definition defaults to 0 on input line ....
+journal-zh=ok

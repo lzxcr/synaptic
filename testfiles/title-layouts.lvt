@@ -1,0 +1,21 @@
+\input regression-test.tex
+\documentclass[11pt]{scrartcl}
+\usepackage[mode=journal,theme=ocean,fontset=lm,title-layout=page]{synaptic}
+
+\SynapticTitle{Standalone Title Page Regression}
+\SynapticSubtitle{A dedicated full-page title composition}
+\SynapticAuthor{Test Author}
+\SynapticAffiliation{Regression Institute}
+\SynapticEmail{test@example.org}
+
+\begin{document}
+\START
+\ExplSyntaxOn
+\TYPE{title-layout=\synaptic_title_layout:}
+\ExplSyntaxOff
+\SynapticMakeTitle
+\section{After Title}
+Standalone title-page documents start cleanly on the second page.
+\TYPE{page-title-layout=ok}
+\END
+\end{document}

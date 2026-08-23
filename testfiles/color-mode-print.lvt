@@ -1,0 +1,20 @@
+\input regression-test.tex
+\documentclass[11pt]{scrartcl}
+\usepackage[mode=journal,theme=forest,fontset=lm,color-mode=print]{synaptic}
+
+\SynapticTitle{Print Delivery Regression}
+\SynapticAuthor{Test Author}
+\SynapticKeywords{print, delivery}
+
+\begin{document}
+\START
+\ExplSyntaxOn
+\TYPE{color-mode=\synaptic_color_mode:}
+\ExplSyntaxOff
+\SynapticMakeTitle
+\section{Print}
+The print delivery mode keeps semantic colours but darkens links for paper.
+\begin{theorem}Print-safe theorem colouring.\end{theorem}
+\TYPE{print-color-mode=ok}
+\END
+\end{document}
