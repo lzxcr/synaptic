@@ -25,7 +25,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic}{2026-08-13}{2.2.0}
+\ProvidesExplPackage{synaptic}{2026-08-27}{2.4.0}
   {Modern~Academic~Typesetting~Framework}
 
 \RequirePackageWithOptions{synaptic-base}
@@ -54,3 +54,5 @@
 
 \ProvideDocumentCommand{\acknowledgments}{s O{\c_synaptic_label_acknowledgments_tl}}
   { \IfBooleanTF{#1}{\SynapticAcknowledgments*[#2]}{\SynapticAcknowledgments[#2]} }
+
+

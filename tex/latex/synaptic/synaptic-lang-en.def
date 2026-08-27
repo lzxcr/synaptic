@@ -32,13 +32,23 @@
 \tl_const:Nn \c_synaptic_label_header_tl         { Prepared~for~submission~to~journal }
 \tl_const:Nn \c_synaptic_label_thm_tl            { Theorem }
 \tl_const:Nn \c_synaptic_label_lemma_tl          { Lemma }
-\tl_const:Nn \c_synaptic_label_prop_tl           { Proposition }
-\tl_const:Nn \c_synaptic_label_def_tl            { Definition }
+\tl_const:Nn \c_synaptic_label_proposition_tl    { Proposition }
+\tl_const:Nn \c_synaptic_label_definition_tl     { Definition }
 \tl_const:Nn \c_synaptic_label_proof_tl          { Proof }
 \tl_const:Nn \c_synaptic_label_example_tl        { Example }
 \tl_const:Nn \c_synaptic_label_remark_tl         { Remark }
 \tl_const:Nn \c_synaptic_label_warning_tl        { Warning }
 \tl_const:Nn \c_synaptic_label_exercise_tl       { Exercise }
+\tl_const:Nn \c_synaptic_label_corollary_tl      { Corollary }
+\tl_const:Nn \c_synaptic_label_axiom_tl          { Axiom }
+\tl_const:Nn \c_synaptic_label_conjecture_tl     { Conjecture }
+\tl_const:Nn \c_synaptic_label_claim_tl          { Claim }
+\tl_const:Nn \c_synaptic_label_property_tl       { Property }
+\tl_const:Nn \c_synaptic_label_criterion_tl      { Criterion }
+\tl_const:Nn \c_synaptic_label_convention_tl     { Convention }
+\tl_const:Nn \c_synaptic_label_problem_tl        { Problem }
+\tl_const:Nn \c_synaptic_label_solution_tl       { Solution }
+\tl_const:Nn \c_synaptic_label_note_tl           { Note }
 \tl_const:Nn \c_synaptic_label_acknowledgments_tl { Acknowledgments }
 \tl_const:Nn \c_synaptic_label_email_tl          { E-mail }
 \tl_const:Nn \c_synaptic_label_correspondence_tl { Correspondence }
@@ -51,3 +61,7 @@
 \tl_const:Nn \c_synaptic_label_question_tl       { Question }
 \tl_const:Nn \c_synaptic_label_todo_tl           { To~do }
 \tl_const:Nn \c_synaptic_colon_tl                { : }
+
+
+
+

@@ -145,10 +145,16 @@ STIX Two、Latin Modern。显式选择不完整字体组时，报错会列出必
 垂直节奏、列表间距、行距与段首缩进都是明确配置，
 不再用全局方式隐藏坏盒子。
 
-KOMA 标题字体与间距在 \texttt{begindocument/before} 钩子中安装。hyperref、bookmark、
+KOMA 标题字体与间距在 \texttt{begindocument/before} 钩子中安装，所有编号层级共用
+无衬线标题家族：\texttt{section} 用主色，\texttt{subsection} 用深色，
+\texttt{subsubsection} 更小且略微淡化，使层级一目了然。hyperref、bookmark、
 microtype、图表标题标点、列表与模式化公式编号由布局模块统一配置。各模式模块通过共享
 辅助函数安装页眉发丝线（\texttt{headsepline}），并用专用的 KOMA
 \texttt{headsepline} 字体着色，使装饰线比页眉文字更浅。
+
+目录通过 KOMA 的 \texttt{\string\DeclareTOCStyleEntry} 在其输出前立即细化：顶层条目
+以加粗主色重现将页面标题颜色，深层条目保持深色，并收紧编号对齐与垂直节奏。图表标题
+标签使用次要主题色。
 
 \subsection{标题与元数据}
 
@@ -163,10 +169,17 @@ PDF 信息以源词元传给 hyperref，由 hyperref 只执行一次 Unicode PDF
 \subsection{定理与盒子}
 
 thmtools 在 amsthm 之上定义 plain、definition 和 remark 三种样式。内置定理家族
-使用模式化共享计数器：书籍默认按章，其他模式默认按节。讲义模式用 tcolorbox 包装核心
-定理环境；例题与练习可共享定理计数器，警告与注记默认不编号。新公开短名使用
-\texttt{syn} 前缀；v2.0 通用名是有条件的兼容层。独立编号档案中的 tcolorbox
-定理计数器遵循 \texttt{tcb@cnt@<环境名>} 命名约定。
+（\texttt{theorem}、\texttt{lemma}、\texttt{proposition}、
+\texttt{definition}、\texttt{corollary}、\texttt{axiom}、\texttt{conjecture}、
+\texttt{claim}、\texttt{property}、\texttt{criterion}、\texttt{convention}、
+\texttt{problem}、\texttt{solution}、\texttt{example}、\texttt{remark} 与
+\texttt{note}）使用模式化共享计数器：书籍默认按章，其他模式默认按节。在
+\texttt{theorem-style=boxed} 之下，编号的陈述环境在 \texttt{\string\begin{document}}
+处由 tcolorbox 包装（主题色背景配西侧强调条）；\texttt{proof} 保持无框。
+\texttt{theorem-style=plain} 关闭该包装。讲义模式额外提供盒式卡片环境；例题与
+练习可共享定理计数器，警告与注记默认不编号。新公开短名使用 \texttt{syn} 前缀；
+v2.0 通用名是有条件的兼容层。独立编号档案中的 tcolorbox 定理计数器遵循
+\texttt{tcb@cnt@<环境名>} 命名约定。
 
 \section{命名空间规则}
 

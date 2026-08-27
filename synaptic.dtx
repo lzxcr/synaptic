@@ -21,7 +21,7 @@
 \hfuzz=6pt
 \AtBeginDocument{\hypersetup{pdftitle={synaptic bundle},
   linkcolor=blue!60!black,urlcolor=teal}}
-\ProvidesFile{synaptic.dtx}[2026-08-23 v2.3.0 synaptic documented source]
+\ProvidesFile{synaptic.dtx}[2026-08-27 v2.4.0 synaptic documented source]
 \EnableCrossrefs\CodelineIndex\RecordChanges
 \begin{document}
 \DocInput{synaptic.dtx}
@@ -45,6 +45,11 @@
 % renderer, added a hairline running-head separator in every mode, an
 % editorial double rule beneath journal titles, unified the card corner
 % treatment, and expanded the regression suite to eighteen test groups.}
+% \changes{v2.4.0}{2026-08-27}{Gave the theorem environments a refined
+% boxed presentation with a shared accent-bar treatment, added corollary,
+% axiom, conjecture, claim, property, criterion, convention, problem,
+% solution, example, remark, and note environments with bilingual labels,
+% and introduced the configurable \texttt{theorem-style} option.}
 % \textbf{synaptic} is a modular \LaTeX3 design system for academic documents.
 % It provides a clean, non-invasive API with mode-aware module loading
 % and deterministic font-bundle auto-detection through \textsf{fontspec}.
@@ -70,6 +75,7 @@
 % \texttt{color-mode}=screen, print, or mono;
 % \texttt{density}=compact, balanced, or airy;
 % \texttt{measure}=auto, narrow, standard, or wide;
+% \texttt{theorem-style}=boxed or plain;
 % \texttt{extra-math} and \texttt{fine-breaking} are booleans.
 % Structural keys are frozen after loading; only \texttt{theme},
 % \texttt{toc}, and \texttt{toc-layout} may change at runtime through
@@ -140,7 +146,7 @@
 %    \begin{macrocode}
 %<*base>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-base}{2026-08-23}{2.3.0}
+\ProvidesExplPackage{synaptic-base}{2026-08-27}{2.4.0}
   {Synaptic~Core~Infrastructure}
 
 \msg_new:nnn { synaptic } { luatex-required }
@@ -176,6 +182,7 @@
 \tl_new:N  \l_synaptic_color_mode_tl
 \tl_new:N  \l_synaptic_density_tl
 \tl_new:N  \l_synaptic_measure_tl
+\tl_new:N  \l_synaptic_theorem_style_tl
 \bool_new:N \l_synaptic_toc_bool
 \bool_new:N \l_synaptic_toc_explicit_bool
 \bool_new:N \l_synaptic_extra_math_bool
@@ -299,6 +306,11 @@
     measure / wide     .code:n = \tl_set:Nn \l_synaptic_measure_tl { wide },
     measure .initial:n = auto,
 
+    theorem-style .choice:,
+    theorem-style / boxed  .code:n = \tl_set:Nn \l_synaptic_theorem_style_tl { boxed },
+    theorem-style / plain  .code:n = \tl_set:Nn \l_synaptic_theorem_style_tl { plain },
+    theorem-style .initial:n = boxed,
+
     binding-offset .dim_set:N = \l_synaptic_binding_offset_dim,
     binding-offset .initial:n = 0pt,
 
@@ -359,6 +371,8 @@
       {Option~`density'~is~frozen~after~package~loading},
     measure .code:n = \PackageWarning{synaptic-base}
       {Option~`measure'~is~frozen~after~package~loading},
+    theorem-style .code:n = \PackageWarning{synaptic-base}
+      {Option~`theorem-style'~is~frozen~after~package~loading},
     binding-offset .code:n = \PackageWarning{synaptic-base}
       {Option~`binding-offset'~is~frozen~after~package~loading},
     unknown .code:n = \__synaptic_base_unknown_warning:n { \l_keys_key_tl },
@@ -387,6 +401,7 @@
 \cs_new:Npn \synaptic_color_mode: { \l_synaptic_color_mode_tl }
 \cs_new:Npn \synaptic_density: { \l_synaptic_density_tl }
 \cs_new:Npn \synaptic_measure: { \l_synaptic_measure_tl }
+\cs_new:Npn \synaptic_theorem_style: { \l_synaptic_theorem_style_tl }
 
 \cs_new_protected:Npn \synaptic_if_lang_zh:TF #1#2
   {
@@ -465,7 +480,7 @@
 %    \begin{macrocode}
 %<*color>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-color}{2026-08-23}{2.3.0}
+\ProvidesExplPackage{synaptic-color}{2026-08-27}{2.4.0}
   {Synaptic~Theme~Colour~System}
 
 \RequirePackage{xcolor}
@@ -581,7 +596,7 @@
 %    \begin{macrocode}
 %<*fonts>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-fonts}{2026-08-23}{2.3.0}
+\ProvidesExplPackage{synaptic-fonts}{2026-08-27}{2.4.0}
   {Synaptic~Font~System}
 
 \RequirePackage{fontspec}
@@ -817,7 +832,7 @@
 %    \begin{macrocode}
 %<*layout>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-layout}{2026-08-23}{2.3.0}
+\ProvidesExplPackage{synaptic-layout}{2026-08-27}{2.4.0}
   {Synaptic~Page~Layout}
 
 \RequirePackage{geometry}
@@ -1045,7 +1060,7 @@
 % ---------------------------------------------------------------------------
 \captionsetup{
   font      = small,
-  labelfont = {bf, sf},
+  labelfont = {bf, sf, color=syn-secondary},
   labelsep  = quad,
   skip      = 10pt
 }
@@ -1062,8 +1077,8 @@
 \AddToHook{begindocument/before}
   {
     \setkomafont{section}{\normalfont\large\bfseries\sffamily\color{syn-primary}}
-    \setkomafont{subsection}{\normalfont\normalsize\bfseries\sffamily}
-    \setkomafont{subsubsection}{\normalfont\normalsize\bfseries}
+    \setkomafont{subsection}{\normalfont\normalsize\bfseries\sffamily\color{syn-text-dark}}
+    \setkomafont{subsubsection}{\normalfont\small\bfseries\sffamily\color{syn-text-dark!85}}
 
     \RedeclareSectionCommand[
       beforeskip = -3.5ex plus -1ex minus -.2ex,
@@ -1077,6 +1092,54 @@
       beforeskip = -2.0ex plus -0.5ex minus -.1ex,
       afterskip  = 1.0ex plus .1ex
     ]{subsubsection}
+  }
+
+% ---------------------------------------------------------------------------
+% Table of contents.  Refine the vertical rhythm, number alignment, and entry
+% colour so the top level echoes the on-page heading colour while keeping
+% KOMA's clean dotted leaders and dark page numbers.  This must run
+% immediately before \tableofcontents is typeset: declarations made during
+% package loading are overridden by KOMA's own TOC initialisation.
+% ---------------------------------------------------------------------------
+\cs_new_protected:Npn \__synaptic_layout_toc_style:
+  {
+    \bool_if:NTF \l_synaptic_toc_bool
+      {
+        \clist_map_inline:nn { chapter, section }
+          {
+            \cs_if_exist:cT {l@##1}
+              {
+                \DeclareTOCStyleEntry[
+                  beforeskip   = 1.0em plus 0.2em,
+                  indent       = 0pt,
+                  dynnumwidth,
+                  entryformat  = {\bfseries\color{syn-primary}}
+                ]{tocline}{##1}
+              }
+          }
+        \clist_map_inline:nn { subsection }
+          {
+            \cs_if_exist:cT {l@##1}
+              {
+                \DeclareTOCStyleEntry[
+                  beforeskip  = 0.25em,
+                  indent      = 1.5em,
+                  entryformat = {\color{syn-text-dark}}
+                ]{tocline}{##1}
+              }
+          }
+        \clist_map_inline:nn { subsubsection }
+          {
+            \cs_if_exist:cT {l@##1}
+              {
+                \DeclareTOCStyleEntry[
+                  indent = 3em,
+                  entryformat = {\color{syn-text-dark!85}}
+                ]{tocline}{##1}
+              }
+          }
+      }
+      { }
   }
 
 % ---------------------------------------------------------------------------
@@ -1131,15 +1194,50 @@
 %    \begin{macrocode}
 %<*theorem>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-theorem}{2026-08-23}{2.3.0}
+\ProvidesExplPackage{synaptic-theorem}{2026-08-27}{2.4.0}
   {Synaptic~Theorem~Environments}
 
 \RequirePackage{amsthm}
 \RequirePackage{thmtools}
+\RequirePackage{tcolorbox}
+\tcbuselibrary{skins, breakable, theorems}
+\RequirePackage{needspace}
 
 % ---------------------------------------------------------------------------
 % Labels (defined in synaptic-lang-*.def, loaded by synaptic-base)
 % ---------------------------------------------------------------------------
+
+% ---------------------------------------------------------------------------
+% Theorem box presentation (collapsible to plain via theorem-style=plain)
+% ---------------------------------------------------------------------------
+\tcbset{
+  synaptic/theorem-box/.style={
+    enhanced,
+    breakable,
+    frame~hidden,
+    colback     = syn-surface,
+    coltext     = syn-text-dark,
+    left        = 10pt,
+    right       = 8pt,
+    top         = 7pt,
+    bottom      = 7pt,
+    arc         = 0pt,
+    before~skip = 9pt,
+    after~skip  = 9pt
+  },
+  synaptic/theorem-box-plain/.style={
+    synaptic/theorem-box,
+    borderline~west = {2pt}{0pt}{syn-primary}
+  },
+  synaptic/theorem-box-definition/.style={
+    synaptic/theorem-box,
+    borderline~west = {2pt}{0pt}{syn-primary}
+  },
+  synaptic/theorem-box-remark/.style={
+    synaptic/theorem-box,
+    borderline~west = {2pt}{0pt}{syn-secondary}
+  }
+}
 
 % ---------------------------------------------------------------------------
 % Theorem style (journal/academic default)
@@ -1180,23 +1278,23 @@
 % numbering by default; shorter modes use sections.  This keeps book labels
 % such as 2.3 rather than the unnecessarily deep 2.1.3.
 % ---------------------------------------------------------------------------
+\cs_new_protected:Npn \__synaptic_theorem_declare_sibling:nn #1#2
+  {
+    \cs_if_exist:cF {#1}
+      { \declaretheorem[style=#2,name=\use:c{c_synaptic_label_#1_tl},sibling=theorem]{#1} }
+  }
+
 \cs_new_protected:Npn \__synaptic_theorem_declare_siblings:
   {
-    \declaretheorem[
-      style=syn-theorem-plain,
-      name=\c_synaptic_label_lemma_tl,
-      sibling=theorem
-    ]{lemma}
-    \declaretheorem[
-      style=syn-theorem-plain,
-      name=\c_synaptic_label_prop_tl,
-      sibling=theorem
-    ]{proposition}
-    \declaretheorem[
-      style=syn-theorem-definition,
-      name=\c_synaptic_label_def_tl,
-      sibling=theorem
-    ]{definition}
+    \clist_map_inline:nn { lemma,proposition,corollary,axiom,conjecture,claim,property }
+      { \__synaptic_theorem_declare_sibling:nn {##1} { syn-theorem-plain } }
+    \clist_map_inline:nn { definition,criterion,convention,problem,solution }
+      { \__synaptic_theorem_declare_sibling:nn {##1} { syn-theorem-definition } }
+    \clist_map_inline:nn { remark,note }
+      { \__synaptic_theorem_declare_sibling:nn {##1} { syn-theorem-remark } }
+    \cs_if_exist:cF { example }
+      { \declaretheorem[style=syn-theorem-plain,
+          name=\c_synaptic_label_example_tl,sibling=theorem]{example} }
   }
 
 \cs_new_protected:Npn \__synaptic_theorem_declare_within:n #1
@@ -1218,16 +1316,25 @@
     \__synaptic_theorem_declare_siblings:
   }
 
+\cs_new_protected:Npn \__synaptic_theorem_declare_unnumbered_sibling:nn #1#2
+  {
+    \cs_if_exist:cF {#1}
+      { \declaretheorem[style=#2,name=\use:c{c_synaptic_label_#1_tl},numbered=no]{#1} }
+  }
+
 \cs_new_protected:Npn \__synaptic_theorem_declare_unnumbered:
   {
     \declaretheorem[style=syn-theorem-plain,
       name=\c_synaptic_label_thm_tl,numbered=no]{theorem}
-    \declaretheorem[style=syn-theorem-plain,
-      name=\c_synaptic_label_lemma_tl,numbered=no]{lemma}
-    \declaretheorem[style=syn-theorem-plain,
-      name=\c_synaptic_label_prop_tl,numbered=no]{proposition}
-    \declaretheorem[style=syn-theorem-definition,
-      name=\c_synaptic_label_def_tl,numbered=no]{definition}
+    \clist_map_inline:nn { lemma,proposition,corollary,axiom,conjecture,claim,property }
+      { \__synaptic_theorem_declare_unnumbered_sibling:nn {##1} { syn-theorem-plain } }
+    \clist_map_inline:nn { definition,criterion,convention,problem,solution }
+      { \__synaptic_theorem_declare_unnumbered_sibling:nn {##1} { syn-theorem-definition } }
+    \clist_map_inline:nn { remark,note }
+      { \__synaptic_theorem_declare_unnumbered_sibling:nn {##1} { syn-theorem-remark } }
+    \cs_if_exist:cF { example }
+      { \declaretheorem[style=syn-theorem-plain,
+          name=\c_synaptic_label_example_tl,numbered=no]{example} }
   }
 
 \str_case:VnF \l_synaptic_numbering_tl
@@ -1249,9 +1356,49 @@
   }
 
 % ---------------------------------------------------------------------------
+% Boxed theorem presentation (theorem-style=boxed, the default).  The tcolorbox
+% wrapping is applied at \begin{document} because the theorem environments are
+% finalised only then; wrapping during package loading would be overwritten.
+% ---------------------------------------------------------------------------
+\cs_new_protected:Npn \__synaptic_theorem_apply_boxes:
+  {
+    \str_if_eq:VnT \l_synaptic_theorem_style_tl { boxed }
+      {
+        \clist_map_inline:nn
+          { theorem,lemma,proposition,corollary,axiom,conjecture,claim,property,example }
+          {
+            \cs_if_exist:cT {##1}
+              {
+                \tcolorboxenvironment{##1}{synaptic/theorem-box-plain}
+                \AddToHook{env/##1/before}{\Needspace{7\baselineskip}}
+              }
+          }
+        \clist_map_inline:nn
+          { definition,criterion,convention,problem,solution }
+          {
+            \cs_if_exist:cT {##1}
+              {
+                \tcolorboxenvironment{##1}{synaptic/theorem-box-definition}
+                \AddToHook{env/##1/before}{\Needspace{6\baselineskip}}
+              }
+          }
+        \clist_map_inline:nn
+          { remark,note }
+          {
+            \cs_if_exist:cT {##1}
+              {
+                \tcolorboxenvironment{##1}{synaptic/theorem-box-remark}
+                \AddToHook{env/##1/before}{\Needspace{5\baselineskip}}
+              }
+          }
+      }
+  }
+\AddToHook{begindocument/before}{\__synaptic_theorem_apply_boxes:}
+
+% ---------------------------------------------------------------------------
 % \SynapticNewTheorem
 % ---------------------------------------------------------------------------
-\NewDocumentCommand{\SynapticNewTheorem}{O{plain} m m}
+\cs_new_protected:Npn \__synaptic_theorem_declare_custom:nnn #1#2#3
   {
     \str_case:nnF {#1}
       {
@@ -1260,18 +1407,24 @@
             \str_if_eq:VnTF \l_synaptic_numbering_tl { none }
               { \declaretheorem[style=syn-theorem-plain,name=#3,numbered=no]{#2} }
               { \declaretheorem[style=syn-theorem-plain,name=#3,sibling=theorem]{#2} }
+            \str_if_eq:VnT \l_synaptic_theorem_style_tl { boxed }
+              { \tcolorboxenvironment{#2}{synaptic/theorem-box-plain} }
           }
         { definition }
           {
             \str_if_eq:VnTF \l_synaptic_numbering_tl { none }
               { \declaretheorem[style=syn-theorem-definition,name=#3,numbered=no]{#2} }
               { \declaretheorem[style=syn-theorem-definition,name=#3,sibling=theorem]{#2} }
+            \str_if_eq:VnT \l_synaptic_theorem_style_tl { boxed }
+              { \tcolorboxenvironment{#2}{synaptic/theorem-box-definition} }
           }
         { remark }
           {
             \str_if_eq:VnTF \l_synaptic_numbering_tl { none }
               { \declaretheorem[style=syn-theorem-remark,name=#3,numbered=no]{#2} }
               { \declaretheorem[style=syn-theorem-remark,name=#3,sibling=theorem]{#2} }
+            \str_if_eq:VnT \l_synaptic_theorem_style_tl { boxed }
+              { \tcolorboxenvironment{#2}{synaptic/theorem-box-remark} }
           }
       }
       {
@@ -1279,6 +1432,9 @@
           {Use~plain,~definition,~or~remark.}
       }
   }
+
+\NewDocumentCommand{\SynapticNewTheorem}{O{plain} m m}
+  { \__synaptic_theorem_declare_custom:nnn {#1} {#2} {#3} }
 
 % ---------------------------------------------------------------------------
 % Proof environment
@@ -1327,7 +1483,7 @@
 %    \begin{macrocode}
 %<*title>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-title}{2026-08-23}{2.3.0}
+\ProvidesExplPackage{synaptic-title}{2026-08-27}{2.4.0}
   {Synaptic~Title~Page}
 
 % ---------------------------------------------------------------------------
@@ -1982,6 +2138,7 @@
   {
     \bool_if:NT \l_synaptic_toc_bool
       {
+        \__synaptic_layout_toc_style:
         \str_case:Vn \l_synaptic_toc_layout_tl
           {
             { inline }
@@ -2028,7 +2185,7 @@
 %    \begin{macrocode}
 %<*journal>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-journal}{2026-08-23}{2.3.0}
+\ProvidesExplPackage{synaptic-journal}{2026-08-27}{2.4.0}
   {Synaptic~Journal~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -2074,7 +2231,7 @@
 %    \begin{macrocode}
 %<*book>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-book}{2026-08-23}{2.3.0}
+\ProvidesExplPackage{synaptic-book}{2026-08-27}{2.4.0}
   {Synaptic~Book~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -2097,10 +2254,15 @@
       font        = \normalfont\Huge\bfseries\sffamily\color{syn-primary}
     ]{chapter}
 
-    % Chapter decoration: rule below chapter title
+    % Chapter decoration: number and title inline, balanced by a short
+    % primary rule beneath that echoes the book title-page bar.
     \renewcommand*{\chapterformat}{%
-      \thechapter\enskip\textcolor{syn-primary!40}{%
-        \rule[-0.2em]{0.5pt}{1.5em}}%
+      \thechapter\enskip
+    }
+    \renewcommand*{\chapterlinesformat}[3]{%
+      #2#3%
+      \par\nobreak\vspace{0.35em}%
+      \noindent\textcolor{syn-primary}{\rule{0.22\linewidth}{1.0pt}}\par\nobreak\vspace{0.6em}%
     }
   }
 
@@ -2166,7 +2328,7 @@
       beforeskip = -0.10\textheight,
       afterskip  = 3em
     ]{part}
-    \setkomafont{chapterentry}{\normalfont\bfseries\sffamily}
+    \setkomafont{chapterentry}{\normalfont\bfseries\sffamily\color{syn-primary}}
     \setkomafont{chapterentrypagenumber}
       {\normalfont\bfseries\sffamily\color{syn-primary}}
   }
@@ -2175,7 +2337,7 @@
 % Book workflow helpers
 % ---------------------------------------------------------------------------
 \NewDocumentCommand{\SynapticBookContents}{}
-  { \tableofcontents\cleardoublepage }
+  { \__synaptic_layout_toc_style:\tableofcontents\cleardoublepage }
 
 \NewDocumentCommand{\SynapticListOfFigures}{}
   { \listoffigures\cleardoublepage }
@@ -2217,7 +2379,7 @@
 %    \begin{macrocode}
 %<*lecture>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-lecture}{2026-08-23}{2.3.0}
+\ProvidesExplPackage{synaptic-lecture}{2026-08-27}{2.4.0}
   {Synaptic~Lecture~Mode}
 
 % ---------------------------------------------------------------------------
@@ -2242,39 +2404,12 @@
   }
 
 % ---------------------------------------------------------------------------
-% Lecture theorem style (tcolorbox)
+% Lecture theorem presentation.  The core theorem module applies the shared
+% boxed treatment (theorem-style=boxed) in every mode; lecture mode therefore
+% only needs its box-card machinery, which is declared further below.
 % ---------------------------------------------------------------------------
 \RequirePackage{tcolorbox}
 \tcbuselibrary{skins, breakable, theorems}
-
-\tcbset{
-  synaptic/lecture theorem/.style={
-    enhanced,
-    breakable,
-    colback       = syn-surface,
-    frame~hidden,
-    coltext       = syn-text-dark,
-    borderline~west = {2pt}{0pt}{syn-primary},
-    left          = 9pt,
-    right         = 7pt,
-    top           = 7pt,
-    bottom        = 7pt,
-    arc           = 0pt,
-    before~skip   = 9pt,
-    after~skip    = 9pt
-  }
-}
-
-\tcolorboxenvironment{theorem}{synaptic/lecture theorem}
-\tcolorboxenvironment{lemma}{synaptic/lecture theorem}
-\tcolorboxenvironment{proposition}{synaptic/lecture theorem}
-\tcolorboxenvironment{definition}{synaptic/lecture theorem}
-
-% Keep a short statement and its likely proof away from the foot of a page.
-\AddToHook{env/theorem/before}{\Needspace{9\baselineskip}}
-\AddToHook{env/lemma/before}{\Needspace{8\baselineskip}}
-\AddToHook{env/proposition/before}{\Needspace{8\baselineskip}}
-\AddToHook{env/definition/before}{\Needspace{7\baselineskip}}
 
 % ---------------------------------------------------------------------------
 % Course navigation
@@ -2342,7 +2477,7 @@
 %    \begin{macrocode}
 %<*boxes>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-boxes}{2026-08-23}{2.3.0}
+\ProvidesExplPackage{synaptic-boxes}{2026-08-27}{2.4.0}
   {Synaptic~Box~Environments}
 
 \RequirePackage{tcolorbox}
@@ -2503,7 +2638,7 @@
 %    \begin{macrocode}
 %<*notes>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-notes}{2026-08-23}{2.3.0}
+\ProvidesExplPackage{synaptic-notes}{2026-08-27}{2.4.0}
   {Synaptic~Notes~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -2616,13 +2751,23 @@
 \tl_const:Nn \c_synaptic_label_header_tl         { Prepared~for~submission~to~journal }
 \tl_const:Nn \c_synaptic_label_thm_tl            { Theorem }
 \tl_const:Nn \c_synaptic_label_lemma_tl          { Lemma }
-\tl_const:Nn \c_synaptic_label_prop_tl           { Proposition }
-\tl_const:Nn \c_synaptic_label_def_tl            { Definition }
+\tl_const:Nn \c_synaptic_label_proposition_tl    { Proposition }
+\tl_const:Nn \c_synaptic_label_definition_tl     { Definition }
 \tl_const:Nn \c_synaptic_label_proof_tl          { Proof }
 \tl_const:Nn \c_synaptic_label_example_tl        { Example }
 \tl_const:Nn \c_synaptic_label_remark_tl         { Remark }
 \tl_const:Nn \c_synaptic_label_warning_tl        { Warning }
 \tl_const:Nn \c_synaptic_label_exercise_tl       { Exercise }
+\tl_const:Nn \c_synaptic_label_corollary_tl      { Corollary }
+\tl_const:Nn \c_synaptic_label_axiom_tl          { Axiom }
+\tl_const:Nn \c_synaptic_label_conjecture_tl     { Conjecture }
+\tl_const:Nn \c_synaptic_label_claim_tl          { Claim }
+\tl_const:Nn \c_synaptic_label_property_tl       { Property }
+\tl_const:Nn \c_synaptic_label_criterion_tl      { Criterion }
+\tl_const:Nn \c_synaptic_label_convention_tl     { Convention }
+\tl_const:Nn \c_synaptic_label_problem_tl        { Problem }
+\tl_const:Nn \c_synaptic_label_solution_tl       { Solution }
+\tl_const:Nn \c_synaptic_label_note_tl           { Note }
 \tl_const:Nn \c_synaptic_label_acknowledgments_tl { Acknowledgments }
 \tl_const:Nn \c_synaptic_label_email_tl          { E-mail }
 \tl_const:Nn \c_synaptic_label_correspondence_tl { Correspondence }
@@ -2653,13 +2798,23 @@
 \tl_const:Nn \c_synaptic_label_header_tl         { 学术论文预印本 }
 \tl_const:Nn \c_synaptic_label_thm_tl            { 定理 }
 \tl_const:Nn \c_synaptic_label_lemma_tl          { 引理 }
-\tl_const:Nn \c_synaptic_label_prop_tl           { 命题 }
-\tl_const:Nn \c_synaptic_label_def_tl            { 定义 }
+\tl_const:Nn \c_synaptic_label_proposition_tl    { 命题 }
+\tl_const:Nn \c_synaptic_label_definition_tl     { 定义 }
 \tl_const:Nn \c_synaptic_label_proof_tl          { 证明 }
 \tl_const:Nn \c_synaptic_label_example_tl        { 例题 }
 \tl_const:Nn \c_synaptic_label_remark_tl         { 注记 }
 \tl_const:Nn \c_synaptic_label_warning_tl        { 注意 }
 \tl_const:Nn \c_synaptic_label_exercise_tl       { 练习 }
+\tl_const:Nn \c_synaptic_label_corollary_tl      { 推论 }
+\tl_const:Nn \c_synaptic_label_axiom_tl          { 公理 }
+\tl_const:Nn \c_synaptic_label_conjecture_tl     { 猜想 }
+\tl_const:Nn \c_synaptic_label_claim_tl          { 断言 }
+\tl_const:Nn \c_synaptic_label_property_tl       { 性质 }
+\tl_const:Nn \c_synaptic_label_criterion_tl      { 判据 }
+\tl_const:Nn \c_synaptic_label_convention_tl     { 约定 }
+\tl_const:Nn \c_synaptic_label_problem_tl        { 问题 }
+\tl_const:Nn \c_synaptic_label_solution_tl       { 解 }
+\tl_const:Nn \c_synaptic_label_note_tl           { 注记 }
 \tl_const:Nn \c_synaptic_label_acknowledgments_tl { 致谢 }
 \tl_const:Nn \c_synaptic_label_email_tl          { 电子邮箱 }
 \tl_const:Nn \c_synaptic_label_correspondence_tl { 通讯信息 }
@@ -2681,7 +2836,7 @@
 %    \begin{macrocode}
 %<*package>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic}{2026-08-23}{2.3.0}
+\ProvidesExplPackage{synaptic}{2026-08-27}{2.4.0}
   {Modern~Academic~Typesetting~Framework}
 
 % Forward all user options to synaptic-base

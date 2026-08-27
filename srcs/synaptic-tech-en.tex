@@ -165,11 +165,20 @@ vertical rhythm, list spacing, line spacing, and paragraph indentation are
 explicit rather than hidden behind global bad-box suppression.
 
 KOMA heading fonts and skips are installed in the
-\texttt{begindocument/before} hook. Hyperref, bookmark, microtype, captions,
+\texttt{begindocument/before} hook, with all numbered levels sharing the sans
+heading family: the primary colour for \texttt{section}, dark for
+\texttt{subsection}, and a smaller, muted tint for \texttt{subsubsection} so
+the depth hierarchy stays legible. Hyperref, bookmark, microtype, captions,
 lists, caption punctuation, and mode-aware equation numbering are configured centrally.
 A hairline running-head separator (\texttt{headsepline}) is installed by the
 mode modules through a shared helper and coloured by the dedicated KOMA
 \texttt{headsepline} font, keeping decoration lighter than head text.
+
+The table of contents is refined through KOMA's \texttt{\string\DeclareTOCStyleEntry}
+immediately before it is typeset: top-level entries repeat the on-page heading
+colour in bold, deeper entries remain dark, and number alignment and vertical
+rhythm are tightened. Figure and table caption labels carry the secondary
+theme token.
 
 \subsection{Titles and metadata}
 
@@ -188,9 +197,17 @@ Unicode PDF-string conversion once; pre-converting and then calling
 \subsection{Theorems and boxes}
 
 thmtools defines plain, definition, and remark styles on top of amsthm. The
-built-in theorem family uses a mode-aware shared counter: chapter scope for
-books and section scope elsewhere by default. Lecture mode wraps core theorem
-environments with tcolorbox; examples and exercises can share that counter,
+built-in theorem family (\texttt{theorem}, \texttt{lemma},
+\texttt{proposition}, \texttt{definition}, \texttt{corollary}, \texttt{axiom},
+\texttt{conjecture}, \texttt{claim}, \texttt{property}, \texttt{criterion},
+\texttt{convention}, \texttt{problem}, \texttt{solution}, \texttt{example},
+\texttt{remark}, and \texttt{note}) uses a mode-aware shared counter: chapter
+scope for books and section scope elsewhere by default. Under
+\texttt{theorem-style=boxed} the numbered statement environments are wrapped
+with tcolorbox (a theme-tinted background with a west accent bar) at
+\texttt{\string\begin{document}}; proofs stay unboxed.
+\texttt{theorem-style=plain} disables that wrapping. Lecture mode adds its
+box-card environments; examples and exercises can share the theorem counter,
 while warning and remark cards remain unnumbered by default. Public short names use the
 \texttt{syn} prefix; v2.0 generic aliases are conditional compatibility shims.
 In the separate numbering profile, tcolorbox theorem counters follow the

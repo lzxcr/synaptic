@@ -52,8 +52,9 @@ Ready-to-compile documents for every mode live in [`examples/`](examples/).
   use `scrartcl` or `scrreprt`.
 - A recent TeX distribution containing `expl3`, `fontspec`, `unicode-math`,
   `geometry`, `microtype`, `thmtools`, and the other standard dependencies.
-- `tcolorbox` and PGF for the teaching and notes cards; `ctex` and a supported
-  CJK font for `lang=zh`.
+- `tcolorbox` and PGF for the boxed theorem styles (except under
+  `theorem-style=plain`) and the teaching and notes cards; `ctex` and a
+  supported CJK font for `lang=zh`.
 
 The package respects the paper size selected by the class. It does not force A4.
 
@@ -73,6 +74,7 @@ The package respects the paper size selected by the class. It does not force A4.
 | `color-mode` | `screen` | `screen`, `print`, `mono` | No |
 | `density` | `balanced` | `compact`, `balanced`, `airy` | No |
 | `measure` | `auto` | `auto`, `narrow`, `standard`, `wide` | No |
+| `theorem-style` | `boxed` | `boxed`, `plain` | No |
 | `binding-offset` | `0pt` | Any dimension; primarily for books | No |
 | `extra-math` | `false` | Boolean | No |
 | `fine-breaking` | `true` | Boolean | No |
@@ -147,16 +149,30 @@ statements. Its starred form omits the statement from the table of contents.
 
 ### Theorems and boxes
 
-The core environments are `theorem`, `lemma`, `proposition`, `definition`, and
-`proof`. Definitions use upright body text; theorem statements use italics in
-English and upright text in Chinese. Book mode numbers theorems by chapter by
-default; the shorter modes use sections.
+The core environments are `theorem`, `lemma`, `proposition`, `definition`,
+`corollary`, `axiom`, `conjecture`, `claim`, `property`, `criterion`,
+`convention`, `problem`, `solution`, `example`, `remark`, `note`, and `proof`.
+Definitions use upright body text; theorem statements use italics in English
+and upright text in Chinese. Book mode numbers theorems by chapter by default;
+the shorter modes use sections. All numbered environments share the theorem
+counter and honour the `numbering` profile.
+
+By default (`theorem-style=boxed`) the numbered statement environments are
+presented as refined cards: a subtle theme-tinted background, a west accent
+bar, and square corners that match the teaching and notes card language.
+`proof` stays clean and unboxed. Set `theorem-style=plain` for the classic
+unboxed look:
+
+```latex
+\usepackage[theorem-style=plain]{synaptic}
+```
 
 ```latex
 \SynapticNewTheorem[remark]{observation}{Observation}
 ```
 
-The optional style is `plain`, `definition`, or `remark`.
+The optional style is `plain`, `definition`, or `remark`; a custom theorem is
+also boxed automatically.
 
 Lecture mode adds `synexample`, `synremark`, `synwarning`, `synexercise`, and
 `synbox`. The first optional argument is a title and the second is a label.
@@ -171,6 +187,17 @@ remarks remain unnumbered:
 
 The short v2.0 environment names (`example`, `remark`, `warning`, `exercise`)
 are provided only when no existing package or class has already claimed them.
+
+### Typography
+
+All numbered section levels use a single sans heading family with a clear
+depth hierarchy (`section` in the primary colour, `subsection` dark,
+`subsubsection` smaller and muted) so the structure reads at a glance. When a
+table of contents is requested its top-level entries repeat the on-page
+heading colour in bold, while deeper entries stay dark and the number
+alignment and vertical rhythm are tightened. Figure and table caption labels
+carry the secondary theme token to keep the caption language consistent with
+the rest of the design.
 
 ### Themes
 
@@ -192,7 +219,10 @@ Book mode provides `\SynapticFrontMatter`, `\SynapticMainMatter`, and
 appendix helpers. `\SynapticHalfTitle`, `\SynapticPublisher`,
 `\SynapticEdition`, `\SynapticISBN`, and `\SynapticCopyright` populate the book
 title sequence. `\SynapticChapterSubtitle` and `\SynapticEpigraph` extend
-chapter openings.
+chapter openings. Chapter headings set the number and title inline over a short
+primary rule that echoes the title-page bar, and chapter contents entries carry
+the same primary colour so the table of contents mirrors the on-page
+structure.
 
 Lecture metadata uses `\SynapticCourse`, `\SynapticCourseCode`,
 `\SynapticLectureNumber`, `\SynapticInstructor`, and `\SynapticSemester`.

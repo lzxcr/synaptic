@@ -1,5 +1,46 @@
 # Changelog
 
+## [2.4.0] — 2026-08-27
+
+### Added
+
+- Gave the core theorem environments (`theorem`, `lemma`, `proposition`,
+  `definition`) a refined boxed presentation in every mode: a subtle
+  theme-tinted background, a west accent bar, and square corners that match
+  the existing teaching and notes card language. Proofs remain clean and
+  unboxed, and a short statement stays away from the foot of a page through
+  `\Needspace` guards.
+- Added a broad set of theorem environments with bilingual labels:
+  `corollary`, `axiom`, `conjecture`, `claim`, `property`, `criterion`,
+  `convention`, `problem`, `solution`, `example`, `remark`, and `note`.
+  These share the theorem counter and honour every `numbering` profile.
+- Introduced the `theorem-style` package option (`boxed` for the default
+  refined presentation, `plain` for the classic unboxed look). It is a
+  structural key and is frozen after package loading.
+- Wrapped any theorem declared through `\SynapticNewTheorem` in the matching
+  boxed style, so custom environments stay visually consistent.
+- Refined the table of contents in every mode: top-level (chapter/section)
+  entries echo the on-page heading colour in bold, deeper entries stay dark,
+  and the number alignment and vertical rhythm are tightened through KOMA's
+  `\DeclareTOCStyleEntry`.
+- Unified the section-heading family so all numbered levels use the sans
+  heading face; `subsubsection` is now set slightly smaller and muted to keep
+  the depth hierarchy clear.
+- Refined the book mode: chapter headings now set the number and title inline
+  with a short primary rule beneath (echoing the title-page bar), and chapter
+  table-of-contents entries repeat the primary heading colour in bold so the
+  contents echo the on-page structure.
+
+### Changed
+
+- Coloured figure and table caption labels with the secondary theme token so
+  the caption language ties into the rest of the design.
+- The lecture module now reuses the shared theorem-box styling from
+  `synaptic-theorem` instead of redeclaring its own; the visual result is
+  unchanged.
+- `\SynapticNewTheorem` now accepts the same `plain`, `definition`, and
+  `remark` styles and applies the corresponding box treatment.
+
 ## [2.3.0] — 2026-08-23
 
 ### Added

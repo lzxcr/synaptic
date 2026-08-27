@@ -19,7 +19,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-book}{2026-08-23}{2.3.0}
+\ProvidesExplPackage{synaptic-book}{2026-08-27}{2.4.0}
   {Synaptic~Book~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -39,10 +39,15 @@
       font        = \normalfont\Huge\bfseries\sffamily\color{syn-primary}
     ]{chapter}
 
-    % Chapter decoration: rule below chapter title
+    % Chapter decoration: number and title inline, balanced by a short
+    % primary rule beneath that echoes the book title-page bar.
     \renewcommand*{\chapterformat}{%
-      \thechapter\enskip\textcolor{syn-primary!40}{%
-        \rule[-0.2em]{0.5pt}{1.5em}}%
+      \thechapter\enskip
+    }
+    \renewcommand*{\chapterlinesformat}[3]{%
+      #2#3%
+      \par\nobreak\vspace{0.35em}%
+      \noindent\textcolor{syn-primary}{\rule{0.22\linewidth}{1.0pt}}\par\nobreak\vspace{0.6em}%
     }
   }
 
@@ -98,13 +103,13 @@
       beforeskip = -0.10\textheight,
       afterskip  = 3em
     ]{part}
-    \setkomafont{chapterentry}{\normalfont\bfseries\sffamily}
+    \setkomafont{chapterentry}{\normalfont\bfseries\sffamily\color{syn-primary}}
     \setkomafont{chapterentrypagenumber}
       {\normalfont\bfseries\sffamily\color{syn-primary}}
   }
 
 \NewDocumentCommand{\SynapticBookContents}{}
-  { \tableofcontents\cleardoublepage }
+  { \__synaptic_layout_toc_style:\tableofcontents\cleardoublepage }
 
 \NewDocumentCommand{\SynapticListOfFigures}{}
   { \listoffigures\cleardoublepage }
@@ -135,3 +140,11 @@
     \end{flushright}
     \addvspace{1.2em}
   }
+
+
+
+
+
+
+
+

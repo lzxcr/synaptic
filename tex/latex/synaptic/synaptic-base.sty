@@ -12,7 +12,7 @@
 %%
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-base}{2026-08-23}{2.3.0}
+\ProvidesExplPackage{synaptic-base}{2026-08-27}{2.4.0}
   {Synaptic~Core~Infrastructure}
 
 \msg_new:nnn { synaptic } { luatex-required }
@@ -39,6 +39,7 @@
 \tl_new:N  \l_synaptic_color_mode_tl
 \tl_new:N  \l_synaptic_density_tl
 \tl_new:N  \l_synaptic_measure_tl
+\tl_new:N  \l_synaptic_theorem_style_tl
 \bool_new:N \l_synaptic_toc_bool
 \bool_new:N \l_synaptic_toc_explicit_bool
 \bool_new:N \l_synaptic_extra_math_bool
@@ -159,6 +160,11 @@
     measure / wide     .code:n = \tl_set:Nn \l_synaptic_measure_tl { wide },
     measure .initial:n = auto,
 
+    theorem-style .choice:,
+    theorem-style / boxed  .code:n = \tl_set:Nn \l_synaptic_theorem_style_tl { boxed },
+    theorem-style / plain  .code:n = \tl_set:Nn \l_synaptic_theorem_style_tl { plain },
+    theorem-style .initial:n = boxed,
+
     binding-offset .dim_set:N = \l_synaptic_binding_offset_dim,
     binding-offset .initial:n = 0pt,
 
@@ -218,6 +224,8 @@
       {Option~`density'~is~frozen~after~package~loading},
     measure .code:n = \PackageWarning{synaptic-base}
       {Option~`measure'~is~frozen~after~package~loading},
+    theorem-style .code:n = \PackageWarning{synaptic-base}
+      {Option~`theorem-style'~is~frozen~after~package~loading},
     binding-offset .code:n = \PackageWarning{synaptic-base}
       {Option~`binding-offset'~is~frozen~after~package~loading},
     unknown .code:n = \__synaptic_base_unknown_warning:n { \l_keys_key_tl },
@@ -240,6 +248,7 @@
 \cs_new:Npn \synaptic_color_mode: { \l_synaptic_color_mode_tl }
 \cs_new:Npn \synaptic_density: { \l_synaptic_density_tl }
 \cs_new:Npn \synaptic_measure: { \l_synaptic_measure_tl }
+\cs_new:Npn \synaptic_theorem_style: { \l_synaptic_theorem_style_tl }
 
 \cs_new_protected:Npn \synaptic_if_lang_zh:TF #1#2
   {
@@ -300,3 +309,18 @@
 
 \__synaptic_load_core_modules:
 \__synaptic_load_mode_modules:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -15,7 +15,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-layout}{2026-08-23}{2.3.0}
+\ProvidesExplPackage{synaptic-layout}{2026-08-27}{2.4.0}
   {Synaptic~Page~Layout}
 
 \RequirePackage{geometry}
@@ -221,7 +221,7 @@
 
 \captionsetup{
   font      = small,
-  labelfont = {bf, sf},
+  labelfont = {bf, sf, color=syn-secondary},
   labelsep  = quad,
   skip      = 10pt
 }
@@ -235,8 +235,8 @@
 \AddToHook{begindocument/before}
   {
     \setkomafont{section}{\normalfont\large\bfseries\sffamily\color{syn-primary}}
-    \setkomafont{subsection}{\normalfont\normalsize\bfseries\sffamily}
-    \setkomafont{subsubsection}{\normalfont\normalsize\bfseries}
+    \setkomafont{subsection}{\normalfont\normalsize\bfseries\sffamily\color{syn-text-dark}}
+    \setkomafont{subsubsection}{\normalfont\small\bfseries\sffamily\color{syn-text-dark!85}}
 
     \RedeclareSectionCommand[
       beforeskip = -3.5ex plus -1ex minus -.2ex,
@@ -250,6 +250,47 @@
       beforeskip = -2.0ex plus -0.5ex minus -.1ex,
       afterskip  = 1.0ex plus .1ex
     ]{subsubsection}
+  }
+
+\cs_new_protected:Npn \__synaptic_layout_toc_style:
+  {
+    \bool_if:NTF \l_synaptic_toc_bool
+      {
+        \clist_map_inline:nn { chapter, section }
+          {
+            \cs_if_exist:cT {l@##1}
+              {
+                \DeclareTOCStyleEntry[
+                  beforeskip   = 1.0em plus 0.2em,
+                  indent       = 0pt,
+                  dynnumwidth,
+                  entryformat  = {\bfseries\color{syn-primary}}
+                ]{tocline}{##1}
+              }
+          }
+        \clist_map_inline:nn { subsection }
+          {
+            \cs_if_exist:cT {l@##1}
+              {
+                \DeclareTOCStyleEntry[
+                  beforeskip  = 0.25em,
+                  indent      = 1.5em,
+                  entryformat = {\color{syn-text-dark}}
+                ]{tocline}{##1}
+              }
+          }
+        \clist_map_inline:nn { subsubsection }
+          {
+            \cs_if_exist:cT {l@##1}
+              {
+                \DeclareTOCStyleEntry[
+                  indent = 3em,
+                  entryformat = {\color{syn-text-dark!85}}
+                ]{tocline}{##1}
+              }
+          }
+      }
+      { }
   }
 
 \cs_new_protected:Npn \__synaptic_layout_number_equations_within:n #1
@@ -290,3 +331,15 @@
       { \__synaptic_layout_number_equations_within:n { chapter } }
       { \__synaptic_layout_number_equations_within:n { section } }
   }
+
+
+
+
+
+
+
+
+
+
+
+

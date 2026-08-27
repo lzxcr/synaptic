@@ -20,7 +20,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-lecture}{2026-08-23}{2.3.0}
+\ProvidesExplPackage{synaptic-lecture}{2026-08-27}{2.4.0}
   {Synaptic~Lecture~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -43,34 +43,6 @@
 
 \RequirePackage{tcolorbox}
 \tcbuselibrary{skins, breakable, theorems}
-
-\tcbset{
-  synaptic/lecture theorem/.style={
-    enhanced,
-    breakable,
-    colback       = syn-surface,
-    frame~hidden,
-    coltext       = syn-text-dark,
-    borderline~west = {2pt}{0pt}{syn-primary},
-    left          = 9pt,
-    right         = 7pt,
-    top           = 7pt,
-    bottom        = 7pt,
-    arc           = 0pt,
-    before~skip   = 9pt,
-    after~skip    = 9pt
-  }
-}
-
-\tcolorboxenvironment{theorem}{synaptic/lecture theorem}
-\tcolorboxenvironment{lemma}{synaptic/lecture theorem}
-\tcolorboxenvironment{proposition}{synaptic/lecture theorem}
-\tcolorboxenvironment{definition}{synaptic/lecture theorem}
-
-\AddToHook{env/theorem/before}{\Needspace{9\baselineskip}}
-\AddToHook{env/lemma/before}{\Needspace{8\baselineskip}}
-\AddToHook{env/proposition/before}{\Needspace{8\baselineskip}}
-\AddToHook{env/definition/before}{\Needspace{7\baselineskip}}
 
 \cs_new:Npn \__synaptic_lecture_running_left:
   {
@@ -124,3 +96,10 @@
   {\begin{tcolorbox}[synaptic/lecture-summary,
       title={\c_synaptic_label_summary_tl}]}
   {\end{tcolorbox}}
+
+
+
+
+
+
+

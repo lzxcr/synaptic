@@ -107,6 +107,7 @@ l3build ctan        # 生成 TDS/CTAN 压缩包
   \texttt{color-mode} & screen & screen、print 或 mono \\
   \texttt{density} & balanced & compact、balanced 或 airy \\
   \texttt{measure} & auto & narrow、standard、wide 或模式默认值 \\
+  \texttt{theorem-style} & boxed & boxed 或 plain \\
   \texttt{binding-offset} & 0pt & 书籍装订补偿尺寸 \\
   \texttt{extra-math} & false & 便捷 Unicode 数学字母命令 \\
   \texttt{fine-breaking} & true & 适度放宽断行容忍度 \\
@@ -190,6 +191,14 @@ journal 的 \texttt{inline}、book 的 \texttt{cover} 以及 lecture 与 notes �
 所有模式在运行页眉下方绘制一条发丝线。发丝线使用独立的装饰性浅色令牌，
 使导航保持安静。页码居中于页脚；书籍模式还遵循外侧页眉与双面空白页。
 
+\subsection{标题、目录与图表标题}
+
+所有编号的章节标题共用无衬线家族：\texttt{section} 使用主色，
+\texttt{subsection} 使用深色正文色，\texttt{subsubsection} 更小且略微淡化，
+使结构一目了然。启用目录时，顶层条目以加粗主色重现将页面标题颜色，深层条目
+保持深色，并收紧编号对齐与垂直节奏。图表标题标签使用次要主题色，与整体设计
+保持一致。
+
 \subsection{卡片与规则}
 
 教学与笔记卡片共享同一视觉语言：直角、着语义色（主色、次级、警告或成功色）
@@ -230,9 +239,17 @@ PDF 字符串只进行一次 Unicode 安全转换。
 
 \section{定理与数学}
 
-内置 \texttt{theorem}、\texttt{lemma}、\texttt{proposition} 与 \texttt{definition}
-共享一个计数器。书籍默认按章编号，短文档默认按节编号。定义正文使用正体；中文命题类
-正文保持正体，避免伪斜体造成的阅读干扰。
+内置 \texttt{theorem}、\texttt{lemma}、\texttt{proposition}、
+\texttt{definition}、\texttt{corollary}、\texttt{axiom}、\texttt{conjecture}、
+\texttt{claim}、\texttt{property}、\texttt{criterion}、\texttt{convention}、
+\texttt{problem}、\texttt{solution}、\texttt{example}、\texttt{remark} 与
+\texttt{note} 共享一个计数器。书籍默认按章编号，短文档默认按节编号。定义正
+文使用正体；中文命题类正文保持正体，避免伪斜体造成的阅读干扰。
+
+默认（\texttt{theorem-style=boxed}）下，编号的陈述环境以精致的卡片呈现：微
+妙的主题色背景、西侧强调条与方角，与教学与笔记卡片语言保持一致。
+\texttt{proof} 保持干净、不加框。选择 \texttt{theorem-style=plain} 可恢复无框
+经典样式。
 
 \begin{theorem}[高斯积分]
   \[
@@ -245,6 +262,7 @@ PDF 字符串只进行一次 Unicode 安全转换。
 \end{proof}
 
 自定义定理可选择 \texttt{plain}、\texttt{definition} 或 \texttt{remark} 样式：
+自定义定理也会自动加框。
 
 \begin{verbatim}
 \SynapticNewTheorem[remark]{observation}{观察}

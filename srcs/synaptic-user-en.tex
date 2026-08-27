@@ -111,6 +111,7 @@ directly into the same structure.
   \texttt{color-mode} & screen & screen, print, or mono \\
   \texttt{density} & balanced & compact, balanced, or airy \\
   \texttt{measure} & auto & narrow, standard, wide, or mode default \\
+  \texttt{theorem-style} & boxed & boxed or plain \\
   \texttt{binding-offset} & 0pt & additional book binding correction \\
   \texttt{extra-math} & false & convenience Unicode math alphabets \\
   \texttt{fine-breaking} & true & moderate emergency stretch and tolerance \\
@@ -210,6 +211,16 @@ separate, deliberately lighter decorative token so navigation stays quiet.
 Page numbers sit centred in the footer; book mode additionally respects outer
 running heads and duplex blank pages.
 
+\subsection{Headings, contents, and captions}
+
+All numbered section levels share the sans heading family: `section` uses the
+primary colour, `subsection` the dark text colour, and `subsubsection` a
+smaller, slightly muted tint, so structure reads at a glance. When a table of
+contents is requested its top-level entries repeat the on-page heading colour
+in bold while deeper entries stay dark, and the number alignment and vertical
+rhythm are tightened. Figure and table caption labels carry the secondary
+theme token to keep them consistent with the rest of the design.
+
 \subsection{Cards and rules}
 
 Teaching and notes cards share one visual language: square corners, a west
@@ -254,10 +265,19 @@ Synaptic field is empty. PDF metadata receives one Unicode-safe conversion.
 
 \section{Theorems and mathematics}
 
-The built-in \texttt{theorem}, \texttt{lemma}, \texttt{proposition}, and
-\texttt{definition} environments share one counter. Books use chapter scope by
+The built-in \texttt{theorem}, \texttt{lemma}, \texttt{proposition},
+\texttt{definition}, \texttt{corollary}, \texttt{axiom}, \texttt{conjecture},
+\texttt{claim}, \texttt{property}, \texttt{criterion}, \texttt{convention},
+\texttt{problem}, \texttt{solution}, \texttt{example}, \texttt{remark}, and
+\texttt{note} environments share one counter. Books use chapter scope by
 default; shorter modes use sections. Definitions use upright body text;
 proposition-style statements use italics in English and upright CJK text.
+
+By default (\texttt{theorem-style=boxed}) the numbered statement environments
+are presented as refined cards: a subtle theme-tinted background, a west accent
+bar, and square corners matching the teaching and notes card language.
+\texttt{proof} stays clean and unboxed. Select \texttt{theorem-style=plain} for
+the classic unboxed look.
 
 \begin{theorem}[Gaussian integral]
   The integral satisfies
@@ -278,7 +298,7 @@ New theorem types accept a style:
 \end{verbatim}
 
 The available styles are \texttt{plain}, \texttt{definition}, and
-\texttt{remark}.
+\texttt{remark}; a custom theorem is boxed automatically.
 
 \begin{observation}
   With \texttt{extra-math=true}, commands such as \(\symbb{R}\),

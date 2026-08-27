@@ -33,13 +33,23 @@
 \tl_const:Nn \c_synaptic_label_header_tl         { 学术论文预印本 }
 \tl_const:Nn \c_synaptic_label_thm_tl            { 定理 }
 \tl_const:Nn \c_synaptic_label_lemma_tl          { 引理 }
-\tl_const:Nn \c_synaptic_label_prop_tl           { 命题 }
-\tl_const:Nn \c_synaptic_label_def_tl            { 定义 }
+\tl_const:Nn \c_synaptic_label_proposition_tl    { 命题 }
+\tl_const:Nn \c_synaptic_label_definition_tl     { 定义 }
 \tl_const:Nn \c_synaptic_label_proof_tl          { 证明 }
 \tl_const:Nn \c_synaptic_label_example_tl        { 例题 }
 \tl_const:Nn \c_synaptic_label_remark_tl         { 注记 }
 \tl_const:Nn \c_synaptic_label_warning_tl        { 注意 }
 \tl_const:Nn \c_synaptic_label_exercise_tl       { 练习 }
+\tl_const:Nn \c_synaptic_label_corollary_tl      { 推论 }
+\tl_const:Nn \c_synaptic_label_axiom_tl          { 公理 }
+\tl_const:Nn \c_synaptic_label_conjecture_tl     { 猜想 }
+\tl_const:Nn \c_synaptic_label_claim_tl          { 断言 }
+\tl_const:Nn \c_synaptic_label_property_tl       { 性质 }
+\tl_const:Nn \c_synaptic_label_criterion_tl      { 判据 }
+\tl_const:Nn \c_synaptic_label_convention_tl     { 约定 }
+\tl_const:Nn \c_synaptic_label_problem_tl        { 问题 }
+\tl_const:Nn \c_synaptic_label_solution_tl       { 解 }
+\tl_const:Nn \c_synaptic_label_note_tl           { 注记 }
 \tl_const:Nn \c_synaptic_label_acknowledgments_tl { 致谢 }
 \tl_const:Nn \c_synaptic_label_email_tl          { 电子邮箱 }
 \tl_const:Nn \c_synaptic_label_correspondence_tl { 通讯信息 }
@@ -52,3 +62,6 @@
 \tl_const:Nn \c_synaptic_label_question_tl       { 问题 }
 \tl_const:Nn \c_synaptic_label_todo_tl           { 待办 }
 \tl_const:Nn \c_synaptic_colon_tl                { ： }
+
+
+

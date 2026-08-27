@@ -1,0 +1,41 @@
+\input regression-test.tex
+\documentclass[11pt]{scrartcl}
+\usepackage[mode=journal,theme=ocean,fontset=lm]{synaptic}
+
+\SynapticTitle{Theorem Boxes Regression}
+\SynapticAuthor[1]{Test Author}
+\SynapticAffiliation[1]{Test Institute}
+\SynapticEmail{test@example.org}
+\SynapticNewTheorem[remark]{observation}{Observation}
+
+\begin{document}
+\START
+\ExplSyntaxOn
+\TYPE{mode=\synaptic_mode:}
+\TYPE{theme=\synaptic_theme:}
+\TYPE{theorem-style=\synaptic_theorem_style:}
+\ExplSyntaxOff
+\SynapticMakeTitle
+\section{Statements}
+\begin{theorem}[Pythagoras]A boxed theorem.\end{theorem}
+\begin{lemma}A boxed lemma.\end{lemma}
+\begin{proposition}A boxed proposition.\end{proposition}
+\begin{definition}[Continuity]A boxed definition.\end{definition}
+\begin{corollary}A boxed corollary.\end{corollary}
+\begin{axiom}A boxed axiom.\end{axiom}
+\begin{conjecture}A boxed conjecture.\end{conjecture}
+\begin{claim}[Main claim]A boxed claim.\end{claim}
+\begin{property}A boxed property.\end{property}
+\begin{criterion}A boxed criterion.\end{criterion}
+\begin{convention}A boxed convention.\end{convention}
+\begin{problem}A boxed problem.\end{problem}
+\begin{solution}A boxed solution.\end{solution}
+\begin{example}[An example]A boxed example.\end{example}
+\begin{remark}[A remark]A boxed remark.\end{remark}
+\begin{note}A boxed note.\end{note}
+\begin{proof}A clean, unboxed proof.\end{proof}
+\begin{observation}A custom boxed theorem.\end{observation}
+\TYPE{shared-counter=\thetheorem}
+\TYPE{theorem-family-and-boxes=ok}
+\END
+\end{document}
