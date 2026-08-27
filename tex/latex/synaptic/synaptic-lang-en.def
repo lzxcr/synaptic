@@ -60,6 +60,9 @@
 \tl_const:Nn \c_synaptic_label_key_idea_tl       { Key~idea }
 \tl_const:Nn \c_synaptic_label_question_tl       { Question }
 \tl_const:Nn \c_synaptic_label_todo_tl           { To~do }
+\tl_const:Nn \c_synaptic_label_contents_tl       { Contents }
+\tl_const:Nn \c_synaptic_label_list_figures_tl   { List~of~Figures }
+\tl_const:Nn \c_synaptic_label_list_tables_tl    { List~of~Tables }
 \tl_const:Nn \c_synaptic_colon_tl                { : }
 
 

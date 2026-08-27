@@ -1,9 +1,13 @@
 % !TEX program = lualatex
 \documentclass[11pt]{scrartcl}
-\usepackage[mode=journal,theme=ocean,fontset=lm,title-layout=inline]{synaptic}
+\usepackage[mode=journal,theme=ocean,fontset=lm,title-layout=inline,
+  density=compact]{synaptic}
 
-\SynapticTitle{A Minimal Journal Article}
-\SynapticShortTitle{Minimal Journal Article}
+\SynapticHeader{Research note}
+\SynapticPreprint{SYN--2026--04}
+\SynapticTitle{Structure, Rhythm, and Mathematical Reading}
+\SynapticSubtitle{A compact study of reusable academic page systems}
+\SynapticShortTitle{Structure and Mathematical Reading}
 \SynapticAuthor[1]{Ada Author}
 \SynapticAffiliation[1]{Department of Clear Typesetting}
 \SynapticEmail{ada@example.org}
@@ -13,18 +17,35 @@
 \SynapticKeywords{LaTeX, academic publishing, typography}
 
 \begin{abstract}
-  This document demonstrates journal metadata, mathematics, and theorem styles.
+  Academic pages work best when hierarchy, measure, and semantic emphasis are
+  treated as one system. This sample demonstrates a restrained editorial rhythm.
 \end{abstract}
 
 \begin{document}
 \SynapticMakeTitle
 \section{Introduction}
-Readable defaults should remain predictable across machines.
+Readable defaults should remain predictable across machines. A useful design
+system makes the relationships among title matter, argument, and supporting
+metadata visible without allowing decoration to compete with content.
+
 \begin{theorem}[A small result]
-  If (a=b), then (a+c=b+c).
+  If $a=b$, then $a+c=b+c$ for every compatible $c$.
 \end{theorem}
 \begin{definition}
-  A definition uses upright body text.
+  A \emph{visual invariant} is a relation that remains recognizable across
+  document modes.
 \end{definition}
-\SynapticStatement{Data availability}{No external data were used in this example.}
+
+\subsection{A measured hierarchy}
+Line measure and vertical rhythm are coupled. A simple page cost is
+\[
+  \mathcal C = \alpha\,\lvert L-L_0\rvert
+    + \beta\,\lvert R-R_0\rvert + \gamma E,
+\]
+where $L$ is line length, $R$ is baseline rhythm, and $E$ records exceptions.
+
+\begin{remark}
+  Decoration is most effective when it explains an edge, an anchor, or a
+  transition; otherwise it is merely additional ink.
+\end{remark}
 \end{document}

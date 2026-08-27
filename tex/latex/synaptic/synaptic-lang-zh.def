@@ -61,6 +61,9 @@
 \tl_const:Nn \c_synaptic_label_key_idea_tl       { 核心要点 }
 \tl_const:Nn \c_synaptic_label_question_tl       { 问题 }
 \tl_const:Nn \c_synaptic_label_todo_tl           { 待办 }
+\tl_const:Nn \c_synaptic_label_contents_tl       { 目录 }
+\tl_const:Nn \c_synaptic_label_list_figures_tl   { 插图目录 }
+\tl_const:Nn \c_synaptic_label_list_tables_tl    { 表格目录 }
 \tl_const:Nn \c_synaptic_colon_tl                { ： }
 
 

@@ -7,4 +7,8 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `LatinModernSans' (encoding: TU).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `LatinModernMath' (encoding: TU).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
 notes-standard-metadata-and-cards=ok

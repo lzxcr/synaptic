@@ -16,12 +16,12 @@
 \SynapticNewTheorem[remark]{observation}{Observation}
 \SynapticHeader{Synaptic User Manual}
 \SynapticSubHeader{Reliable academic typesetting with LuaLaTeX}
-\SynapticPreprint{v2.3.0}
+\SynapticPreprint{v2.5.0}
 \SynapticTitle{The synaptic Package: User Manual}
 \SynapticAuthor{synaptic project}
 \SynapticAffiliation{Open-source LaTeX community}
 \SynapticEmail{synaptic@example.com}
-\SynapticSubject{User manual for synaptic version 2.3.0}
+\SynapticSubject{User manual for synaptic version 2.5.0}
 \SynapticKeywords{synaptic, LaTeX3, LuaLaTeX, academic typesetting}
 
 \begin{abstract}
@@ -200,16 +200,17 @@ symmetry.
 \texttt{auto} value resolves to \texttt{inline} (journal), \texttt{cover}
 (book), and \texttt{compact} (lecture, notes). \texttt{page} dedicates a
 full title page and \texttt{inline} forces the first-page composition.
-Journal titles are underlined by an editorial double rule; book titles rest
-on a short primary bar; lecture and notes mastheads use a single rule whose
-colour follows the theme.
+All title renderers reuse an asymmetric “synaptic rail”: a short primary rule,
+an accent node, and a quiet continuation line. Book title and verso pages use
+the motif at architectural edges; lecture and notes place it beside compact
+metadata panels, while journal mode keeps the treatment editorial and inline.
 
 \subsection{Navigation}
 
 Every mode draws a hairline beneath its running heads. The hairline uses a
 separate, deliberately lighter decorative token so navigation stays quiet.
-Page numbers sit centred in the footer; book mode additionally respects outer
-running heads and duplex blank pages.
+Running-head labels and outer folios repeat the small node marker; book mode
+additionally gives forced duplex blank pages a quiet footer anchor.
 
 \subsection{Headings, contents, and captions}
 
@@ -223,9 +224,10 @@ theme token to keep them consistent with the rest of the design.
 
 \subsection{Cards and rules}
 
-Teaching and notes cards share one visual language: square corners, a west
-accent bar tinted with the semantic colour of the card (primary, secondary,
-warning, or success), and a light surface with a readable title colouring.
+Teaching and notes cards share one visual language: a very small corner radius,
+a west accent bar tinted with the semantic colour of the card (primary,
+secondary, warning, or success), a faint hairline, and a light surface with a
+readable title colouring.
 Rules and hairlines derive from the theme's primary colour at low tint, so
 decoration never competes with text.
 
@@ -274,8 +276,9 @@ default; shorter modes use sections. Definitions use upright body text;
 proposition-style statements use italics in English and upright CJK text.
 
 By default (\texttt{theorem-style=boxed}) the numbered statement environments
-are presented as refined cards: a subtle theme-tinted background, a west accent
-bar, and square corners matching the teaching and notes card language.
+are presented as refined cards: a subtle theme-tinted background, a semantic
+west accent bar, a faint hairline, and the same restrained corner treatment as
+the teaching and notes card language.
 \texttt{proof} stays clean and unboxed. Select \texttt{theorem-style=plain} for
 the classic unboxed look.
 
@@ -298,7 +301,10 @@ New theorem types accept a style:
 \end{verbatim}
 
 The available styles are \texttt{plain}, \texttt{definition}, and
-\texttt{remark}; a custom theorem is boxed automatically.
+\texttt{remark}; a custom theorem is boxed automatically. Repeating a
+declaration for an existing environment is safe: synaptic keeps the established
+definition and emits a warning, which lets older documents coexist with the
+expanded built-in theorem set.
 
 \begin{observation}
   With \texttt{extra-math=true}, commands such as \(\symbb{R}\),
@@ -394,7 +400,7 @@ migration hints.
 
 {\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l Y@{}}
   \toprule
-  \textbf{v1} & \textbf{v2.3} \\
+  \textbf{v1} & \textbf{v2.5} \\
   \midrule
   \texttt{color=ocean} & \texttt{theme=ocean} \\
   \texttt{style=modern/minimal} & \texttt{mode=journal/notes} \\
@@ -404,7 +410,7 @@ migration hints.
   \bottomrule
 \end{tabularx}}
 
-The v2.3 API is unchanged from v2.2. Lower-case book matter helpers and generic
+The v2.5 API remains compatible with v2.2. Lower-case book matter helpers and generic
 lecture box names remain conditional v2.0 compatibility aliases; new documents
 should use the namespaced public forms.
 

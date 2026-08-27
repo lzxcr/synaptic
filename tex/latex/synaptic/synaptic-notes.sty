@@ -22,7 +22,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-notes}{2026-08-27}{2.4.0}
+\ProvidesExplPackage{synaptic-notes}{2026-08-28}{2.5.0}
   {Synaptic~Notes~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -54,9 +54,9 @@
   }
 
 \clearpairofpagestyles
-\ihead{\__synaptic_notes_running_title:}
+\ihead{\__synaptic_layout_header_mark:\__synaptic_notes_running_title:}
 \ohead{\headmark}
-\ofoot*{\pagemark}
+\ofoot*{\__synaptic_layout_footer_mark:\enspace\pagemark}
 \automark{section}
 \setkomafont{pageheadfoot}
   {\normalfont\footnotesize\sffamily\color{syn-muted-text}}
@@ -65,11 +65,13 @@
 
 \tcbset{
   synaptic/note-base/.style={
-    enhanced,breakable,frame~hidden,arc=0pt,
+    enhanced,breakable,frame~hidden,
+    arc=1.5pt,outer~arc=1.5pt,
     colback=syn-surface,coltext=syn-text-dark,
     fonttitle=\bfseries\sffamily,
-    left=8pt,right=7pt,top=6pt,bottom=6pt,
-    before~skip=7pt,after~skip=7pt
+    left=9pt,right=8pt,top=7pt,bottom=7pt,
+    before~skip=8pt,after~skip=8pt,
+    borderline~north={0.3pt}{0pt}{syn-border!55!white}
   },
   synaptic/key-idea/.style={
     synaptic/note-base,coltitle=syn-primary,
@@ -85,7 +87,8 @@
   },
   synaptic/note-summary/.style={
     synaptic/note-base,colback=syn-primary!7!white,coltitle=syn-primary,
-    borderline~west={3pt}{0pt}{syn-primary}
+    borderline~west={3pt}{0pt}{syn-primary},
+    borderline~south={0.6pt}{0pt}{syn-primary!45!white}
   }
 }
 

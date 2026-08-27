@@ -16,7 +16,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-theorem}{2026-08-27}{2.4.0}
+\ProvidesExplPackage{synaptic-theorem}{2026-08-28}{2.5.0}
   {Synaptic~Theorem~Environments}
 
 \RequirePackage{amsthm}
@@ -33,25 +33,30 @@
     frame~hidden,
     colback     = syn-surface,
     coltext     = syn-text-dark,
+    boxrule     = 0pt,
     left        = 10pt,
-    right       = 8pt,
-    top         = 7pt,
-    bottom      = 7pt,
-    arc         = 0pt,
-    before~skip = 9pt,
-    after~skip  = 9pt
+    right       = 10pt,
+    top         = 8pt,
+    bottom      = 8pt,
+    arc         = 1.5pt,
+    outer~arc   = 1.5pt,
+    before~skip = 10pt,
+    after~skip  = 10pt,
+    borderline~north = {0.35pt}{0pt}{syn-border!60!white}
   },
   synaptic/theorem-box-plain/.style={
     synaptic/theorem-box,
-    borderline~west = {2pt}{0pt}{syn-primary}
+    borderline~west = {2.4pt}{0pt}{syn-primary}
   },
   synaptic/theorem-box-definition/.style={
     synaptic/theorem-box,
-    borderline~west = {2pt}{0pt}{syn-primary}
+    colback = syn-accent!4!white,
+    borderline~west = {2.4pt}{0pt}{syn-accent}
   },
   synaptic/theorem-box-remark/.style={
     synaptic/theorem-box,
-    borderline~west = {2pt}{0pt}{syn-secondary}
+    colback = syn-secondary!3!white,
+    borderline~west = {2.2pt}{0pt}{syn-secondary}
   }
 }
 
@@ -200,36 +205,63 @@
 
 \cs_new_protected:Npn \__synaptic_theorem_declare_custom:nnn #1#2#3
   {
-    \str_case:nnF {#1}
+    \bool_lazy_or:nnTF
+      { \cs_if_exist_p:c {#2} }
+      { \cs_if_exist_p:c { c@#2 } }
       {
-        { plain }
-          {
-            \str_if_eq:VnTF \l_synaptic_numbering_tl { none }
-              { \declaretheorem[style=syn-theorem-plain,name=#3,numbered=no]{#2} }
-              { \declaretheorem[style=syn-theorem-plain,name=#3,sibling=theorem]{#2} }
-            \str_if_eq:VnT \l_synaptic_theorem_style_tl { boxed }
-              { \tcolorboxenvironment{#2}{synaptic/theorem-box-plain} }
-          }
-        { definition }
-          {
-            \str_if_eq:VnTF \l_synaptic_numbering_tl { none }
-              { \declaretheorem[style=syn-theorem-definition,name=#3,numbered=no]{#2} }
-              { \declaretheorem[style=syn-theorem-definition,name=#3,sibling=theorem]{#2} }
-            \str_if_eq:VnT \l_synaptic_theorem_style_tl { boxed }
-              { \tcolorboxenvironment{#2}{synaptic/theorem-box-definition} }
-          }
-        { remark }
-          {
-            \str_if_eq:VnTF \l_synaptic_numbering_tl { none }
-              { \declaretheorem[style=syn-theorem-remark,name=#3,numbered=no]{#2} }
-              { \declaretheorem[style=syn-theorem-remark,name=#3,sibling=theorem]{#2} }
-            \str_if_eq:VnT \l_synaptic_theorem_style_tl { boxed }
-              { \tcolorboxenvironment{#2}{synaptic/theorem-box-remark} }
-          }
+        \PackageWarning{synaptic-theorem}
+          {Theorem~environment~`#2'~already~exists;~declaration~ignored}
       }
       {
-        \PackageError{synaptic-theorem}{Unknown~theorem~style~`#1'}
-          {Use~plain,~definition,~or~remark.}
+        \str_case:nnF {#1}
+          {
+            { plain }
+              {
+                \str_if_eq:VnTF \l_synaptic_numbering_tl { none }
+                  {
+                    \declaretheorem
+                      [style=syn-theorem-plain,name=#3,numbered=no]{#2}
+                  }
+                  {
+                    \declaretheorem
+                      [style=syn-theorem-plain,name=#3,sibling=theorem]{#2}
+                  }
+                \str_if_eq:VnT \l_synaptic_theorem_style_tl { boxed }
+                  { \tcolorboxenvironment{#2}{synaptic/theorem-box-plain} }
+              }
+            { definition }
+              {
+                \str_if_eq:VnTF \l_synaptic_numbering_tl { none }
+                  {
+                    \declaretheorem
+                      [style=syn-theorem-definition,name=#3,numbered=no]{#2}
+                  }
+                  {
+                    \declaretheorem
+                      [style=syn-theorem-definition,name=#3,sibling=theorem]{#2}
+                  }
+                \str_if_eq:VnT \l_synaptic_theorem_style_tl { boxed }
+                  { \tcolorboxenvironment{#2}{synaptic/theorem-box-definition} }
+              }
+            { remark }
+              {
+                \str_if_eq:VnTF \l_synaptic_numbering_tl { none }
+                  {
+                    \declaretheorem
+                      [style=syn-theorem-remark,name=#3,numbered=no]{#2}
+                  }
+                  {
+                    \declaretheorem
+                      [style=syn-theorem-remark,name=#3,sibling=theorem]{#2}
+                  }
+                \str_if_eq:VnT \l_synaptic_theorem_style_tl { boxed }
+                  { \tcolorboxenvironment{#2}{synaptic/theorem-box-remark} }
+              }
+          }
+          {
+            \PackageError{synaptic-theorem}{Unknown~theorem~style~`#1'}
+              {Use~plain,~definition,~or~remark.}
+          }
       }
   }
 

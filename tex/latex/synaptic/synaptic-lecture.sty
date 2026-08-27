@@ -20,7 +20,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-lecture}{2026-08-27}{2.4.0}
+\ProvidesExplPackage{synaptic-lecture}{2026-08-28}{2.5.0}
   {Synaptic~Lecture~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -62,9 +62,9 @@
   }
 
 \clearpairofpagestyles
-\ihead{\__synaptic_lecture_running_left:}
+\ihead{\__synaptic_layout_header_mark:\__synaptic_lecture_running_left:}
 \ohead{\__synaptic_lecture_running_right:}
-\ofoot*{\pagemark}
+\ofoot*{\__synaptic_layout_footer_mark:\enspace\pagemark}
 \setkomafont{pageheadfoot}
   {\normalfont\footnotesize\sffamily\color{syn-muted-text}}
 \pagestyle{scrheadings}
@@ -74,16 +74,20 @@
   synaptic/learning-goals/.style={
     enhanced,breakable,frame~hidden,
     colback=syn-surface-strong,coltext=syn-text-dark,
-    borderline~west={2.4pt}{0pt}{syn-primary},
+    borderline~west={2.6pt}{0pt}{syn-primary},
+    borderline~north={0.35pt}{0pt}{syn-border!60!white},
     fonttitle=\bfseries\sffamily,coltitle=syn-primary,
     attach~title~to~upper={\quad},
-    left=9pt,right=7pt,top=7pt,bottom=7pt,arc=0pt
+    left=10pt,right=9pt,top=8pt,bottom=8pt,
+    arc=1.5pt,outer~arc=1.5pt
   },
   synaptic/lecture-summary/.style={
     enhanced,breakable,colback=syn-primary!7!white,colframe=syn-primary,
     boxrule=0.5pt,fonttitle=\bfseries\sffamily,
     colbacktitle=syn-primary,coltitle=syn-on-primary,
-    left=9pt,right=9pt,top=7pt,bottom=7pt,arc=0pt
+    borderline~west={2.0pt}{0pt}{syn-accent},
+    left=10pt,right=10pt,top=8pt,bottom=8pt,
+    arc=1.5pt,outer~arc=1.5pt
   }
 }
 

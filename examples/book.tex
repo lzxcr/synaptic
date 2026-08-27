@@ -2,32 +2,74 @@
 \documentclass[11pt,twoside]{scrbook}
 \usepackage[mode=book,theme=midnight,fontset=lm,toc=false]{synaptic}
 
-\SynapticTitle{A Minimal Synaptic Book}
-\SynapticHalfTitle{A Minimal Synaptic Book}
-\SynapticSubtitle{A compact demonstration of long-form structure}
+\SynapticTitle{The Architecture of Mathematical Ideas}
+\SynapticHalfTitle{The Architecture of Mathematical Ideas}
+\SynapticShortTitle{Mathematical Ideas}
+\SynapticSubtitle{Structure, proof, and the design of a readable page}
 \SynapticAuthor{Ada Author}
 \SynapticPublisher{Synaptic Press}
 \SynapticEdition{First edition}
 \SynapticISBN{978-0-00-000000-0}
 \SynapticCopyright{Copyright \textcopyright\ 2026 Ada Author.}
 \SynapticDate{2026}
-\SynapticSubject{A compact synaptic book-mode example}
+\SynapticSubject{A synaptic book-mode design example}
 \begin{abstract}
-  Book mode provides chapter styling, mirrored margins, and running heads.
+  Book mode provides an intentional title sequence, mirrored margins, running
+  navigation, part and chapter openings, and a coherent language for
+  mathematical statements.
 \end{abstract}
 
 \begin{document}
 \SynapticMakeTitle
 \SynapticFrontMatter
 \chapter{Preface}
-This short preface demonstrates unnumbered front matter at chapter scale.
+Mathematical writing is read at several speeds. A reader may scan the page for
+structure, pause at a definition, or follow a proof line by line. The page
+should support all three behaviours without changing its visual grammar.
+
+This example treats whitespace as structure: rules terminate a region, nodes
+mark transitions, and quiet surfaces collect statements that belong together.
 \SynapticBookContents
 \SynapticMainMatter
+\part{Foundations}
 \chapter{First Principles}
 \SynapticChapterSubtitle{Structure before decoration}
 \SynapticEpigraph{Good pages make difficult ideas easier to revisit.}{The editor}
-\section{A section}
-Book content begins here.
+\section{Reading relationships}
+Book content begins with a simple principle: decoration should reveal a
+relationship already present in the argument. Repetition then turns that
+relationship into navigation.
+
+\begin{definition}
+  A page has \emph{visual continuity} when related components preserve their
+  alignment, spacing, colour role, and typographic voice across contexts.
+\end{definition}
+
+\begin{theorem}[Hierarchy principle]
+  If every level of a document has one dominant cue and one supporting cue,
+  then the levels remain distinguishable under both colour and monochrome
+  delivery.
+\end{theorem}
+\begin{proof}
+  The dominant cue determines the first classification. The independent
+  supporting cue resolves any collision remaining after colour is removed.
+\end{proof}
+
+\section{Rhythm and measure}
+Long-form pages need enough room for equations without producing tiring lines.
+Mirrored inner and outer margins also need to leave space for binding and for
+the reader's hands. Synaptic therefore treats measure and density as separate
+controls rather than one generic scale.
+
+\chapter{Semantic Emphasis}
+\SynapticChapterSubtitle{Cards as part of the argument}
+Definitions, theorems, examples, and remarks carry distinct semantic roles.
+Their surfaces should be visible during scanning and quiet during sustained
+reading.
+\begin{remark}
+  A card is not a poster. Its border and fill should remain subordinate to the
+  text it protects.
+\end{remark}
 \SynapticBackMatter
 \SynapticAcknowledgments
 Thanks to the readers.

@@ -16,12 +16,12 @@
 \SynapticNewTheorem[remark]{observation}{观察}
 \SynapticHeader{synaptic 用户手册}
 \SynapticSubHeader{面向 LuaLaTeX 的稳定学术排版}
-\SynapticPreprint{v2.3.0}
+\SynapticPreprint{v2.5.0}
 \SynapticTitle{synaptic 宏包用户手册}
 \SynapticAuthor{synaptic 项目}
 \SynapticAffiliation{开源 LaTeX 社区}
 \SynapticEmail{synaptic@example.com}
-\SynapticSubject{synaptic 2.3.0 用户手册}
+\SynapticSubject{synaptic 2.5.0 用户手册}
 \SynapticKeywords{synaptic, LaTeX3, LuaLaTeX, 学术排版}
 
 \begin{abstract}
@@ -183,13 +183,15 @@ synaptic 的默认外观是确定的而非装饰性的。以下设计原则贯�
 \textbf{title-layout} 决定各模式标题区的渲染方式。\texttt{auto} 解析为
 journal 的 \texttt{inline}、book 的 \texttt{cover} 以及 lecture 与 notes 的
 \texttt{compact}。\texttt{page} 生成整页标题；\texttt{inline} 强制第一页
-内联构成。期刊标题下方使用编辑部风格的双重规则；书籍标题置于短主色条之上；
-讲义与笔记信息条使用随主题着色的单一规则。
+内联构成。所有标题渲染器共用一组非对称“连接轨道”：短主色线、强调节点与
+淡色延伸线。书籍将其用于标题页和版权页的建筑性边缘，讲义与笔记则将其与
+紧凑信息带组合，期刊模式保持内联且具有编辑感。
 
 \subsection{导航}
 
 所有模式在运行页眉下方绘制一条发丝线。发丝线使用独立的装饰性浅色令牌，
-使导航保持安静。页码居中于页脚；书籍模式还遵循外侧页眉与双面空白页。
+使导航保持安静。运行页眉与外侧页码重复微型节点标记；书籍模式还为双面强制空白页
+提供克制的页脚锚点。
 
 \subsection{标题、目录与图表标题}
 
@@ -201,8 +203,8 @@ journal 的 \texttt{inline}、book 的 \texttt{cover} 以及 lecture 与 notes �
 
 \subsection{卡片与规则}
 
-教学与笔记卡片共享同一视觉语言：直角、着语义色（主色、次级、警告或成功色）
-的左侧色条、浅色表面与可读标题颜色。规则与发丝线由主题主色的低浓度混合
+教学与笔记卡片共享同一视觉语言：极小圆角、着语义色（主色、次级、警告或成功色）
+的左侧色条、淡发丝线、浅色表面与可读标题颜色。规则与发丝线由主题主色的低浓度混合
 推导，装饰永不与正文争抢。
 
 \section{标题与 PDF 元数据}
@@ -247,7 +249,7 @@ PDF 字符串只进行一次 Unicode 安全转换。
 文使用正体；中文命题类正文保持正体，避免伪斜体造成的阅读干扰。
 
 默认（\texttt{theorem-style=boxed}）下，编号的陈述环境以精致的卡片呈现：微
-妙的主题色背景、西侧强调条与方角，与教学与笔记卡片语言保持一致。
+妙的主题色背景、语义西侧强调条、淡发丝线与克制圆角，与教学与笔记卡片语言保持一致。
 \texttt{proof} 保持干净、不加框。选择 \texttt{theorem-style=plain} 可恢复无框
 经典样式。
 
@@ -262,7 +264,8 @@ PDF 字符串只进行一次 Unicode 安全转换。
 \end{proof}
 
 自定义定理可选择 \texttt{plain}、\texttt{definition} 或 \texttt{remark} 样式：
-自定义定理也会自动加框。
+自定义定理也会自动加框。对已有环境重复声明是安全的：synaptic 会保留既有
+定义并给出警告，以便旧文档与扩充后的内置定理集兼容。
 
 \begin{verbatim}
 \SynapticNewTheorem[remark]{observation}{观察}
@@ -353,7 +356,7 @@ notes 模式提供 \texttt{synkeyidea}、\texttt{synquestion}、\texttt{syntodo}
 
 {\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l Y@{}}
   \toprule
-  \textbf{v1} & \textbf{v2.3} \\
+  \textbf{v1} & \textbf{v2.5} \\
   \midrule
   \texttt{color=ocean} & \texttt{theme=ocean} \\
   \texttt{style=modern/minimal} & \texttt{mode=journal/notes} \\
@@ -363,7 +366,7 @@ notes 模式提供 \texttt{synkeyidea}、\texttt{synquestion}、\texttt{syntodo}
   \bottomrule
 \end{tabularx}}
 
-v2.3 的公开 API 与 v2.2 一致。小写书籍前后文命令和讲义盒子通用名仍作为有条件的
+v2.5 的公开 API 继续兼容 v2.2。小写书籍前后文命令和讲义盒子通用名仍作为有条件的
 v2.0 兼容别名保留；新文档应使用带命名空间的公开形式。
 
 \section{开发命令}

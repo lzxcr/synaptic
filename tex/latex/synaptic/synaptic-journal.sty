@@ -18,7 +18,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-journal}{2026-08-27}{2.4.0}
+\ProvidesExplPackage{synaptic-journal}{2026-08-28}{2.5.0}
   {Synaptic~Journal~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -37,9 +37,9 @@
   }
 
 \clearpairofpagestyles
-\ihead{\__synaptic_journal_running_author:}
+\ihead{\__synaptic_layout_header_mark:\__synaptic_journal_running_author:}
 \ohead{\__synaptic_journal_running_title:}
-\ofoot*{\pagemark}
+\ofoot*{\__synaptic_layout_footer_mark:\enspace\pagemark}
 \setkomafont{pageheadfoot}
   {\normalfont\footnotesize\sffamily\color{syn-muted-text}}
 \pagestyle{scrheadings}
@@ -49,6 +49,7 @@
   {
     \section*{#2}
     \IfBooleanF{#1}{\addcontentsline{toc}{section}{#2}}
+    \noindent\textcolor{syn-rule}{\rule{2.5em}{0.45pt}}\par\smallskip
     #3\par
   }
 

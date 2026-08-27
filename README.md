@@ -158,8 +158,9 @@ the shorter modes use sections. All numbered environments share the theorem
 counter and honour the `numbering` profile.
 
 By default (`theorem-style=boxed`) the numbered statement environments are
-presented as refined cards: a subtle theme-tinted background, a west accent
-bar, and square corners that match the teaching and notes card language.
+presented as refined cards: a subtle theme-tinted background, a semantic west
+accent bar, a quiet hairline, and a very small corner radius shared with the
+teaching and notes card language.
 `proof` stays clean and unboxed. Set `theorem-style=plain` for the classic
 unboxed look:
 
@@ -172,7 +173,9 @@ unboxed look:
 ```
 
 The optional style is `plain`, `definition`, or `remark`; a custom theorem is
-also boxed automatically.
+also boxed automatically. Repeating a declaration for an existing environment
+is safe: synaptic keeps the established definition and emits a warning. This
+lets older documents coexist with the expanded built-in theorem set.
 
 Lecture mode adds `synexample`, `synremark`, `synwarning`, `synexercise`, and
 `synbox`. The first optional argument is a title and the second is a label.
@@ -219,9 +222,10 @@ Book mode provides `\SynapticFrontMatter`, `\SynapticMainMatter`, and
 appendix helpers. `\SynapticHalfTitle`, `\SynapticPublisher`,
 `\SynapticEdition`, `\SynapticISBN`, and `\SynapticCopyright` populate the book
 title sequence. `\SynapticChapterSubtitle` and `\SynapticEpigraph` extend
-chapter openings. Chapter headings set the number and title inline over a short
-primary rule that echoes the title-page bar, and chapter contents entries carry
-the same primary colour so the table of contents mirrors the on-page
+chapter openings. Title matter, intentionally blank duplex pages, chapter
+openings, and folios share an asymmetric rule-and-node motif. Chapter headings
+set the number and title inline above that motif, and chapter contents entries
+carry the same primary colour so the table of contents mirrors the on-page
 structure.
 
 Lecture metadata uses `\SynapticCourse`, `\SynapticCourseCode`,

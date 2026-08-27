@@ -1,13 +1,15 @@
 % !TEX program = lualatex
 \documentclass[11pt]{scrartcl}
-\usepackage[mode=lecture,theme=forest,fontset=lm]{synaptic}
+\usepackage[mode=lecture,theme=forest,fontset=lm,density=compact]{synaptic}
 
 \SynapticCourseCode{MATH 201}
 \SynapticCourse{Analysis}
 \SynapticLectureNumber{1}
 \SynapticTitle{Continuity and Compactness}
+\SynapticSubtitle{From local control to finite structure}
 \SynapticShortTitle{Continuity}
 \SynapticInstructor{Ada Lecturer}
+\SynapticSemester{Autumn 2026}
 \SynapticDate{13 August 2026}
 \begin{abstract}
   Definitions, one worked example, a warning, and guided practice.
@@ -23,18 +25,19 @@
 \end{synlearninggoals}
 \section{Lecture One}
 \begin{theorem}[Continuity]
-  A standard theorem is automatically boxed in lecture mode.
+  A continuous map on a compact metric space is uniformly continuous.
 \end{theorem}
 \begin{synexample}[Worked example][worked]
-  Optional second arguments create stable labels.
+  On $[0,1]$, $\lvert x^2-y^2\rvert\leq 2\lvert x-y\rvert$.
 \end{synexample}
 \begin{synwarning}[Common pitfall]
-  Semantic warning colours remain independent of the selected theme.
+  Pointwise choices of $\delta$ do not establish uniform continuity.
 \end{synwarning}
 \begin{synexercise}[Try it]
-  Compile this example with LuaLaTeX.
+  Extract a finite subcover from the continuity neighbourhoods.
 \end{synexercise}
 \begin{synlecturesummary}
-  Continuity transports local information; compactness turns local data into finite data.
+  Continuity transports local information; compactness turns local data into
+  finite data. A Lebesgue number converts the finite cover into one global scale.
 \end{synlecturesummary}
 \end{document}

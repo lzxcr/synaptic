@@ -1,5 +1,31 @@
 # Changelog
 
+## [2.5.0] — 2026-08-28
+
+### Added
+
+- Introduced a shared “synaptic rail” motif—an asymmetric rule, accent node,
+  and quiet continuation line—across title matter, chapter openings, running
+  navigation, and intentionally blank book versos. This turns large areas of
+  white space into deliberate structure without adding illustrative clutter.
+- Added mode-aware title kickers and richer full-page compositions for book
+  and notes documents. Book half-title and copyright versos now carry a quiet
+  colophon treatment; notes title pages use a stronger editorial hierarchy and
+  anchored metadata panel.
+- Added bilingual contents and list names to the language layer.
+
+### Changed
+
+- Rebalanced the default page profiles to make better use of A4 and Letter
+  paper, especially in book and lecture mode, while preserving readable line
+  lengths and the existing `measure` overrides.
+- Refined section numbering, folios, chapter/part rules, theorem surfaces,
+  teaching cards, and notes cards around one coherent visual vocabulary.
+- Reworked the four bundled examples so compiled samples exercise realistic
+  hierarchy and page composition instead of looking like sparse smoke tests.
+- Made `\SynapticNewTheorem` idempotent for already-defined environments so
+  documents written against older built-in theorem sets continue to compile.
+
 ## [2.4.0] — 2026-08-27
 
 ### Added

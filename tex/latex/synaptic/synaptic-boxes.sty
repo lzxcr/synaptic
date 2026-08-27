@@ -21,7 +21,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-boxes}{2026-08-27}{2.4.0}
+\ProvidesExplPackage{synaptic-boxes}{2026-08-28}{2.5.0}
   {Synaptic~Box~Environments}
 
 \RequirePackage{tcolorbox}
@@ -32,8 +32,9 @@
     enhanced,breakable,
     fonttitle=\bfseries\sffamily,
     coltext=syn-text-dark,
-    boxrule=0.4pt,left=9pt,right=8pt,top=7pt,bottom=7pt,arc=0pt,
-    before~skip=9pt,after~skip=9pt
+    boxrule=0.4pt,left=10pt,right=9pt,top=8pt,bottom=8pt,
+    arc=1.5pt,outer~arc=1.5pt,
+    before~skip=10pt,after~skip=10pt
   },
   synaptic/example/.style={
     synaptic/base,colback=syn-surface,colframe=syn-border,
@@ -160,7 +161,9 @@
       top           = 4pt,
       bottom        = 4pt,
       boxsep        = 4pt,
-      arc           = 0pt,
+      arc           = 1.5pt,
+      outer~arc     = 1.5pt,
+      borderline~west = {2.2pt}{0pt}{syn-accent},
       breakable
     ]
   }

@@ -19,13 +19,18 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-book}{2026-08-27}{2.4.0}
+\ProvidesExplPackage{synaptic-book}{2026-08-28}{2.5.0}
   {Synaptic~Book~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
 \RequirePackage{needspace}
 
-\KOMAoptions{numbers=noendperiod,cleardoublepage=empty}
+\newpairofpagestyles{synapticblank}
+  {
+    \clearpairofpagestyles
+    \cfoot{\__synaptic_layout_footer_mark:}
+  }
+\KOMAoptions{numbers=noendperiod,cleardoublepage=synapticblank}
 \raggedbottom
 
 \AddToHook{begindocument/before}
@@ -39,22 +44,22 @@
       font        = \normalfont\Huge\bfseries\sffamily\color{syn-primary}
     ]{chapter}
 
-    % Chapter decoration: number and title inline, balanced by a short
-    % primary rule beneath that echoes the book title-page bar.
+    % Chapter decoration: number and title stay inline; the shared rail below
+    % connects chapter openings to title matter and running navigation.
     \renewcommand*{\chapterformat}{%
       \thechapter\enskip
     }
     \renewcommand*{\chapterlinesformat}[3]{%
       #2#3%
-      \par\nobreak\vspace{0.35em}%
-      \noindent\textcolor{syn-primary}{\rule{0.22\linewidth}{1.0pt}}\par\nobreak\vspace{0.6em}%
+      \par\nobreak\vspace{0.45em}%
+      \__synaptic_layout_motif:\par\nobreak\vspace{0.65em}%
     }
   }
 
 \clearpairofpagestyles
 
-\ohead{\headmark}
-\ofoot*{\pagemark}
+\ohead{\__synaptic_layout_header_mark:\headmark}
+\ofoot*{\__synaptic_layout_footer_mark:\enspace\pagemark}
 
 \automark[section]{chapter}
 \setkomafont{pageheadfoot}
@@ -96,13 +101,24 @@
       {\normalfont\Large\bfseries\sffamily\color{syn-muted-text}}
     \renewcommand*{\partformat}{%
       {\usekomafont{partnumber}\partname\nobreakspace\thepart
-        \par\nobreak\vspace{0.8em}}%
-      \textcolor{syn-primary}{\rule{0.22\linewidth}{1.3pt}}\par\nobreak\vspace{0.9em}%
+        \par\nobreak\vspace{1.0em}}%
+      \__synaptic_layout_motif:\par\nobreak\vspace{1.3em}%
+    }
+    \renewcommand*{\partlineswithprefixformat}[3]{%
+      #2%
+      \IfUseNumber
+        {\par\nobreak\vspace{0.025\textheight}%
+         {\normalfont\fontsize{72}{78}\selectfont\bfseries\sffamily
+          \color{syn-faded}\thepart\par}%
+         \vspace{0.025\textheight}}%
+        {}%
+      #3%
     }
     \RedeclareSectionCommand[
-      beforeskip = -0.10\textheight,
+      beforeskip = -0.18\textheight,
       afterskip  = 3em
     ]{part}
+    \renewcommand*{\partpagestyle}{synapticblank}
     \setkomafont{chapterentry}{\normalfont\bfseries\sffamily\color{syn-primary}}
     \setkomafont{chapterentrypagenumber}
       {\normalfont\bfseries\sffamily\color{syn-primary}}
@@ -122,9 +138,9 @@
 
 \NewDocumentCommand{\SynapticChapterSubtitle}{m}
   {
-    \par\vspace{-1.1em}
+    \par\vspace{-1.0em}
     {\large\sffamily\color{syn-muted-text}#1\par}
-    \vspace{1.4em}
+    \vspace{1.25em}
   }
 
 \NewDocumentCommand{\SynapticEpigraph}{m m}
@@ -132,10 +148,12 @@
     \Needspace{7\baselineskip}
     \begin{flushright}
       \begin{minipage}{0.62\linewidth}
+        \textcolor{syn-rule}{\rule{0.40\linewidth}{0.45pt}}\par\smallskip
         \raggedleft\synaptic_if_lang_zh:TF{\upshape}{\itshape}
         \color{syn-text-dark}
         #1\par\smallskip
-        {\normalfont\small\sffamily\color{syn-muted-text}#2}
+        {\normalfont\small\sffamily\color{syn-muted-text}
+          \__synaptic_layout_node:\enspace#2}
       \end{minipage}
     \end{flushright}
     \addvspace{1.2em}

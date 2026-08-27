@@ -2,16 +2,19 @@
 \documentclass[11pt,letterpaper]{scrartcl}
 \usepackage[mode=notes,theme=graphite,fontset=lm]{synaptic}
 \SynapticSetup{theme=paper}
-\SynapticTitle{Compact Notes}
-\SynapticSubtitle{Metric spaces and continuity}
+\SynapticTitle{Field Notes on Metric Spaces}
+\SynapticSubtitle{Continuity, completeness, and compactness}
 \SynapticShortTitle{Metric-space notes}
 \SynapticAuthor{Ada Student}
 \SynapticDate{Week 3}
 \SynapticTags{analysis \textbullet\ topology}
+\begin{abstract}
+  A working sheet for separating local, sequential, and covering arguments.
+\end{abstract}
 
 \begin{document}
 \SynapticMakeTitle
-\section{Compact Notes}
+\section{Metric-space toolkit}
 The package respects the paper size selected by the document class.
 \begin{lemma}
   Structural options are frozen after loading; themes remain switchable.
@@ -22,6 +25,15 @@ The package respects the paper size selected by the document class.
 \begin{synquestion}[For review]
   Which implications require completeness?
 \end{synquestion}
+\subsection{A reusable estimate}
+For a contraction $T$ with constant $0<q<1$, the iterates satisfy
+\[
+  d(T^n x,T^n y)\leq q^n d(x,y).
+\]
+The estimate separates the geometric input from the limiting argument.
+\begin{syntodo}[Before the exam]
+  Compare sequential compactness, total boundedness, and completeness.
+\end{syntodo}
 \begin{synsummary}
   Definitions, results, and open questions now share a compact visual hierarchy.
 \end{synsummary}

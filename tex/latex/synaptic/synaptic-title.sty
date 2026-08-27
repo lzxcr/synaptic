@@ -17,7 +17,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-title}{2026-08-27}{2.4.0}
+\ProvidesExplPackage{synaptic-title}{2026-08-28}{2.5.0}
   {Synaptic~Title~Page}
 
 \tl_new:N   \l_synaptic_title_tl
@@ -244,7 +244,57 @@
 }
 
 \tl_new:N   \l__synaptic_title_layout_tl
-\bool_new:N \l__synaptic_title_verso_bool
+
+\cs_new:Npn \__synaptic_title_mode_word:
+  {
+    \synaptic_if_lang_zh:TF
+      {
+        \str_case:Vn \l_synaptic_mode_tl
+          {
+            { journal } { 学术论文 }
+            { book }    { 专著 }
+            { lecture } { 课程讲义 }
+            { notes }   { 数学笔记 }
+          }
+      }
+      {
+        \str_case:Vn \l_synaptic_mode_tl
+          {
+            { journal } { Research~article }
+            { book }    { Monograph }
+            { lecture } { Course~notes }
+            { notes }   { Working~notes }
+          }
+      }
+  }
+
+\cs_new_protected:Npn \__synaptic_title_kicker:n #1
+  {
+    \noindent
+    {\footnotesize\sffamily\bfseries\color{syn-muted-text}#1\par}
+    \addvspace{7pt}
+    \__synaptic_layout_motif:\par
+  }
+
+\cs_new_protected:Npn \__synaptic_title_metadata_panel:n #1
+  {
+    \group_begin:
+      \setlength{\fboxsep}{10pt}
+      \noindent\colorbox{syn-surface}{%
+        \parbox{\dimexpr\linewidth-2\fboxsep\relax}{#1}}
+    \group_end:
+  }
+
+\cs_new_protected:Npn \__synaptic_title_page_signature:
+  {
+    \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.45pt}}\par
+    \addvspace{8pt}
+    \noindent
+    {\footnotesize\sffamily\color{syn-muted-text}\l_synaptic_title_tl}
+    \hfill
+    {\footnotesize\sffamily\color{syn-muted-text}\l_synaptic_date_tl}
+    \par
+  }
 
 \cs_new_protected:Npn \__synaptic_title_resolve_layout:
   {
@@ -370,12 +420,8 @@
           {\large\raggedright\color{syn-text-dark!86}
             \l_synaptic_subtitle_tl\par}
         }
-      \addvspace{13pt}
-      % Classic double rule: a strong primary bar over a hairline gives the
-      % journal header a precise, editorial finish without extra decoration.
-      \noindent\textcolor{syn-primary}{\rule{\linewidth}{1.1pt}}\par
-      \vspace{2.5pt}
-      \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.35pt}}\par
+      \addvspace{14pt}
+      \__synaptic_layout_motif:\par
       \seq_if_empty:NF \l_synaptic_authors_seq
         {
           \addvspace{15pt}
@@ -422,6 +468,7 @@
       {
         \thispagestyle{empty}
         \__synaptic_title_render_journal_block:
+        \vfill\__synaptic_title_page_signature:
         \clearpage
       }
       {
@@ -435,10 +482,25 @@
   {
     \tl_if_empty:NF \l_synaptic_half_title_tl
       {
+        \thispagestyle{empty}\null\vspace*{0.10\textheight}
+        \__synaptic_title_kicker:n { \__synaptic_title_mode_word: }
+        \vspace*{0.13\textheight}
+        {\raggedright\fontsize{30}{35}\selectfont\bfseries
+          \l_synaptic_half_title_tl\par}
+        \vfill
+        \__synaptic_title_page_signature:
+        \vspace*{0.035\textheight}\null
+        \clearpage
+        % A half-title traditionally leaves its verso blank.  A very quiet
+        % colophon keeps the convention while making the page intentional in
+        % screen PDFs and short books.
         \thispagestyle{empty}\null\vfill
-        {\raggedright\Huge\bfseries\l_synaptic_half_title_tl\par}
-        \vfill\null
-        \cleardoublepage
+        {\raggedleft\footnotesize\sffamily\color{syn-muted-text}
+          \l_synaptic_short_title_tl\par}
+        \addvspace{10pt}
+        \noindent\hfill\__synaptic_layout_footer_mark:\par
+        \vspace*{0.045\textheight}\null
+        \clearpage
       }
   }
 
@@ -446,86 +508,89 @@
   {
     \thispagestyle{empty}
     \group_begin:
-      \noindent
-      {\small\sffamily\bfseries\color{syn-muted-text}
-        \l_synaptic_header_tl}\par
+      \tl_if_empty:NTF \l_synaptic_header_tl
+        { \__synaptic_title_kicker:n { \__synaptic_title_mode_word: } }
+        { \__synaptic_title_kicker:n { \l_synaptic_header_tl } }
       \tl_if_empty:NF \l_synaptic_subheader_tl
         {
-          \addvspace{5pt}
+          \addvspace{8pt}
           {\small\sffamily\color{syn-primary}
             \l_synaptic_subheader_tl\par}
         }
-      \vspace*{0.13\textheight}
-      {\Huge\raggedright\bfseries\l_synaptic_title_tl\par}
+      \vspace*{0.075\textheight}
+      {\raggedright\fontsize{34}{40}\selectfont\bfseries
+        \l_synaptic_title_tl\par}
       \tl_if_empty:NF \l_synaptic_subtitle_tl
         {
-          \addvspace{12pt}
-          {\Large\raggedright\color{syn-primary}
+          \addvspace{14pt}
+          {\Large\raggedright\sffamily\color{syn-primary}
             \l_synaptic_subtitle_tl\par}
         }
-      \addvspace{18pt}
-      \noindent\textcolor{syn-primary}{\rule{0.32\linewidth}{1.4pt}}\par
+      \addvspace{20pt}
+      \__synaptic_layout_motif:\par
       \seq_if_empty:NF \l_synaptic_authors_seq
         {
-          \addvspace{22pt}
+          \addvspace{24pt}
           {\Large\sffamily\bfseries\raggedright
             \__synaptic_title_render_authors:\par}
         }
-      \addvspace{8pt}
+      \addvspace{10pt}
       \__synaptic_title_render_affiliations:
       \vfill
-      \tl_if_empty:NF \l_synaptic_edition_tl
-        { {\small\sffamily\color{syn-muted-text}\l_synaptic_edition_tl\par} }
-      \tl_if_empty:NF \l_synaptic_publisher_tl
+      \__synaptic_title_metadata_panel:n
         {
-          \addvspace{6pt}
-          {\large\sffamily\bfseries\color{syn-text-dark}
-            \l_synaptic_publisher_tl\par}
+          \tl_if_empty:NF \l_synaptic_edition_tl
+            { {\small\sffamily\color{syn-muted-text}
+                \l_synaptic_edition_tl\par} }
+          \tl_if_empty:NF \l_synaptic_publisher_tl
+            {
+              \addvspace{5pt}
+              {\large\sffamily\bfseries\color{syn-text-dark}
+                \l_synaptic_publisher_tl\par}
+            }
+          \tl_if_empty:NF \l_synaptic_date_tl
+            { {\small\sffamily\color{syn-muted-text}
+                \l_synaptic_date_tl\par} }
         }
-      \tl_if_empty:NF \l_synaptic_date_tl
-        { {\small\sffamily\color{syn-muted-text}\l_synaptic_date_tl\par} }
     \group_end:
     \clearpage
   }
 
 \cs_new_protected:Npn \__synaptic_title_render_book_verso:
   {
-    \bool_set_false:N \l__synaptic_title_verso_bool
+    \thispagestyle{empty}
+    \tl_if_empty:NTF \l_synaptic_abstract_tl
+      { \__synaptic_title_kicker:n { \__synaptic_title_mode_word: } }
+      { \__synaptic_title_kicker:n { \c_synaptic_label_about_book_tl } }
     \tl_if_empty:NF \l_synaptic_abstract_tl
-      { \bool_set_true:N \l__synaptic_title_verso_bool }
-    \tl_if_empty:NF \l_synaptic_copyright_tl
-      { \bool_set_true:N \l__synaptic_title_verso_bool }
-    \tl_if_empty:NF \l_synaptic_isbn_tl
-      { \bool_set_true:N \l__synaptic_title_verso_bool }
-    \bool_if:NT \l__synaptic_title_verso_bool
       {
-        \thispagestyle{empty}
-        \tl_if_empty:NF \l_synaptic_abstract_tl
+        \addvspace{18pt}
+        \__synaptic_title_metadata_panel:n
           {
-            {\sffamily\bfseries\color{syn-primary}
-              \c_synaptic_label_about_book_tl\par}
-            \addvspace{10pt}
             \group_begin:\small\setstretch{1.18}
               \l_synaptic_abstract_tl\par
             \group_end:
           }
-        \vfill
-        \tl_if_empty:NF \l_synaptic_copyright_tl
-          { {\footnotesize\l_synaptic_copyright_tl\par} }
-        \tl_if_empty:NF \l_synaptic_isbn_tl
-          {
-            \addvspace{4pt}
-            {\footnotesize\sffamily ISBN\c_synaptic_colon_tl\enspace
-              \l_synaptic_isbn_tl\par}
-          }
+      }
+    \vfill
+    \__synaptic_title_page_signature:
+    \tl_if_empty:NF \l_synaptic_copyright_tl
+      { \addvspace{8pt}{\footnotesize\l_synaptic_copyright_tl\par} }
+    \tl_if_empty:NF \l_synaptic_isbn_tl
+      {
+        \addvspace{4pt}
+        {\footnotesize\sffamily ISBN\c_synaptic_colon_tl\enspace
+          \l_synaptic_isbn_tl\par}
       }
     \cleardoublepage
     \tl_if_empty:NF \l_synaptic_dedicated_tl
       {
-        \thispagestyle{empty}\null\vfill
-        {\raggedleft\large\synaptic_if_lang_zh:TF{\upshape}{\itshape}
-          \color{syn-muted-text}
-          \l_synaptic_dedicated_tl\par}
+        \thispagestyle{empty}\null\vspace*{0.18\textheight}
+        \__synaptic_title_kicker:n { \__synaptic_title_mode_word: }
+        \vfill
+        {\raggedright\large\synaptic_if_lang_zh:TF{\upshape}{\itshape}
+          \color{syn-text-dark}\l_synaptic_dedicated_tl\par}
+        \addvspace{18pt}\__synaptic_layout_motif:\par
         \vfill\null
         \cleardoublepage
       }
@@ -550,26 +615,34 @@
 \cs_new_protected:Npn \__synaptic_title_render_lecture_block:
   {
     \group_begin:
-      \noindent
-      {\small\sffamily\bfseries\color{syn-muted-text}
-        \l_synaptic_course_code_tl
-        \tl_if_empty:NF \l_synaptic_course_tl
-          {\tl_if_empty:NF \l_synaptic_course_code_tl {\enspace\textbullet\enspace}
-           \l_synaptic_course_tl}}
-      \hfill
-      {\small\sffamily\color{syn-muted-text}
-        \tl_if_empty:NF \l_synaptic_lecture_number_tl
-          {\c_synaptic_label_lecture_tl\nobreakspace\l_synaptic_lecture_number_tl
-           \synaptic_if_lang_zh:TF {~讲} {}}
-        \tl_if_empty:NF \l_synaptic_date_tl
-          {\tl_if_empty:NF \l_synaptic_lecture_number_tl {\enspace\textbullet\enspace}
-           \l_synaptic_date_tl}}
-      \par\addvspace{12pt}
-      {\LARGE\sffamily\bfseries\raggedright\l_synaptic_title_tl\par}
+      \__synaptic_title_metadata_panel:n
+        {
+          \noindent
+          {\small\sffamily\bfseries\color{syn-text-dark}
+            \__synaptic_layout_header_mark:
+            \l_synaptic_course_code_tl
+            \tl_if_empty:NF \l_synaptic_course_tl
+              {\tl_if_empty:NF \l_synaptic_course_code_tl
+                 {\enspace\textbullet\enspace}
+               \l_synaptic_course_tl}}
+          \hfill
+          {\small\sffamily\color{syn-muted-text}
+            \tl_if_empty:NF \l_synaptic_lecture_number_tl
+              {\c_synaptic_label_lecture_tl\nobreakspace
+               \l_synaptic_lecture_number_tl
+               \synaptic_if_lang_zh:TF {~讲} {}}
+            \tl_if_empty:NF \l_synaptic_date_tl
+              {\tl_if_empty:NF \l_synaptic_lecture_number_tl
+                 {\enspace\textbullet\enspace}
+               \l_synaptic_date_tl}}
+        }
+      \par\addvspace{15pt}
+      {\fontsize{24}{29}\selectfont\sffamily\bfseries\raggedright
+        \l_synaptic_title_tl\par}
       \tl_if_empty:NF \l_synaptic_subtitle_tl
         {\addvspace{5pt}{\large\color{syn-text-dark!86}
           \l_synaptic_subtitle_tl\par}}
-      \addvspace{8pt}
+      \addvspace{9pt}
       \tl_if_empty:NTF \l_synaptic_instructor_tl
         {
           \seq_if_empty:NF \l_synaptic_authors_seq
@@ -581,48 +654,66 @@
       \tl_if_empty:NF \l_synaptic_semester_tl
         { {\small\sffamily\color{syn-muted-text}
             \l_synaptic_semester_tl\par} }
-      \addvspace{10pt}
-      \noindent\textcolor{syn-primary}{\rule{\linewidth}{1.1pt}}\par
+      \addvspace{12pt}
+      \__synaptic_layout_motif:\par
       \tl_if_empty:NF \l_synaptic_abstract_tl
         {
-          \addvspace{9pt}
-          {\small\sffamily\bfseries\color{syn-primary}
-            \c_synaptic_label_overview_tl\c_synaptic_colon_tl}\enspace
-          {\small\l_synaptic_abstract_tl\par}
+          \addvspace{11pt}
+          \__synaptic_title_metadata_panel:n
+            {
+              {\small\sffamily\bfseries\color{syn-primary}
+                \c_synaptic_label_overview_tl\c_synaptic_colon_tl}\enspace
+              {\small\l_synaptic_abstract_tl\par}
+            }
         }
-      \addvspace{16pt}
+      \addvspace{18pt}
     \group_end:
   }
 
 \cs_new_protected:Npn \__synaptic_title_render_lecture:
   {
     \str_if_eq:VnTF \l__synaptic_title_layout_tl { page }
-      { \thispagestyle{empty}\__synaptic_title_render_lecture_block:\clearpage }
+      {
+        \thispagestyle{empty}\__synaptic_title_render_lecture_block:
+        \vfill\__synaptic_title_page_signature:\clearpage
+      }
       { \__synaptic_title_use_plain_style:\__synaptic_title_render_lecture_block: }
   }
 
 \cs_new_protected:Npn \__synaptic_title_render_notes_block:
   {
     \group_begin:
-      {\Large\sffamily\bfseries\raggedright\l_synaptic_title_tl\par}
+      \__synaptic_title_kicker:n { \__synaptic_title_mode_word: }
+      \str_if_eq:VnT \l__synaptic_title_layout_tl { page }
+        { \vspace*{0.065\textheight} }
+      \str_if_eq:VnTF \l__synaptic_title_layout_tl { page }
+        {
+          {\fontsize{30}{36}\selectfont\sffamily\bfseries\raggedright
+            \l_synaptic_title_tl\par}
+        }
+        { {\Large\sffamily\bfseries\raggedright\l_synaptic_title_tl\par} }
       \tl_if_empty:NF \l_synaptic_subtitle_tl
-        {\addvspace{3pt}{\normalsize\color{syn-text-dark!86}
+        {\addvspace{6pt}{\large\color{syn-text-dark!86}
           \l_synaptic_subtitle_tl\par}}
-      \addvspace{7pt}
-      \noindent
-      {\small\sffamily\color{syn-muted-text}
-        \seq_if_empty:NF \l_synaptic_authors_seq
-          {\seq_use:Nn \l_synaptic_authors_seq {,~}}
-        \tl_if_empty:NF \l_synaptic_date_tl
-          {\seq_if_empty:NF \l_synaptic_authors_seq {\enspace\textbullet\enspace}
-           \l_synaptic_date_tl}}
-      \hfill
-      {\small\sffamily\color{syn-muted-text}\l_synaptic_tags_tl}\par
-      \addvspace{7pt}
-      \noindent\textcolor{syn-rule}{\rule{\linewidth}{0.7pt}}\par
+      \addvspace{16pt}
+      \__synaptic_title_metadata_panel:n
+        {
+          \noindent
+          {\small\sffamily\color{syn-text-dark}
+            \seq_if_empty:NF \l_synaptic_authors_seq
+              {\__synaptic_layout_header_mark:
+               \seq_use:Nn \l_synaptic_authors_seq {,~}}
+            \tl_if_empty:NF \l_synaptic_date_tl
+              {\seq_if_empty:NF \l_synaptic_authors_seq
+                 {\enspace\textbullet\enspace}
+               \l_synaptic_date_tl}}
+          \hfill
+          {\small\sffamily\color{syn-muted-text}\l_synaptic_tags_tl}\par
+        }
       \tl_if_empty:NF \l_synaptic_abstract_tl
-        {\addvspace{7pt}{\small\l_synaptic_abstract_tl\par}}
-      \addvspace{12pt}
+        {\addvspace{12pt}{\small\setstretch{1.16}
+          \l_synaptic_abstract_tl\par}}
+      \addvspace{16pt}
     \group_end:
   }
 
@@ -630,9 +721,11 @@
   {
     \str_if_eq:VnTF \l__synaptic_title_layout_tl { page }
       {
-        \thispagestyle{empty}\null\vspace{0.12\textheight}
+        \thispagestyle{empty}\null\vspace{0.06\textheight}
         \__synaptic_title_render_notes_block:
-        \vfill\null\clearpage
+        \vfill
+        \__synaptic_title_page_signature:
+        \vspace*{0.035\textheight}\null\clearpage
       }
       {
         \__synaptic_title_use_plain_style:

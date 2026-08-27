@@ -7,6 +7,7 @@
 \SynapticAffiliation[1]{Test Institute}
 \SynapticEmail{test@example.org}
 \SynapticNewTheorem[remark]{observation}{Observation}
+\SynapticNewTheorem[remark]{solution}{Answer}
 
 \begin{document}
 \START
