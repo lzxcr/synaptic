@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.6.0] — 2026-08-28
+
+### Added
+
+- Completed the heading hierarchy. The run-in `\paragraph` and `\subparagraph`
+  levels now inherit the same sans heading voice as the numbered levels instead
+  of falling back to the document default. Each deeper level sits in a
+  monotonically lighter colour, so a heading used without its intermediate
+  level no longer reads with more weight than the level above it.
+- Added table-of-contents entries for `\paragraph` and `\subparagraph` with a
+  matching muted gradient and deeper indentation, so deep hierarchies stay
+  legible when a document opts into that `tocdepth`.
+
+### Changed
+
+- Unified the deeper heading sizes (`subsubsection`, `paragraph`, and
+  `subparagraph`) on the same small size, with colour depth carrying the
+  remaining distinction, so block and run-in headings scale predictably.
+
 ## [2.5.0] — 2026-08-28
 
 ### Added

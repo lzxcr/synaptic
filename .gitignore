@@ -37,3 +37,12 @@ synaptic.log
 # OS files
 .DS_Store
 Thumbs.db
+
+# Docstrip header byproducts
+*.hd
+
+# Skill / task workspace (not project source)
+.jspace/
+
+# Reference materials provided alongside the project (not source)
+上升之海代數幾何引論Ravi_Vakil.pdf

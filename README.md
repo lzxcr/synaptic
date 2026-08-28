@@ -195,12 +195,15 @@ are provided only when no existing package or class has already claimed them.
 
 All numbered section levels use a single sans heading family with a clear
 depth hierarchy (`section` in the primary colour, `subsection` dark,
-`subsubsection` smaller and muted) so the structure reads at a glance. When a
-table of contents is requested its top-level entries repeat the on-page
-heading colour in bold, while deeper entries stay dark and the number
-alignment and vertical rhythm are tightened. Figure and table caption labels
-carry the secondary theme token to keep the caption language consistent with
-the rest of the design.
+`subsubsection` smaller and muted) so the structure reads at a glance. The
+run-in `paragraph` and `subparagraph` levels carry the same sans voice and a
+monotonically lighter colour, so a deeper level never out-weighs the level
+above it. When a table of contents is requested its top-level entries repeat
+the on-page heading colour in bold, deeper entries stay dark (with `paragraph`
+and `subparagraph` muted further), and the number alignment and vertical
+rhythm are tightened. Figure and table caption labels carry the secondary
+theme token to keep the caption language consistent with the rest of the
+design.
 
 ### Themes
 

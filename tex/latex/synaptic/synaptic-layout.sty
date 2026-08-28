@@ -15,7 +15,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-layout}{2026-08-28}{2.5.0}
+\ProvidesExplPackage{synaptic-layout}{2026-08-28}{2.6.0}
   {Synaptic~Page~Layout}
 
 \RequirePackage{geometry}
@@ -272,6 +272,8 @@
     \setkomafont{section}{\normalfont\large\bfseries\sffamily\color{syn-primary}}
     \setkomafont{subsection}{\normalfont\normalsize\bfseries\sffamily\color{syn-text-dark}}
     \setkomafont{subsubsection}{\normalfont\small\bfseries\sffamily\color{syn-text-dark!85}}
+    \setkomafont{paragraph}{\normalfont\small\bfseries\sffamily\color{syn-text-dark!80}}
+    \setkomafont{subparagraph}{\normalfont\small\bfseries\sffamily\color{syn-text-dark!60}}
 
     % A muted number and one accent node make section starts easier to scan
     % without turning the number into a badge or a second headline.
@@ -291,6 +293,14 @@
       beforeskip = -2.0ex plus -0.5ex minus -.1ex,
       afterskip  = 1.0ex plus .1ex
     ]{subsubsection}
+    \RedeclareSectionCommand[
+      beforeskip = -1.6ex plus -0.4ex minus -.1ex,
+      afterskip  = 0.6ex plus .1ex
+    ]{paragraph}
+    \RedeclareSectionCommand[
+      beforeskip = -1.3ex plus -0.3ex minus -.1ex,
+      afterskip  = 0.5ex plus .1ex
+    ]{subparagraph}
   }
 
 \cs_new_protected:Npn \__synaptic_layout_toc_style:
@@ -327,6 +337,26 @@
                 \DeclareTOCStyleEntry[
                   indent = 3em,
                   entryformat = {\color{syn-text-dark!85}}
+                ]{tocline}{##1}
+              }
+          }
+        \clist_map_inline:nn { paragraph }
+          {
+            \cs_if_exist:cT {l@##1}
+              {
+                \DeclareTOCStyleEntry[
+                  indent = 4.5em,
+                  entryformat = {\color{syn-text-dark!75}}
+                ]{tocline}{##1}
+              }
+          }
+        \clist_map_inline:nn { subparagraph }
+          {
+            \cs_if_exist:cT {l@##1}
+              {
+                \DeclareTOCStyleEntry[
+                  indent = 6em,
+                  entryformat = {\color{syn-text-dark!60}}
                 ]{tocline}{##1}
               }
           }

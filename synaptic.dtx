@@ -21,7 +21,7 @@
 \hfuzz=6pt
 \AtBeginDocument{\hypersetup{pdftitle={synaptic bundle},
   linkcolor=blue!60!black,urlcolor=teal}}
-\ProvidesFile{synaptic.dtx}[2026-08-28 v2.5.0 synaptic documented source]
+\ProvidesFile{synaptic.dtx}[2026-08-28 v2.6.0 synaptic documented source]
 \EnableCrossrefs\CodelineIndex\RecordChanges
 \begin{document}
 \DocInput{synaptic.dtx}
@@ -53,6 +53,10 @@
 % \changes{v2.5.0}{2026-08-28}{Rebalanced the page profiles and introduced a
 % shared synaptic-rail motif for title matter, navigation, chapter openings,
 % cards, and intentional book versos.}
+% \changes{v2.6.0}{2026-08-28}{Completed the heading hierarchy so the run-in
+% \texttt{paragraph} and \texttt{subparagraph} levels adopt the design's sans
+% voice with a monotonic colour gradient, gave the table of contents matching
+% muted entries for those levels, and unified the deeper heading sizes.}
 % \textbf{synaptic} is a modular \LaTeX3 design system for academic documents.
 % It provides a clean, non-invasive API with mode-aware module loading
 % and deterministic font-bundle auto-detection through \textsf{fontspec}.
@@ -149,7 +153,7 @@
 %    \begin{macrocode}
 %<*base>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-base}{2026-08-28}{2.5.0}
+\ProvidesExplPackage{synaptic-base}{2026-08-28}{2.6.0}
   {Synaptic~Core~Infrastructure}
 
 \msg_new:nnn { synaptic } { luatex-required }
@@ -485,7 +489,7 @@
 %    \begin{macrocode}
 %<*color>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-color}{2026-08-28}{2.5.0}
+\ProvidesExplPackage{synaptic-color}{2026-08-28}{2.6.0}
   {Synaptic~Theme~Colour~System}
 
 \RequirePackage{xcolor}
@@ -601,7 +605,7 @@
 %    \begin{macrocode}
 %<*fonts>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-fonts}{2026-08-28}{2.5.0}
+\ProvidesExplPackage{synaptic-fonts}{2026-08-28}{2.6.0}
   {Synaptic~Font~System}
 
 \RequirePackage{fontspec}
@@ -837,7 +841,7 @@
 %    \begin{macrocode}
 %<*layout>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-layout}{2026-08-28}{2.5.0}
+\ProvidesExplPackage{synaptic-layout}{2026-08-28}{2.6.0}
   {Synaptic~Page~Layout}
 
 \RequirePackage{geometry}
@@ -1127,6 +1131,8 @@
     \setkomafont{section}{\normalfont\large\bfseries\sffamily\color{syn-primary}}
     \setkomafont{subsection}{\normalfont\normalsize\bfseries\sffamily\color{syn-text-dark}}
     \setkomafont{subsubsection}{\normalfont\small\bfseries\sffamily\color{syn-text-dark!85}}
+    \setkomafont{paragraph}{\normalfont\small\bfseries\sffamily\color{syn-text-dark!80}}
+    \setkomafont{subparagraph}{\normalfont\small\bfseries\sffamily\color{syn-text-dark!60}}
 
     % A muted number and one accent node make section starts easier to scan
     % without turning the number into a badge or a second headline.
@@ -1146,6 +1152,14 @@
       beforeskip = -2.0ex plus -0.5ex minus -.1ex,
       afterskip  = 1.0ex plus .1ex
     ]{subsubsection}
+    \RedeclareSectionCommand[
+      beforeskip = -1.6ex plus -0.4ex minus -.1ex,
+      afterskip  = 0.6ex plus .1ex
+    ]{paragraph}
+    \RedeclareSectionCommand[
+      beforeskip = -1.3ex plus -0.3ex minus -.1ex,
+      afterskip  = 0.5ex plus .1ex
+    ]{subparagraph}
   }
 
 % ---------------------------------------------------------------------------
@@ -1189,6 +1203,26 @@
                 \DeclareTOCStyleEntry[
                   indent = 3em,
                   entryformat = {\color{syn-text-dark!85}}
+                ]{tocline}{##1}
+              }
+          }
+        \clist_map_inline:nn { paragraph }
+          {
+            \cs_if_exist:cT {l@##1}
+              {
+                \DeclareTOCStyleEntry[
+                  indent = 4.5em,
+                  entryformat = {\color{syn-text-dark!75}}
+                ]{tocline}{##1}
+              }
+          }
+        \clist_map_inline:nn { subparagraph }
+          {
+            \cs_if_exist:cT {l@##1}
+              {
+                \DeclareTOCStyleEntry[
+                  indent = 6em,
+                  entryformat = {\color{syn-text-dark!60}}
                 ]{tocline}{##1}
               }
           }
@@ -1248,7 +1282,7 @@
 %    \begin{macrocode}
 %<*theorem>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-theorem}{2026-08-28}{2.5.0}
+\ProvidesExplPackage{synaptic-theorem}{2026-08-28}{2.6.0}
   {Synaptic~Theorem~Environments}
 
 \RequirePackage{amsthm}
@@ -1569,7 +1603,7 @@
 %    \begin{macrocode}
 %<*title>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-title}{2026-08-28}{2.5.0}
+\ProvidesExplPackage{synaptic-title}{2026-08-28}{2.6.0}
   {Synaptic~Title~Page}
 
 % ---------------------------------------------------------------------------
@@ -2364,7 +2398,7 @@
 %    \begin{macrocode}
 %<*journal>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-journal}{2026-08-28}{2.5.0}
+\ProvidesExplPackage{synaptic-journal}{2026-08-28}{2.6.0}
   {Synaptic~Journal~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -2411,7 +2445,7 @@
 %    \begin{macrocode}
 %<*book>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-book}{2026-08-28}{2.5.0}
+\ProvidesExplPackage{synaptic-book}{2026-08-28}{2.6.0}
   {Synaptic~Book~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -2577,7 +2611,7 @@
 %    \begin{macrocode}
 %<*lecture>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-lecture}{2026-08-28}{2.5.0}
+\ProvidesExplPackage{synaptic-lecture}{2026-08-28}{2.6.0}
   {Synaptic~Lecture~Mode}
 
 % ---------------------------------------------------------------------------
@@ -2679,7 +2713,7 @@
 %    \begin{macrocode}
 %<*boxes>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-boxes}{2026-08-28}{2.5.0}
+\ProvidesExplPackage{synaptic-boxes}{2026-08-28}{2.6.0}
   {Synaptic~Box~Environments}
 
 \RequirePackage{tcolorbox}
@@ -2843,7 +2877,7 @@
 %    \begin{macrocode}
 %<*notes>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-notes}{2026-08-28}{2.5.0}
+\ProvidesExplPackage{synaptic-notes}{2026-08-28}{2.6.0}
   {Synaptic~Notes~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -3050,7 +3084,7 @@
 %    \begin{macrocode}
 %<*package>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic}{2026-08-28}{2.5.0}
+\ProvidesExplPackage{synaptic}{2026-08-28}{2.6.0}
   {Modern~Academic~Typesetting~Framework}
 
 % Forward all user options to synaptic-base
