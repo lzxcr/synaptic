@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.6.1] — 2026-08-28
+
+### Fixed
+
+- Stopped the pdf backend from reporting duplicate destinations for numbered
+  theorem environments. `thmtools`' `numberwithin` registers the structural
+  parent for the displayed number and the counter reset, but not in
+  hyperref's `cl@<counter>` list, so every environment sharing the `theorem`
+  counter produced the same `\theH` anchor. Two theorems in different sections
+  therefore collided (e.g. `theorem.1`), yielding the `duplicate destination`
+  warning and link targets that could jump to the wrong statement. Synaptic now
+  rebuilds `\theH<theorem>` and every sibling environment's anchor against the
+  real parent (`section` or `chapter`), so anchors stay unique and links land
+  correctly. Applies to the built-in environments and to anything declared via
+  `\SynapticNewTheorem`.
+
 ## [2.6.0] — 2026-08-28
 
 ### Added

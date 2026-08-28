@@ -16,7 +16,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-theorem}{2026-08-28}{2.6.0}
+\ProvidesExplPackage{synaptic-theorem}{2026-08-28}{2.6.1}
   {Synaptic~Theorem~Environments}
 
 \RequirePackage{amsthm}
@@ -91,6 +91,31 @@
   headpunct     = {.}
 ]{syn-theorem-remark}
 
+\tl_new:N \l__synaptic_theorem_parent_tl
+
+\cs_new_protected:Npn \__synaptic_theorem_repair_anchor:n #1
+  {
+    \tl_if_empty:NF \l__synaptic_theorem_parent_tl
+      {
+        \cs_if_exist:cT { theH#1 }
+          {
+            % Build a live anchor: parent's H-value at use time, plus the
+            % shared theorem counter.  (Do not bake a scratch register — it is
+            % clobbered later, and a caught value would repeat across sections.)
+            \cs_set:cpn { theH#1 }
+              { \use:c { theH \l__synaptic_theorem_parent_tl } . \arabic{theorem} }
+          }
+      }
+  }
+
+\cs_new_protected:Npn \__synaptic_theorem_repair_anchors:
+  {
+    \clist_map_inline:nn
+      { theorem,lemma,proposition,corollary,axiom,conjecture,claim,property,
+        definition,criterion,convention,problem,solution,example,remark,note }
+      { \__synaptic_theorem_repair_anchor:n {##1} }
+  }
+
 \cs_new_protected:Npn \__synaptic_theorem_declare_sibling:nn #1#2
   {
     \cs_if_exist:cF {#1}
@@ -112,16 +137,22 @@
 
 \cs_new_protected:Npn \__synaptic_theorem_declare_within:n #1
   {
+    \tl_gset:Nn \l__synaptic_theorem_parent_tl {#1}
     \declaretheorem[
       style=syn-theorem-plain,
       name=\c_synaptic_label_thm_tl,
       numberwithin=#1
     ]{theorem}
     \__synaptic_theorem_declare_siblings:
+    % thmtools' numberwithin does not feed the parent to hyperref, so the
+    % shared counter's anchors repeat across structural numbers.  Rebuild the
+    % H-anchor for every theorem environment against the real parent.
+    \__synaptic_theorem_repair_anchors:
   }
 
 \cs_new_protected:Npn \__synaptic_theorem_declare_continuous:
   {
+    \tl_gset:Nn \l__synaptic_theorem_parent_tl { }
     \declaretheorem[
       style=syn-theorem-plain,
       name=\c_synaptic_label_thm_tl
@@ -137,6 +168,7 @@
 
 \cs_new_protected:Npn \__synaptic_theorem_declare_unnumbered:
   {
+    \tl_gset:Nn \l__synaptic_theorem_parent_tl { }
     \declaretheorem[style=syn-theorem-plain,
       name=\c_synaptic_label_thm_tl,numbered=no]{theorem}
     \clist_map_inline:nn { lemma,proposition,corollary,axiom,conjecture,claim,property }
@@ -226,6 +258,7 @@
                     \declaretheorem
                       [style=syn-theorem-plain,name=#3,sibling=theorem]{#2}
                   }
+                \__synaptic_theorem_repair_anchor:n {#2}
                 \str_if_eq:VnT \l_synaptic_theorem_style_tl { boxed }
                   { \tcolorboxenvironment{#2}{synaptic/theorem-box-plain} }
               }
@@ -240,6 +273,7 @@
                     \declaretheorem
                       [style=syn-theorem-definition,name=#3,sibling=theorem]{#2}
                   }
+                \__synaptic_theorem_repair_anchor:n {#2}
                 \str_if_eq:VnT \l_synaptic_theorem_style_tl { boxed }
                   { \tcolorboxenvironment{#2}{synaptic/theorem-box-definition} }
               }
@@ -254,6 +288,7 @@
                     \declaretheorem
                       [style=syn-theorem-remark,name=#3,sibling=theorem]{#2}
                   }
+                \__synaptic_theorem_repair_anchor:n {#2}
                 \str_if_eq:VnT \l_synaptic_theorem_style_tl { boxed }
                   { \tcolorboxenvironment{#2}{synaptic/theorem-box-remark} }
               }

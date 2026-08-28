@@ -21,7 +21,7 @@
 \hfuzz=6pt
 \AtBeginDocument{\hypersetup{pdftitle={synaptic bundle},
   linkcolor=blue!60!black,urlcolor=teal}}
-\ProvidesFile{synaptic.dtx}[2026-08-28 v2.6.0 synaptic documented source]
+\ProvidesFile{synaptic.dtx}[2026-08-28 v2.6.1 synaptic documented source]
 \EnableCrossrefs\CodelineIndex\RecordChanges
 \begin{document}
 \DocInput{synaptic.dtx}
@@ -57,6 +57,12 @@
 % \texttt{paragraph} and \texttt{subparagraph} levels adopt the design's sans
 % voice with a monotonic colour gradient, gave the table of contents matching
 % muted entries for those levels, and unified the deeper heading sizes.}
+% \changes{v2.6.1}{2026-08-28}{Prevented duplicate pdf link destinations by
+% rebuilding hyperref's \texttt{theH<theorem>} anchors against the real
+% structural parent for every theorem environment that shares the theorem
+% counter.  thmtools registers the parent only for display and reset, not in
+% hyperref's \texttt{cl@<counter>} list, so the shared anchor repeated across
+% sections and produced the \texttt{duplicate destination} warning.}
 % \textbf{synaptic} is a modular \LaTeX3 design system for academic documents.
 % It provides a clean, non-invasive API with mode-aware module loading
 % and deterministic font-bundle auto-detection through \textsf{fontspec}.
@@ -153,7 +159,7 @@
 %    \begin{macrocode}
 %<*base>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-base}{2026-08-28}{2.6.0}
+\ProvidesExplPackage{synaptic-base}{2026-08-28}{2.6.1}
   {Synaptic~Core~Infrastructure}
 
 \msg_new:nnn { synaptic } { luatex-required }
@@ -489,7 +495,7 @@
 %    \begin{macrocode}
 %<*color>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-color}{2026-08-28}{2.6.0}
+\ProvidesExplPackage{synaptic-color}{2026-08-28}{2.6.1}
   {Synaptic~Theme~Colour~System}
 
 \RequirePackage{xcolor}
@@ -605,7 +611,7 @@
 %    \begin{macrocode}
 %<*fonts>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-fonts}{2026-08-28}{2.6.0}
+\ProvidesExplPackage{synaptic-fonts}{2026-08-28}{2.6.1}
   {Synaptic~Font~System}
 
 \RequirePackage{fontspec}
@@ -841,7 +847,7 @@
 %    \begin{macrocode}
 %<*layout>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-layout}{2026-08-28}{2.6.0}
+\ProvidesExplPackage{synaptic-layout}{2026-08-28}{2.6.1}
   {Synaptic~Page~Layout}
 
 \RequirePackage{geometry}
@@ -1282,7 +1288,7 @@
 %    \begin{macrocode}
 %<*theorem>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-theorem}{2026-08-28}{2.6.0}
+\ProvidesExplPackage{synaptic-theorem}{2026-08-28}{2.6.1}
   {Synaptic~Theorem~Environments}
 
 \RequirePackage{amsthm}
@@ -1371,6 +1377,37 @@
 % numbering by default; shorter modes use sections.  This keeps book labels
 % such as 2.3 rather than the unnecessarily deep 2.1.3.
 % ---------------------------------------------------------------------------
+% The structural counter every theorem environment shares.  thmtools'
+% numberwithin registers the parent only for display (\thetheorem) and for
+% the c<counter> reset, but not in hyperref's cl@<counter> list, so hyperref
+% leaves \theH<counter> as a bare \arabic{theorem}.  That anchor then repeats
+% across sections/chapters and the pdf backend reports duplicate destinations.
+% We record the real parent and rebuild the anchors after the declarations.
+\tl_new:N \l__synaptic_theorem_parent_tl
+
+\cs_new_protected:Npn \__synaptic_theorem_repair_anchor:n #1
+  {
+    \tl_if_empty:NF \l__synaptic_theorem_parent_tl
+      {
+        \cs_if_exist:cT { theH#1 }
+          {
+            % Build a live anchor: parent's H-value at use time, plus the
+            % shared theorem counter.  (Do not bake a scratch register — it is
+            % clobbered later, and a caught value would repeat across sections.)
+            \cs_set:cpn { theH#1 }
+              { \use:c { theH \l__synaptic_theorem_parent_tl } . \arabic{theorem} }
+          }
+      }
+  }
+
+\cs_new_protected:Npn \__synaptic_theorem_repair_anchors:
+  {
+    \clist_map_inline:nn
+      { theorem,lemma,proposition,corollary,axiom,conjecture,claim,property,
+        definition,criterion,convention,problem,solution,example,remark,note }
+      { \__synaptic_theorem_repair_anchor:n {##1} }
+  }
+
 \cs_new_protected:Npn \__synaptic_theorem_declare_sibling:nn #1#2
   {
     \cs_if_exist:cF {#1}
@@ -1392,16 +1429,22 @@
 
 \cs_new_protected:Npn \__synaptic_theorem_declare_within:n #1
   {
+    \tl_gset:Nn \l__synaptic_theorem_parent_tl {#1}
     \declaretheorem[
       style=syn-theorem-plain,
       name=\c_synaptic_label_thm_tl,
       numberwithin=#1
     ]{theorem}
     \__synaptic_theorem_declare_siblings:
+    % thmtools' numberwithin does not feed the parent to hyperref, so the
+    % shared counter's anchors repeat across structural numbers.  Rebuild the
+    % H-anchor for every theorem environment against the real parent.
+    \__synaptic_theorem_repair_anchors:
   }
 
 \cs_new_protected:Npn \__synaptic_theorem_declare_continuous:
   {
+    \tl_gset:Nn \l__synaptic_theorem_parent_tl { }
     \declaretheorem[
       style=syn-theorem-plain,
       name=\c_synaptic_label_thm_tl
@@ -1417,6 +1460,7 @@
 
 \cs_new_protected:Npn \__synaptic_theorem_declare_unnumbered:
   {
+    \tl_gset:Nn \l__synaptic_theorem_parent_tl { }
     \declaretheorem[style=syn-theorem-plain,
       name=\c_synaptic_label_thm_tl,numbered=no]{theorem}
     \clist_map_inline:nn { lemma,proposition,corollary,axiom,conjecture,claim,property }
@@ -1514,6 +1558,7 @@
                     \declaretheorem
                       [style=syn-theorem-plain,name=#3,sibling=theorem]{#2}
                   }
+                \__synaptic_theorem_repair_anchor:n {#2}
                 \str_if_eq:VnT \l_synaptic_theorem_style_tl { boxed }
                   { \tcolorboxenvironment{#2}{synaptic/theorem-box-plain} }
               }
@@ -1528,6 +1573,7 @@
                     \declaretheorem
                       [style=syn-theorem-definition,name=#3,sibling=theorem]{#2}
                   }
+                \__synaptic_theorem_repair_anchor:n {#2}
                 \str_if_eq:VnT \l_synaptic_theorem_style_tl { boxed }
                   { \tcolorboxenvironment{#2}{synaptic/theorem-box-definition} }
               }
@@ -1542,6 +1588,7 @@
                     \declaretheorem
                       [style=syn-theorem-remark,name=#3,sibling=theorem]{#2}
                   }
+                \__synaptic_theorem_repair_anchor:n {#2}
                 \str_if_eq:VnT \l_synaptic_theorem_style_tl { boxed }
                   { \tcolorboxenvironment{#2}{synaptic/theorem-box-remark} }
               }
@@ -1603,7 +1650,7 @@
 %    \begin{macrocode}
 %<*title>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-title}{2026-08-28}{2.6.0}
+\ProvidesExplPackage{synaptic-title}{2026-08-28}{2.6.1}
   {Synaptic~Title~Page}
 
 % ---------------------------------------------------------------------------
@@ -2398,7 +2445,7 @@
 %    \begin{macrocode}
 %<*journal>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-journal}{2026-08-28}{2.6.0}
+\ProvidesExplPackage{synaptic-journal}{2026-08-28}{2.6.1}
   {Synaptic~Journal~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -2445,7 +2492,7 @@
 %    \begin{macrocode}
 %<*book>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-book}{2026-08-28}{2.6.0}
+\ProvidesExplPackage{synaptic-book}{2026-08-28}{2.6.1}
   {Synaptic~Book~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -2611,7 +2658,7 @@
 %    \begin{macrocode}
 %<*lecture>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-lecture}{2026-08-28}{2.6.0}
+\ProvidesExplPackage{synaptic-lecture}{2026-08-28}{2.6.1}
   {Synaptic~Lecture~Mode}
 
 % ---------------------------------------------------------------------------
@@ -2713,7 +2760,7 @@
 %    \begin{macrocode}
 %<*boxes>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-boxes}{2026-08-28}{2.6.0}
+\ProvidesExplPackage{synaptic-boxes}{2026-08-28}{2.6.1}
   {Synaptic~Box~Environments}
 
 \RequirePackage{tcolorbox}
@@ -2877,7 +2924,7 @@
 %    \begin{macrocode}
 %<*notes>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-notes}{2026-08-28}{2.6.0}
+\ProvidesExplPackage{synaptic-notes}{2026-08-28}{2.6.1}
   {Synaptic~Notes~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -3084,7 +3131,7 @@
 %    \begin{macrocode}
 %<*package>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic}{2026-08-28}{2.6.0}
+\ProvidesExplPackage{synaptic}{2026-08-28}{2.6.1}
   {Modern~Academic~Typesetting~Framework}
 
 % Forward all user options to synaptic-base

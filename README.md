@@ -155,7 +155,10 @@ The core environments are `theorem`, `lemma`, `proposition`, `definition`,
 Definitions use upright body text; theorem statements use italics in English
 and upright text in Chinese. Book mode numbers theorems by chapter by default;
 the shorter modes use sections. All numbered environments share the theorem
-counter and honour the `numbering` profile.
+counter and honour the `numbering` profile. Because they share one counter,
+synaptic rebuilds each environment's hyperlink anchor against its structural
+parent (`section` or `chapter`), so numbered statements in different sections
+never collide — `\label`/`\ref` links always land on the intended statement.
 
 By default (`theorem-style=boxed`) the numbered statement environments are
 presented as refined cards: a subtle theme-tinted background, a semantic west
