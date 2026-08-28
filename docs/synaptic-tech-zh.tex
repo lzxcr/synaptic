@@ -11,20 +11,21 @@
 ]{synaptic}
 \usepackage{booktabs,tabularx}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\DocCmd}[1]{\textcolor{syn-primary!80!black}{\texttt{\textbackslash#1}}}
 
 \SynapticHeader{synaptic 技术参考}
 \SynapticSubHeader{架构、不变量与发布流程}
-\SynapticPreprint{v3.0.0}
+\SynapticPreprint{v4.0.0}
 \SynapticTitle{synaptic 技术参考}
 \SynapticAuthor{synaptic 项目}
 \SynapticAffiliation{开源 LaTeX 社区}
-\SynapticSubject{synaptic 3.0.0 技术参考}
+\SynapticSubject{synaptic 4.0.0 技术参考}
 \SynapticKeywords{LaTeX3, 架构, l3build, 回归测试}
 
-\begin{abstract}
+\begin{synabstract}
   本文档说明 synaptic 的模块图、加载期不变量、命名空间规则、字体与颜色子系统、
   扩展点、生成文件策略以及自动化验证流程。
-\end{abstract}
+\end{synabstract}
 
 \begin{document}
 \SynapticMakeTitle
@@ -47,9 +48,9 @@ synaptic.sty
           `-- synaptic-notes.sty       notes
 \end{verbatim}
 
-薄封装层把用户选项转发给 \texttt{synaptic-base}，并定义少量文档辅助命令。
-基础模块负责检查引擎与文档类、解析选项、加载标签、验证书籍模式，然后分发核心
-模块和模式模块。语言定义文件先于所有模块加载，保证标签常量随处可用。
+薄封装层把用户选项转发给 \texttt{synaptic-base}，并提供带命名空间的致谢命令。
+基础模块负责检查引擎与文档类、解析选项、加载标签、验证结构要求，然后分发核心
+模块和模式模块。语言定义文件先于消费这些标签的模块加载。
 
 \subsection{模块职责}
 
@@ -57,7 +58,7 @@ synaptic.sty
   \toprule
   \textbf{模块} & \textbf{类别} & \textbf{职责} \\
   \midrule
-  \texttt{synaptic.sty} & 封装 & 选项转发、文档辅助命令 \\
+  \texttt{synaptic.sty} & 封装 & 选项转发、致谢命令 \\
   \texttt{synaptic-base.sty} & 核心 & 引擎/文档类检查、键系统、分发 \\
   \texttt{synaptic-lang-*.def} & 数据 & 双语标签常量 \\
   \texttt{synaptic-color.sty} & 核心 & 主题登记、语义令牌、交付模式 \\
@@ -86,10 +87,10 @@ synaptic.sty
 \section{配置生命周期}
 
 宏包级 \texttt{synaptic} 键系统在模块加载前执行。模式、语言、字体组、标题布局、
-版心尺度、密度、编号、输出颜色模式、数学扩展和断行策略因此成为结构不变量。
+版心尺度、密度、编号、输出颜色模式、定理样式和装订偏移因此成为结构不变量。
 运行时键系统只暴露无需重载宏包就能应用的
 \texttt{theme}、\texttt{toc} 和 \texttt{toc-layout}。运行时请求中的结构键与未知键
-直接报错；宏包选项中的未知键给出警告。
+直接报错；宏包选项中的未知键同样报错。
 
 书籍模式要求章和前文接口同时存在。LuaLaTeX 与 KOMA-Script 要求在不满足时立即给出
 致命诊断，而不是延迟到后续的未定义命令。
@@ -107,8 +108,8 @@ synaptic.sty
     悄悄重新开始页码。
   \item \textbf{只做一次 Unicode 转换}。PDF 元数据以源词元交给 hyperref；
     预先转换会造成双重编码。
-  \item \textbf{公开名抗冲突}。陈述环境属于内置定理族；新声明必须
-    通过 \verb|\SynapticNewTheorem| 进行，重名即报错。
+  \item \textbf{公开名所有权明确}。所有公开命令与环境都带命名空间；
+    文档类或其他宏包提供的通用环境不会被修改。
   \item \textbf{语义颜色架构}。组件只消费语义令牌；主题与交付模式只改变
     令牌，不改变组件逻辑。
 \end{itemize}
@@ -124,10 +125,11 @@ synaptic.sty
 
 \begin{verbatim}
 \SynapticDefineTheme{名称}{主色}{辅色}[强调色]
-\SynapticUseTheme{名称}
+\SynapticSetup{theme=名称}
 \end{verbatim}
 
-参数是 xcolor 表达式。定义自定义主题时会同时登记并启用它。
+颜色参数是 xcolor 表达式。主题名必须是经过校验的小写标识符；定义不可变，
+启用操作显式完成。
 
 \subsection{字体选择}
 
@@ -158,25 +160,27 @@ microtype、图表标题标点、列表与模式化公式编号由布局模块�
 
 \subsection{标题与元数据}
 
-标题值保存在 expl3 词元表和序列中。作者与机构标记使用平行序列，机构与邮箱可重复。
+标题值是贯穿文档的状态，因此保存在 expl3 全局词元表和序列中。作者与机构标记使用
+平行序列，机构与邮箱可重复。
 公共元数据分别驱动期刊内联标题、书籍扉页序列、课程信息条和紧凑笔记信息条。标题命令
-验证非空标题并控制可选目录位置，不再隐式重置用户页码。标准 LaTeX 元数据只是输入适配层，
-不会重定义 \verb|\maketitle|。
+验证非空标题并控制可选目录位置，不再隐式重置用户页码。带命名空间的
+\texttt{synabstract} 捕获摘要；标准 \texttt{abstract} 与 \verb|\maketitle| 均不修改。
 
 PDF 信息以源词元传给 hyperref，由 hyperref 只执行一次 Unicode PDF 字符串转换。预先
 \verb|\pdfstringdef| 再传给 \verb|\hypersetup| 会导致双重编码，因此已禁止这种路径。
 
-\subsection{定理}
+\subsection{陈述}
 
 thmtools 在 amsthm 之上定义 plain、definition 和 remark 三种样式。内置陈述族
-（\texttt{theorem}、\texttt{lemma}、\texttt{proposition}、
-\texttt{definition}、\texttt{corollary}、\texttt{axiom}、\texttt{conjecture}、
-\texttt{claim}、\texttt{property}、\texttt{example}、\texttt{exercise}、
-\texttt{criterion}、\texttt{convention}、\texttt{problem}、\texttt{solution}、
-\texttt{remark}、\texttt{note} 与 \texttt{warning}）使用模式化共享计数器：
+（\texttt{syntheorem}、\texttt{synlemma}、\texttt{synproposition}、
+\texttt{syndefinition}、\texttt{syncorollary}、\texttt{synaxiom}、\texttt{synconjecture}、
+\texttt{synclaim}、\texttt{synproperty}、\texttt{synexample}、\texttt{synexercise}、
+\texttt{syncriterion}、\texttt{synconvention}、\texttt{synproblem}、\texttt{synsolution}、
+\texttt{synremark}、\texttt{synnote} 与 \texttt{synwarning}）使用模式化共享计数器：
 书籍默认按章，其他模式默认按节。在 \texttt{theorem-style=boxed} 之下，编号的陈述
 环境在 \texttt{\string\begin{document}} 处由 tcolorbox 包装（主题色背景配西侧强调条）；
-\texttt{proof} 保持无框。\texttt{theorem-style=plain} 关闭该包装。例题与练习为
+\texttt{synproof} 保持无框，且不会重定义标准 \texttt{proof}。
+\texttt{theorem-style=plain} 关闭陈述包装。例题与练习为
 plain 样式陈述，警告使用注记呈现。由于所有陈述共享定理计数器，本模块还会按真实结构
 父级重建每个环境的超链接锚点（\texttt{theH<名称>}），保证跨章跨节的链接唯一。
 
@@ -186,18 +190,22 @@ plain 样式陈述，警告使用注记呈现。由于所有陈述共享定理�
   \toprule
   \textbf{范围} & \textbf{模式} & \textbf{示例} \\
   \midrule
-  公开命令 & \texttt{\textbackslash Synaptic\ldots} & \SynapticCmd{SynapticDefineTheme} \\
+  公开命令 & \texttt{\textbackslash Synaptic\ldots} & \DocCmd{SynapticDefineTheme} \\
   公开环境 & \texttt{syn...} & \texttt{synsummary} \\
+  公开颜色令牌 & \texttt{syn-...} & \texttt{syn-primary} \\
   内部函数 & \texttt{\textbackslash\_\_synaptic\_\ldots:} & 标题渲染辅助函数 \\
-  模块接口 & \texttt{\textbackslash synaptic\_\ldots:} & 模式访问器 \\
-  局部状态 & \texttt{\textbackslash l\_synaptic\_\ldots} & 当前主题词元表 \\
-  全局登记表 & \texttt{\textbackslash g\_synaptic\_\ldots} & 主题属性表 \\
-  标签常量 & \texttt{\textbackslash c\_synaptic\_label\_\ldots} & 定理标签 \\
+  私有局部状态 & \texttt{\textbackslash l\_\_synaptic\_\ldots} & 标题布局临时值 \\
+  私有全局状态 & \texttt{\textbackslash g\_\_synaptic\_\ldots} & 模式、元数据或注册表 \\
+  私有常量 & \texttt{\textbackslash c\_\_synaptic\_\ldots} & 标签或环境集合 \\
   \bottomrule
 \end{tabularx}}
 
-新公开名应避免常见名词。陈述环境属于内置定理族：新声明应通过
-\verb|\SynapticNewTheorem| 完成，而不是添加别名。
+expl3 的 \texttt{g} 与 \texttt{l} 前缀只描述生命周期，不描述所有权；所有权由
+\texttt{synaptic} 模块名与私有双下划线独立表达。因此文档级状态仍使用私有的
+\texttt{g\_\_synaptic\_...}，短期临时值使用 \texttt{l\_\_synaptic\_...}。
+
+新公开名必须遵循同样的所有权规则。\verb|\SynapticNewTheorem| 接受的自定义
+环境名以 \texttt{syn} 开头且只含小写字母与数字；未命名空间化或重名都会报错。
 
 \section{扩展点}
 
@@ -212,8 +220,8 @@ plain 样式陈述，警告使用注记呈现。由于所有陈述共享定理�
 \section{自动化验证}
 
 \texttt{synaptic.dtx} 是唯一源头。DocStrip 通过 \texttt{synaptic.ins} 生成可安装的
-\texttt{.sty} 和 \texttt{.def} 文件。\texttt{tex/latex/synaptic/} 下的生成副本为了零安装使用而
-提交，必须与新解包结果字节级一致。
+\texttt{.sty} 和 \texttt{.def} 文件到 \texttt{build/unpacked}。提取模块、编译 PDF
+与发布压缩包均不跟踪，因此实现只有一个需要审阅和更新的事实来源。
 
 回归测试的组织方式如下：
 
@@ -230,37 +238,28 @@ plain 样式陈述，警告使用注记呈现。由于所有陈述共享定理�
   \texttt{customization} & 运行时设置与自定义定理 \\
   \texttt{toc-layouts}、\texttt{title-layouts} & 目录与标题构成 \\
   \texttt{layout-profiles} & 密度、版心尺度、装订偏移 \\
+  \texttt{theorem-boxes}、\texttt{strict-options} & 完整陈述族、命名空间验证与严格选项错误 \\
   \texttt{book-full} & 完整标题序列与前后文流程 \\
   \texttt{lecture-continuous} & 连续编号档案 \\
-  \texttt{extra-math} & 可选 Unicode 数学字母表 \\
   \bottomrule
 \end{tabularx}}
 
-每组使用标准引擎排版一份文档，并将规范化日志与已提交的期望文件比较。
-CI 运行套件并额外构建源码文档、四份手册和所有示例，出现警告、溢出盒子或缺字符即失败。
+每组使用标准引擎排版一份文档，并将规范化日志与已提交的期望文件比较。共享入口
+\texttt{scripts/verify} 运行套件、构建源码文档、四份手册和所有示例，并在出现警告、
+溢出盒子、缺字符或 TeX 错误时失败；CI 调用同一入口。
 
 \section{源码与发布流程}
 
 \begin{verbatim}
-l3build unpack     # 重新生成 .sty/.def 到 build/local
-l3build check      # 运行 LuaLaTeX 回归套件
-l3build doc        # 构建源码文档、手册与示例
-l3build ctan       # 生成 TDS 与 CTAN 压缩包
-l3build install    # 复制宏包文件到用户 texmf 目录树
-l3build uninstall  # 移除先前安装
+./scripts/verify  # 测试、手册、示例与诊断
+l3build unpack    # 提取 .sty/.def 到 build/unpacked
+l3build ctan      # 生成经过测试的 TDS 与 CTAN 压缩包
+l3build install   # 复制宏包文件到用户 texmf 目录树
+l3build uninstall # 移除先前安装
 \end{verbatim}
 
 \texttt{ctan} 目标生成 \texttt{synaptic-ctan.zip}（源码树与生成文档、示例）以及内嵌的
-\texttt{synaptic.tds.zip}（TDS 布局）。安装会就地替换旧版本；由于生成文件集合稳定，
-每次发布后重复执行 \texttt{l3build install} 都是安全的。
-
-\section{从旧版本迁移}
-
-3.0 移除了全部向后兼容层：\texttt{\backslash pkg} 与 \texttt{\backslash cmd} 等
-别名、小写书籍前后文命令、对标准 \texttt{\backslash title}/\texttt{\backslash author}/\texttt{\backslash date}
-的导入、\texttt{box-numbering} 选项与 \texttt{synaptic-boxes} 模块。示例、警告与
-练习现在是内置定理族的一等成员；\texttt{title-layout=cover} 更名为
-\texttt{title-layout=sequence}；重复声明 \verb|\SynapticNewTheorem| 会直接报错。
-新文档应完全使用带命名空间的公开形式。
+\texttt{synaptic.tds.zip}（TDS 布局）。安装会就地替换旧版本。仓库不保留兼容副本
+或迁移垫片；已移除接口统一记录在变更日志中。
 
 \end{document}

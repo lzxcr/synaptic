@@ -2,16 +2,18 @@
 module = "synaptic"
 
 sourcefiledir = "."
-sourcefiles   = {"synaptic.dtx", "synaptic.ins", "srcs/*.tex", "examples/*.tex"}
-installfiles  = {"synaptic.sty", "synaptic-base.sty", "synaptic-color.sty",
-                  "synaptic-fonts.sty", "synaptic-layout.sty",
-                  "synaptic-title.sty", "synaptic-theorem.sty", "synaptic-book.sty",
-                  "synaptic-journal.sty", "synaptic-lecture.sty",
-                  "synaptic-notes.sty",
-                  "synaptic-lang-en.def", "synaptic-lang-zh.def"}
-typesetfiles  = {"synaptic.dtx", "srcs/*.tex"}
-docfiles      = {"README.md", "CHANGELOG.md", "LICENSE", "docs/*.pdf"}
+sourcefiles   = {"synaptic.dtx", "synaptic.ins", "docs/*.tex", "examples/*.tex"}
+installfiles  = {"synaptic*.sty", "synaptic-lang-*.def"}
+typesetfiles  = {
+  "synaptic.dtx",
+  "synaptic-tech-en.tex",
+  "synaptic-tech-zh.tex",
+  "synaptic-user-en.tex",
+  "synaptic-user-zh.tex",
+}
+typesetdemofiles = {"book.tex", "journal.tex", "lecture.tex", "notes.tex"}
 demofiles     = {"examples/*.tex"}
+textfiles     = {"README.md", "CHANGELOG.md", "LICENSE"}
 ctanpostdir   = "synaptic"
 packtdszip    = true
 

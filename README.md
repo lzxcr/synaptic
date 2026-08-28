@@ -8,21 +8,19 @@
 
 <p align="center">A modular LaTeX3 design system for academic articles, books, lectures, and notes.</p>
 
-`synaptic` combines a consistent typographic system with mode-aware layouts,
-Unicode mathematics, bilingual labels, semantic colour tokens, and a
-collision-resistant public API. It requires LuaLaTeX, a recent LaTeX format,
-and a KOMA-Script document class.
+`synaptic` provides mode-aware layouts, Unicode mathematics, bilingual labels,
+semantic colour tokens, and a fully namespaced public API. It requires
+LuaLaTeX, a recent LaTeX format, and a KOMA-Script document class.
 
 ## Quick start
 
-Point `TEXINPUTS` at the pre-generated package directory:
+Install the package from the repository root:
 
 ```bash
-export TEXINPUTS=/path/to/synaptic/tex/latex/synaptic//:$TEXINPUTS
-lualatex document.tex
+l3build install
 ```
 
-Then use a KOMA-Script class:
+Then compile a KOMA-Script document with LuaLaTeX:
 
 ```latex
 \documentclass[11pt]{scrartcl}
@@ -34,12 +32,12 @@ Then use a KOMA-Script class:
 \SynapticEmail{ada@example.org}
 \SynapticSubject{A short article example}
 \SynapticKeywords{LaTeX, typography}
-\begin{abstract}A concise abstract.\end{abstract}
+\begin{synabstract}A concise abstract.\end{synabstract}
 
 \begin{document}
 \SynapticMakeTitle
 \section{Introduction}
-\begin{theorem}A readable theorem.\end{theorem}
+\begin{syntheorem}A readable theorem.\end{syntheorem}
 \end{document}
 ```
 
@@ -47,18 +45,16 @@ Ready-to-compile documents for every mode live in [`examples/`](examples/).
 
 ## Requirements
 
-- LuaLaTeX; pdfLaTeX and XeLaTeX are rejected with an explicit error.
-- A KOMA-Script class. Use `scrbook` for `mode=book`; the other modes normally
-  use `scrartcl` or `scrreprt`.
+- LuaLaTeX; pdfLaTeX and XeLaTeX are rejected.
+- A KOMA-Script class. Use `scrbook` for `mode=book`; the other modes
+  normally use `scrartcl` or `scrreprt`.
 - A recent TeX distribution containing `expl3`, `fontspec`, `unicode-math`,
-  `geometry`, `microtype`, `thmtools`, and the other standard dependencies.
-- `tcolorbox` and PGF for the boxed theorem styles (except under
-  `theorem-style=plain`) and the teaching and notes cards; `ctex` and a
-  supported CJK font for `lang=zh`.
+  `geometry`, `microtype`, `thmtools`, `tcolorbox`, and PGF.
+- `ctex` and either Noto CJK SC or Fandol for `lang=zh`.
 
-The package respects the paper size selected by the class. It does not force A4.
+The package respects the paper size selected by the class and never forces A4.
 
-## Package options
+## Configuration
 
 | Key | Default | Values | Runtime? |
 |---|---:|---|:---:|
@@ -74,9 +70,7 @@ The package respects the paper size selected by the class. It does not force A4.
 | `density` | `balanced` | `compact`, `balanced`, `airy` | No |
 | `measure` | `auto` | `auto`, `narrow`, `standard`, `wide` | No |
 | `theorem-style` | `boxed` | `boxed`, `plain` | No |
-| `binding-offset` | `0pt` | Any dimension; primarily for books | No |
-| `extra-math` | `false` | Boolean | No |
-| `fine-breaking` | `true` | Boolean | No |
+| `binding-offset` | `0pt` | Any dimension | No |
 
 Only `theme`, `toc`, and `toc-layout` change after loading:
 
@@ -84,24 +78,23 @@ Only `theme`, `toc`, and `toc-layout` change after loading:
 \SynapticSetup{theme=paper,toc=false,toc-layout=page}
 ```
 
-Structural keys are fixed after loading; `\SynapticSetup` treats them as an
-error rather than silently ignoring them.
+Unknown package options and attempts to mutate load-time settings are errors;
+configuration mistakes are never silently ignored.
 
 ### Modes
 
 | Mode | Recommended class | Main behaviour |
 |---|---|---|
-| `journal` | `scrartcl` | Inline article title, publication metadata, running heads, statements |
-| `book` | `scrbook` | Book title sequence, mirrored navigation, part/chapter design, matter helpers |
-| `lecture` | `scrartcl` / `scrreprt` | Course masthead, shared teaching counter, learning and summary cards |
-| `notes` | `scrartcl` | Compact masthead, single/two-column support, lightweight knowledge cards |
+| `journal` | `scrartcl` | Inline article title, publication metadata, running heads |
+| `book` | `scrbook` | Book title sequence, mirrored navigation, matter helpers |
+| `lecture` | `scrartcl` / `scrreprt` | Course masthead and teaching cards |
+| `notes` | `scrartcl` | Compact masthead and knowledge cards |
 
 ### Font sets
 
 `auto` selects the first complete installed bundle in this order: XCharter,
-Libertinus, STIX Two, then Latin Modern. Detection is performed through
-`fontspec`; there is no external Lua helper or shell command. Explicit font-set
-requests fail clearly when any required font is missing.
+Libertinus, STIX Two, then Latin Modern. Explicit font-set requests fail when
+any required companion is missing.
 
 | Set | Roman | Sans | Mono | Math |
 |---|---|---|---|---|
@@ -110,155 +103,98 @@ requests fail clearly when any required font is missing.
 | `stix2` | STIX Two Text | TeX Gyre Heros | Latin Modern Mono | STIX Two Math |
 | `lm` | Latin Modern Roman | Latin Modern Sans | Latin Modern Mono | Latin Modern Math |
 
-For Chinese, Noto CJK is preferred and the TeX Live Fandol fonts are used as a
-fallback.
-
 ## Public API
 
-### Shared metadata and mode-aware titles
+Every Synaptic-owned command and environment is namespaced. The package does
+not redefine `abstract`, `proof`, or generic theorem environments supplied by
+the document class or another package.
 
-| Command | Purpose |
+### Metadata and titles
+
+| Command or environment | Purpose |
 |---|---|
 | `\SynapticTitle{...}` | Required title |
 | `\SynapticSubtitle{...}` / `\SynapticShortTitle{...}` | Display and running titles |
 | `\SynapticDate{...}` | Explicit document or lecture date |
-| `\SynapticAuthor[mark]{...}` | Repeatable author and optional affiliation mark |
+| `\SynapticAuthor[mark]{...}` | Repeatable author and affiliation mark |
 | `\SynapticAffiliation[mark]{...}` | Repeatable affiliation |
 | `\SynapticEmail{...}` | Repeatable email |
-| `\SynapticSubject{...}` | PDF subject metadata |
-| `\SynapticKeywords{...}` | Printed keywords and PDF metadata |
-| `\SynapticHeader{...}` / `\SynapticSubHeader{...}` | Title-page header text |
-| `\SynapticPreprint{...}` / `\SynapticArxiv{...}` | Preprint fields |
-| `\SynapticDedicated{...}` | Dedication |
+| `\SynapticSubject{...}` / `\SynapticKeywords{...}` | PDF and printed metadata |
+| `synabstract` | Captured abstract rendered by the mode title |
 | `\SynapticMakeTitle` | Validate metadata and render the title |
 
-The same title API is available in all four modes. `journal` renders an inline
-article heading by default, `book` renders a book title sequence, and `lecture`
-and `notes` use compact mode-specific mastheads.
+Journal mode also provides `\SynapticCorrespondence`,
+`\SynapticPublicationInfo`, repeatable `\SynapticAuthorNote`, and
+`\SynapticStatement`. Book, lecture, and notes metadata are demonstrated in
+the bundled examples and manuals.
 
-PDF title, author, subject, and keywords use Unicode-safe conversion. The PDF
-catalog language is set to `en-US` or `zh-CN`.
+### Statements and proofs
 
-Journal extensions include `\SynapticCorrespondence`,
-`\SynapticPublicationInfo`, repeatable `\SynapticAuthorNote`, and the generic
-`\SynapticStatement{heading}{body}` for funding, data, ethics, or conflict
-statements. Its starred form omits the statement from the table of contents.
+The statement family is `syntheorem`, `synlemma`, `synproposition`,
+`syncorollary`, `synaxiom`, `synconjecture`, `synclaim`, `synproperty`,
+`synexample`, `synexercise`, `syndefinition`, `syncriterion`, `synconvention`,
+`synproblem`, `synsolution`, `synremark`, `synnote`, and `synwarning`.
+`synproof` provides the matching proof presentation without changing the
+standard `proof` environment.
 
-### Theorems and boxes
+All statements share one counter. Books use chapter scope by default; shorter
+modes use section scope. Hyperlink anchors include the structural parent, so
+the same displayed counter value in different sections never collides.
 
-The core environments are `theorem`, `lemma`, `proposition`, `definition`,
-`corollary`, `axiom`, `conjecture`, `claim`, `property`, `criterion`,
-`convention`, `problem`, `solution`, `example`, `remark`, `note`, and `proof`.
-Definitions use upright body text; theorem statements use italics in English
-and upright text in Chinese. Book mode numbers theorems by chapter by default;
-the shorter modes use sections. All numbered environments share the theorem
-counter and honour the `numbering` profile. Because they share one counter,
-synaptic rebuilds each environment's hyperlink anchor against its structural
-parent (`section` or `chapter`), so numbered statements in different sections
-never collide — `\label`/`\ref` links always land on the intended statement.
-
-By default (`theorem-style=boxed`) the numbered statement environments are
-presented as refined cards: a subtle theme-tinted background, a semantic west
-accent bar, a quiet hairline, and a very small corner radius shared with the
-teaching and notes card language.
-`proof` stays clean and unboxed. Set `theorem-style=plain` for the classic
-unboxed look:
+Declare a custom statement with a namespaced environment name:
 
 ```latex
-\usepackage[theorem-style=plain]{synaptic}
+\SynapticNewTheorem[remark]{synobservation}{Observation}
 ```
 
-```latex
-\SynapticNewTheorem[remark]{observation}{Observation}
-```
-
-The optional style is `plain`, `definition`, or `remark`; a custom theorem is
-also boxed automatically. Declaring a name that already exists is a hard
-error: the built-in family plus anything you declare via `\SynapticNewTheorem`
-is the complete environment set.
-
-`example`, `exercise`, and `warning` are first-class members of the family in
-every mode: examples and exercises are plain-style statements, warnings are
-remark-style statements, and all three share the theorem counter.
-
-### Typography
-
-All numbered section levels use a single sans heading family with a clear
-depth hierarchy (`section` in the primary colour, `subsection` dark,
-`subsubsection` smaller and muted) so the structure reads at a glance. The
-run-in `paragraph` and `subparagraph` levels carry the same sans voice and a
-monotonically lighter colour, so a deeper level never out-weighs the level
-above it. When a table of contents is requested its top-level entries repeat
-the on-page heading colour in bold, deeper entries stay dark (with `paragraph`
-and `subparagraph` muted further), and the number alignment and vertical
-rhythm are tightened. Figure and table caption labels carry the secondary
-theme token to keep the caption language consistent with the rest of the
-design.
+The style is `plain`, `definition`, or `remark`. Custom names must be lowercase
+alphanumeric identifiers beginning with `syn`; duplicate names are errors.
 
 ### Themes
 
-Switch a built-in theme with `\SynapticUseTheme{name}` or `\SynapticSetup`.
-Define and activate a custom theme using normal xcolor expressions:
+Define an immutable custom theme, then activate it through the one runtime
+configuration interface:
 
 ```latex
 \SynapticDefineTheme{brand}{blue!70!black}{gray!80!black}[orange!80!black]
+\SynapticSetup{theme=brand}
 ```
 
-The semantic colours `syn-primary`, `syn-secondary`, `syn-accent`,
-`syn-danger`, `syn-warning`, `syn-success`, `syn-surface`, and `syn-border`
-are available for extensions.
+Theme identifiers are lowercase slugs and cannot replace existing themes.
+Extensions can consume `syn-primary`, `syn-secondary`, `syn-accent`,
+`syn-danger`, `syn-warning`, `syn-success`, `syn-surface`, and `syn-border`.
 
-### Book, lecture, and notes workflows
-
-Book mode provides `\SynapticFrontMatter`, `\SynapticMainMatter`, and
-`\SynapticBackMatter`, plus `\SynapticBookContents`, list-of-figures/tables and
-appendix helpers. `\SynapticHalfTitle`, `\SynapticPublisher`,
-`\SynapticEdition`, `\SynapticISBN`, and `\SynapticCopyright` populate the book
-title sequence. `\SynapticChapterSubtitle` and `\SynapticEpigraph` extend
-chapter openings. Title matter, intentionally blank duplex pages, chapter
-openings, and folios share an asymmetric rule-and-node motif. Chapter headings
-set the number and title inline above that motif, and chapter contents entries
-carry the same primary colour so the table of contents mirrors the on-page
-structure.
-
-Lecture metadata uses `\SynapticCourse`, `\SynapticCourseCode`,
-`\SynapticLectureNumber`, `\SynapticInstructor`, and `\SynapticSemester`.
-The `synlearninggoals` and `synlecturesummary` environments define the beginning
-and end of a teaching unit.
-
-Notes mode provides `synkeyidea`, `synquestion`, `syntodo`, and `synsummary`.
-It supports class-level `twocolumn`; call `\SynapticBalanceColumns` near the end
-when the final two-column page should be balanced.
-
-`\SynapticAcknowledgments` uses a chapter heading in book mode and a section
-heading elsewhere; its starred form omits the TOC entry.
-
-## Development
+## Development and release
 
 ```bash
-l3build unpack   # regenerate package files from synaptic.dtx
-l3build check    # run LuaLaTeX regression tests
-l3build doc      # build documented source and four manuals
-l3build ctan     # create a TDS/CTAN release archive
+./scripts/verify  # regression suite, manuals, examples, diagnostic scan
+l3build unpack    # extract installable modules into build/unpacked
+l3build ctan      # build tested TDS and CTAN archives
+l3build install   # install into the selected texmf tree
 ```
 
-`synaptic.dtx` is the source of truth. Generated `.sty` and `.def` files under
-`tex/latex/synaptic/` are committed so the repository can be used directly.
-CI runs the regression suite and compiles the documentation and examples.
+[`synaptic.dtx`](synaptic.dtx) is the only implementation source. Extracted
+`.sty`/`.def` modules, compiled manuals, and archives are generated artifacts
+and are deliberately not tracked. This removes sync drift between source,
+checkout convenience copies, and release output.
 
-The regression suite exercises all four modes in English and Chinese, every
-built-in theme plus custom themes, both colour-delivery alternatives, TOC and
-title layouts, numbering profiles, the full book title sequence, the complete
-statement family and its boxed presentation, and the optional mathematics
-alphabets.
+To compile directly from a checkout without installing:
+
+```bash
+l3build unpack
+TEXINPUTS="$PWD/build/unpacked//:" lualatex document.tex
+```
 
 ## Documentation
 
-- [English user manual](docs/synaptic-user-en.pdf)
-- [中文用户手册](docs/synaptic-user-zh.pdf)
-- [English technical reference](docs/synaptic-tech-en.pdf)
-- [中文技术参考](docs/synaptic-tech-zh.pdf)
+- [English user manual source](docs/synaptic-user-en.tex)
+- [中文用户手册源码](docs/synaptic-user-zh.tex)
+- [English technical reference source](docs/synaptic-tech-en.tex)
+- [中文技术参考源码](docs/synaptic-tech-zh.tex)
 - [`synaptic.dtx`](synaptic.dtx) for the documented implementation
+
+Run `l3build doc`; all PDFs are written under `build/doc/` and included in
+release archives.
 
 ## License
 

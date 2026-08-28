@@ -1,6 +1,7 @@
 \input regression-test.tex
 \documentclass[11pt]{scrartcl}
 \newenvironment{example}{}{}
+\newenvironment{theorem}{}{}
 \usepackage[mode=lecture,theme=forest,fontset=lm]{synaptic}
 \SynapticCourseCode{TEST 101}
 \SynapticCourse{Regression Design}
@@ -11,19 +12,22 @@
 \begin{document}
 \START
 \ExplSyntaxOn
-\TYPE{mode=\synaptic_mode:}
+\TYPE{mode=\__synaptic_mode:}
 \ExplSyntaxOff
 \SynapticMakeTitle
 \begin{synlearninggoals}Test the teaching hierarchy.\end{synlearninggoals}
 \section{Lecture}
+\begin{abstract}\TYPE{generic-abstract-preserved=ok}\end{abstract}
 \begin{example}\TYPE{generic-example-preserved=ok}\end{example}
-\begin{theorem}Theorems are boxed in lecture mode.\end{theorem}
-\begin{definition}Shared counter siblings.\end{definition}
-\begin{remark}[Remark]A semantic remark.\end{remark}
-\begin{warning}[Warning]A semantic warning.\end{warning}
-\begin{exercise}[Exercise]A semantic exercise.\end{exercise}
+\begin{theorem}\TYPE{generic-theorem-preserved=ok}\end{theorem}
+\begin{syntheorem}Theorems are boxed in lecture mode.\end{syntheorem}
+\begin{syndefinition}Shared counter siblings.\end{syndefinition}
+\begin{synremark}[Remark]A semantic remark.\end{synremark}
+\begin{synwarning}[Warning]A semantic warning.\end{synwarning}
+\begin{synexercise}[Exercise]A semantic exercise.\end{synexercise}
+\begin{synproof}The namespaced proof is available.\end{synproof}
 \begin{synlecturesummary}A short summary.\end{synlecturesummary}
-\TYPE{shared-teaching-counter=\thetheorem}
+\TYPE{shared-teaching-counter=\thesyntheorem}
 \TYPE{lecture-navigation-and-statements=ok}
 \END
 \end{document}

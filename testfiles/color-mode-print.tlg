@@ -10,5 +10,5 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `LatinModernMath' (encoding: TU).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
-Package hyperref Info: bookmark level for unknown theorem defaults to 0 on input line ....
+Package hyperref Info: bookmark level for unknown syntheorem defaults to 0 on input line ....
 print-color-mode=ok

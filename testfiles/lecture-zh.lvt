@@ -12,12 +12,12 @@
 \SynapticMakeTitle
 \begin{synlearninggoals}辨别逐点连续与一致连续。\end{synlearninggoals}
 \section{核心概念}
-\begin{theorem}中文讲义定理。\end{theorem}
-\begin{example}[例题]中文例题。\end{example}
-\begin{warning}[易错点]中文警告。\end{warning}
+\begin{syntheorem}中文讲义定理。\end{syntheorem}
+\begin{synexample}[例题]中文例题。\end{synexample}
+\begin{synwarning}[易错点]中文警告。\end{synwarning}
 \begin{synlecturesummary}本讲小结。\end{synlecturesummary}
 \START
-\TYPE{zh-lecture-counter=\thetheorem}
+\TYPE{zh-lecture-counter=\thesyntheorem}
 \TYPE{zh-lecture-workflow=ok}
 \END
 \end{document}

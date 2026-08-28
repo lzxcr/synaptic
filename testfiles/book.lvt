@@ -7,12 +7,12 @@
 \SynapticAuthor{Test Author}
 \SynapticPublisher{Test Press}
 \SynapticISBN{978-0-00-000000-0}
-\begin{abstract}A short book abstract.\end{abstract}
+\begin{synabstract}A short book abstract.\end{synabstract}
 
 \begin{document}
 \START
 \ExplSyntaxOn
-\TYPE{mode=\synaptic_mode:}
+\TYPE{mode=\__synaptic_mode:}
 \ExplSyntaxOff
 \SynapticMakeTitle
 \SynapticMainMatter
@@ -20,8 +20,8 @@
 \SynapticChapterSubtitle{A chapter subtitle}
 \section{Section}
 Book content.
-\begin{theorem}Book theorems use chapter-level numbering by default.\end{theorem}
-\TYPE{book-theorem-number=\thetheorem}
+\begin{syntheorem}Book theorems use chapter-level numbering by default.\end{syntheorem}
+\TYPE{book-theorem-number=\thesyntheorem}
 \SynapticBackMatter
 \SynapticAcknowledgments*
 Acknowledgment text.

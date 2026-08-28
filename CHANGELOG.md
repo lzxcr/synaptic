@@ -1,5 +1,43 @@
 # Changelog
 
+## [4.0.0] — 2026-08-28
+
+### Removed
+
+- Removed all generic public environments. Synaptic no longer owns or
+  redefines `abstract`, `proof`, or any unprefixed statement name.
+- Removed `extra-math` and `fine-breaking`; Unicode mathematics is part of the
+  core font system and a moderate paragraph-breaking policy is always active.
+- Removed `\SynapticUseTheme`, the package-internal documentation commands,
+  and the unnecessary `seqsplit` dependency. Runtime theme changes now have
+  one entry point: `\SynapticSetup`.
+- Stopped tracking extracted `.sty`/`.def` files, compiled manuals, and release
+  archives. They are reproducible build artifacts, not parallel sources.
+
+### Changed
+
+- Namespaced every public environment under `syn`: `synabstract`, `synproof`,
+  the complete `syn…` statement family, and custom statement names beginning
+  with `syn`. Existing generic environments remain untouched.
+- Adopted expl3's private double-underscore convention across all internal
+  functions, variables, constants, and accessors. Global and local scope now
+  describe lifetime; the module namespace describes ownership.
+- Made theme definitions immutable and separated definition from activation.
+  Theme names are validated lowercase slugs and activation uses
+  `\SynapticSetup{theme=...}`.
+- Unknown package options are errors. `numbering=chapter` without a chapter
+  counter is also an error instead of silently falling back to sections.
+- Moved manual sources from `srcs/` to `docs/` and made `synaptic.dtx` the only
+  implementation source.
+
+### Tooling
+
+- Added a single `scripts/verify` entry point for regression tests, manuals,
+  examples, and diagnostic scanning.
+- Simplified `l3build` manifests around source files and generated artifacts.
+- Updated CI with concurrency control, bounded execution, a current TeX Live
+  image, and the shared verification script.
+
 ## [3.0.0] — 2026-08-28
 
 ### Removed

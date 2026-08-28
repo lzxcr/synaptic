@@ -10,21 +10,21 @@
 \SynapticSubject{中文期刊模式回归测试}
 \SynapticKeywords{回归测试, 中文排版}
 
-\begin{abstract}
+\begin{synabstract}
   本文件验证中文期刊模式的标题、摘要、定理与声明排版。
-\end{abstract}
+\end{synabstract}
 
 \begin{document}
 \START
 \ExplSyntaxOn
-\TYPE{mode=\synaptic_mode:}
-\TYPE{language=\synaptic_lang:}
+\TYPE{mode=\__synaptic_mode:}
+\TYPE{language=\__synaptic_lang:}
 \ExplSyntaxOff
 \SynapticMakeTitle
 \section{中文回归测试}
 中英文混排与全角标点：定理、引理与证明。
-\begin{theorem}定理环境中的中文正文。\end{theorem}
-\begin{definition}定义使用直立正文。\end{definition}
+\begin{syntheorem}定理环境中的中文正文。\end{syntheorem}
+\begin{syndefinition}定义使用直立正文。\end{syndefinition}
 \SynapticStatement{数据可用性}{本测试未使用外部数据。}
 \SynapticAcknowledgments
 感谢所有测试读者。

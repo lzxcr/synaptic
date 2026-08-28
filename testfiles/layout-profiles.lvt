@@ -9,9 +9,9 @@
 \begin{document}
 \START
 \ExplSyntaxOn
-\TYPE{density=\synaptic_density:}
-\TYPE{measure=\synaptic_measure:}
-\TYPE{binding-offset=\dim_use:N\l_synaptic_binding_offset_dim}
+\TYPE{density=\__synaptic_density:}
+\TYPE{measure=\__synaptic_measure:}
+\TYPE{binding-offset=\dim_use:N\g__synaptic_binding_offset_dim}
 \ExplSyntaxOff
 \SynapticMakeTitle
 \SynapticMainMatter

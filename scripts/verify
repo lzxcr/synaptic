@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+project_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
+cd "$project_dir"
+
+generated_pdfs=(
+  book.pdf
+  journal.pdf
+  lecture.pdf
+  notes.pdf
+  synaptic.pdf
+  synaptic-tech-en.pdf
+  synaptic-tech-zh.pdf
+  synaptic-user-en.pdf
+  synaptic-user-zh.pdf
+)
+cleanup() {
+  rm -f -- "${generated_pdfs[@]}"
+}
+trap cleanup EXIT
+
+if [[ -z ${TEXMFVAR:-} ]]; then
+  export TEXMFVAR="${TMPDIR:-/tmp}/synaptic-texmf-var-${UID}"
+fi
+mkdir -p "$TEXMFVAR"
+
+l3build check
+l3build doc
+
+mapfile -d '' logs < <(find build/doc -type f -name '*.log' -print0)
+if (( ${#logs[@]} == 0 )); then
+  echo 'No documentation or example logs were produced.' >&2
+  exit 1
+fi
+
+if grep -En 'LaTeX Warning|Package .* Warning|Class .* Warning|Overfull|Missing character|^!' "${logs[@]}"; then
+  echo 'Documentation or example compilation emitted diagnostics.' >&2
+  exit 1
+fi

@@ -6,40 +6,40 @@
 \SynapticAuthor[1]{Test Author}
 \SynapticAffiliation[1]{Test Institute}
 \SynapticEmail{test@example.org}
-\SynapticNewTheorem[remark]{observation}{Observation}
-\SynapticNewTheorem[plain]{conclusion}{Conclusion}
+\SynapticNewTheorem[remark]{synobservation}{Observation}
+\SynapticNewTheorem[plain]{synconclusion}{Conclusion}
 
 \begin{document}
 \START
 \ExplSyntaxOn
-\TYPE{mode=\synaptic_mode:}
-\TYPE{theme=\synaptic_theme:}
-\TYPE{theorem-style=\synaptic_theorem_style:}
+\TYPE{mode=\__synaptic_mode:}
+\TYPE{theme=\__synaptic_theme:}
+\TYPE{theorem-style=\__synaptic_theorem_style:}
 \ExplSyntaxOff
 \SynapticMakeTitle
 \section{Statements}
-\begin{theorem}[Pythagoras]A boxed theorem.\end{theorem}
-\begin{lemma}A boxed lemma.\end{lemma}
-\begin{proposition}A boxed proposition.\end{proposition}
-\begin{definition}[Continuity]A boxed definition.\end{definition}
-\begin{corollary}A boxed corollary.\end{corollary}
-\begin{axiom}A boxed axiom.\end{axiom}
-\begin{conjecture}A boxed conjecture.\end{conjecture}
-\begin{claim}[Main claim]A boxed claim.\end{claim}
-\begin{property}A boxed property.\end{property}
-\begin{criterion}A boxed criterion.\end{criterion}
-\begin{convention}A boxed convention.\end{convention}
-\begin{problem}A boxed problem.\end{problem}
-\begin{solution}A boxed solution.\end{solution}
-\begin{example}[An example]A boxed example.\end{example}
-\begin{exercise}[An exercise]A boxed exercise.\end{exercise}
-\begin{remark}[A remark]A boxed remark.\end{remark}
-\begin{note}A boxed note.\end{note}
-\begin{warning}[A warning]A boxed warning.\end{warning}
-\begin{proof}A clean, unboxed proof.\end{proof}
-\begin{observation}A custom boxed theorem.\end{observation}
-\begin{conclusion}A custom plain theorem.\end{conclusion}
-\TYPE{shared-counter=\thetheorem}
+\begin{syntheorem}[Pythagoras]A boxed theorem.\end{syntheorem}
+\begin{synlemma}A boxed lemma.\end{synlemma}
+\begin{synproposition}A boxed proposition.\end{synproposition}
+\begin{syndefinition}[Continuity]A boxed definition.\end{syndefinition}
+\begin{syncorollary}A boxed corollary.\end{syncorollary}
+\begin{synaxiom}A boxed axiom.\end{synaxiom}
+\begin{synconjecture}A boxed conjecture.\end{synconjecture}
+\begin{synclaim}[Main claim]A boxed claim.\end{synclaim}
+\begin{synproperty}A boxed property.\end{synproperty}
+\begin{syncriterion}A boxed criterion.\end{syncriterion}
+\begin{synconvention}A boxed convention.\end{synconvention}
+\begin{synproblem}A boxed problem.\end{synproblem}
+\begin{synsolution}A boxed solution.\end{synsolution}
+\begin{synexample}[An example]A boxed example.\end{synexample}
+\begin{synexercise}[An exercise]A boxed exercise.\end{synexercise}
+\begin{synremark}[A remark]A boxed remark.\end{synremark}
+\begin{synnote}A boxed note.\end{synnote}
+\begin{synwarning}[A warning]A boxed warning.\end{synwarning}
+\begin{synproof}A clean, unboxed proof.\end{synproof}
+\begin{synobservation}A custom boxed theorem.\end{synobservation}
+\begin{synconclusion}A custom plain theorem.\end{synconclusion}
+\TYPE{shared-counter=\thesyntheorem}
 \TYPE{theorem-family-and-boxes=ok}
 \END
 \end{document}

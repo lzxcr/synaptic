@@ -6,31 +6,31 @@
   mode=journal,
   theme=ocean,
   fontset=lm,
-  extra-math=true,
   toc=true,
   toc-layout=page
 ]{synaptic}
 \usepackage{booktabs,tabularx}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\DocCmd}[1]{\textcolor{syn-primary!80!black}{\texttt{\textbackslash#1}}}
 
-\SynapticNewTheorem[remark]{observation}{Observation}
+\SynapticNewTheorem[remark]{synobservation}{Observation}
 \SynapticHeader{Synaptic User Manual}
 \SynapticSubHeader{Reliable academic typesetting with LuaLaTeX}
-\SynapticPreprint{v3.0.0}
+\SynapticPreprint{v4.0.0}
 \SynapticTitle{The synaptic Package: User Manual}
 \SynapticAuthor{synaptic project}
 \SynapticAffiliation{Open-source LaTeX community}
 \SynapticEmail{synaptic@example.com}
-\SynapticSubject{User manual for synaptic version 3.0.0}
+\SynapticSubject{User manual for synaptic version 4.0.0}
 \SynapticKeywords{synaptic, LaTeX3, LuaLaTeX, academic typesetting}
 
-\begin{abstract}
+\begin{synabstract}
   \textbf{synaptic} is a modular LaTeX3 design system for journal articles,
   books, lecture material, and compact notes. This manual describes its
   installation, requirements, safe configuration model, typographic system,
   metadata API, theorem system, theme and customization tools, and
   mode-specific features.
-\end{abstract}
+\end{synabstract}
 
 \begin{document}
 \SynapticMakeTitle
@@ -45,7 +45,7 @@ installed in your TeX tree, a document needs nothing more than:
 \usepackage[mode=journal]{synaptic}
 \SynapticTitle{A Short Article}
 \SynapticAuthor{Ada Author}
-\begin{abstract}Summary.\end{abstract}
+\begin{synabstract}Summary.\end{synabstract}
 \begin{document}
 \SynapticMakeTitle
 \section{Introduction}
@@ -58,10 +58,11 @@ synaptic does not silently force A4.
 
 \subsection{Using a checkout without installation}
 
-The repository ships generated package files. Point \texttt{TEXINPUTS} at them:
+Extract the package modules, then point \texttt{TEXINPUTS} at the build output:
 
 \begin{verbatim}
-export TEXINPUTS=/path/to/synaptic/tex/latex/synaptic//:$TEXINPUTS
+l3build unpack
+export TEXINPUTS=/path/to/synaptic/build/unpacked//:$TEXINPUTS
 lualatex document.tex
 \end{verbatim}
 
@@ -112,8 +113,6 @@ directly into the same structure.
   \texttt{measure} & auto & narrow, standard, wide, or mode default \\
   \texttt{theorem-style} & boxed & boxed or plain \\
   \texttt{binding-offset} & 0pt & additional book binding correction \\
-  \texttt{extra-math} & false & convenience Unicode math alphabets \\
-  \texttt{fine-breaking} & true & moderate emergency stretch and tolerance \\
   \bottomrule
 \end{tabularx}}
 
@@ -213,8 +212,9 @@ additionally gives forced duplex blank pages a quiet footer anchor.
 
 \subsection{Headings, contents, and captions}
 
-All numbered section levels share the sans heading family: `section` uses the
-primary colour, `subsection` the dark text colour, and `subsubsection` a
+All numbered section levels share the sans heading family:
+\texttt{section} uses the primary colour, \texttt{subsection} the dark text
+colour, and \texttt{subsubsection} a
 smaller, slightly muted tint, so structure reads at a glance. When a table of
 contents is requested its top-level entries repeat the on-page heading colour
 in bold while deeper entries stay dark, and the number alignment and vertical
@@ -238,21 +238,21 @@ All four modes share the metadata model and render it differently:
   \toprule
   \textbf{Command} & \textbf{Meaning} \\
   \midrule
-  \SynapticCmd{SynapticTitle} & Required printed title and PDF title \\
-  \SynapticCmd{SynapticSubtitle} & Optional display subtitle \\
-  \SynapticCmd{SynapticShortTitle} & Running-head title \\
-  \SynapticCmd{SynapticDate} & Explicit date \\
-  \SynapticCmd{SynapticAuthor} & Repeatable author and optional affiliation mark \\
-  \SynapticCmd{SynapticAffiliation} & Repeatable affiliation \\
-  \SynapticCmd{SynapticEmail} & Repeatable clickable contact address \\
-  \SynapticCmd{SynapticSubject} & PDF subject \\
-  \SynapticCmd{SynapticKeywords} & Printed and PDF keywords \\
-  \SynapticCmd{SynapticHeader} & Submission header override \\
-  \SynapticCmd{SynapticSubHeader} & Secondary header \\
-  \SynapticCmd{SynapticPreprint} & Preprint identifier \\
-  \SynapticCmd{SynapticArxiv} & Linked arXiv identifier \\
-  \SynapticCmd{SynapticDedicated} & Dedication \\
-  \SynapticCmd{SynapticMakeTitle} & Validate and render all title data \\
+  \DocCmd{SynapticTitle} & Required printed title and PDF title \\
+  \DocCmd{SynapticSubtitle} & Optional display subtitle \\
+  \DocCmd{SynapticShortTitle} & Running-head title \\
+  \DocCmd{SynapticDate} & Explicit date \\
+  \DocCmd{SynapticAuthor} & Repeatable author and optional affiliation mark \\
+  \DocCmd{SynapticAffiliation} & Repeatable affiliation \\
+  \DocCmd{SynapticEmail} & Repeatable clickable contact address \\
+  \DocCmd{SynapticSubject} & PDF subject \\
+  \DocCmd{SynapticKeywords} & Printed and PDF keywords \\
+  \DocCmd{SynapticHeader} & Submission header override \\
+  \DocCmd{SynapticSubHeader} & Secondary header \\
+  \DocCmd{SynapticPreprint} & Preprint identifier \\
+  \DocCmd{SynapticArxiv} & Linked arXiv identifier \\
+  \DocCmd{SynapticDedicated} & Dedication \\
+  \DocCmd{SynapticMakeTitle} & Validate and render all title data \\
   \bottomrule
 \end{tabularx}}
 
@@ -263,13 +263,13 @@ Use \verb|\SynapticStatement{heading}{body}| for journal funding, data, ethics,
 or conflict statements; the starred form omits its table-of-contents entry.
 PDF metadata receives one Unicode-safe conversion.
 
-\section{Theorems and mathematics}
+\section{Statements and mathematics}
 
-The built-in \texttt{theorem}, \texttt{lemma}, \texttt{proposition},
-\texttt{definition}, \texttt{corollary}, \texttt{axiom}, \texttt{conjecture},
-\texttt{claim}, \texttt{property}, \texttt{criterion}, \texttt{convention},
-\texttt{problem}, \texttt{solution}, \texttt{example}, \texttt{exercise},
-\texttt{remark}, \texttt{note}, and \texttt{warning} environments share one
+The built-in \texttt{syntheorem}, \texttt{synlemma}, \texttt{synproposition},
+\texttt{syndefinition}, \texttt{syncorollary}, \texttt{synaxiom}, \texttt{synconjecture},
+\texttt{synclaim}, \texttt{synproperty}, \texttt{syncriterion}, \texttt{synconvention},
+\texttt{synproblem}, \texttt{synsolution}, \texttt{synexample}, \texttt{synexercise},
+\texttt{synremark}, \texttt{synnote}, and \texttt{synwarning} environments share one
 counter. Books use chapter scope by default; shorter modes use sections.
 Definitions use upright body text; proposition-style statements use italics in
 English and upright CJK text. Examples and exercises are plain-style
@@ -279,47 +279,50 @@ By default (\texttt{theorem-style=boxed}) the numbered statement environments
 are presented as refined cards: a subtle theme-tinted background, a semantic
 west accent bar, a faint hairline, and the same restrained corner treatment as
 the teaching and notes card language.
-\texttt{proof} stays clean and unboxed. Select \texttt{theorem-style=plain} for
+\texttt{synproof} stays clean and unboxed. The standard \texttt{proof}
+environment remains untouched. Select \texttt{theorem-style=plain} for
 the classic unboxed look.
 
-\begin{theorem}[Gaussian integral]
+\begin{syntheorem}[Gaussian integral]
   The integral satisfies
   \[
     \int_0^\infty e^{-x^2}\,\mathrm{d}x=\frac{\sqrt{\pi}}{2}.
   \]
-\end{theorem}
+\end{syntheorem}
 
-\begin{proof}
+\begin{synproof}
   Square the integral, change to polar coordinates, and evaluate the radial
   integral.
-\end{proof}
+\end{synproof}
 
 New theorem types accept a style:
 
 \begin{verbatim}
-\SynapticNewTheorem[remark]{observation}{Observation}
+\SynapticNewTheorem[remark]{synobservation}{Observation}
 \end{verbatim}
 
 The available styles are \texttt{plain}, \texttt{definition}, and
-\texttt{remark}; a custom theorem is boxed automatically. Declaring a name that
-already exists is a hard error: the built-in family plus anything declared with
-\verb|\SynapticNewTheorem| is the complete environment set.
+\texttt{remark}; a custom statement is boxed automatically. Its environment
+name must be a lowercase alphanumeric identifier beginning with \texttt{syn}.
+Duplicate or unnamespaced names are errors.
 
-\begin{observation}
-  With \texttt{extra-math=true}, commands such as \(\symbb{R}\),
-  \(\symcal{F}\), and \(\symfrak{g}\) are available.
-\end{observation}
+\begin{synobservation}
+  Unicode-math commands such as \(\symbb{R}\), \(\symcal{F}\), and
+  \(\symfrak{g}\) are available directly, without generated letter aliases.
+\end{synobservation}
 
 \section{Themes and customization}
 
-Themes may be switched with \verb|\SynapticUseTheme{name}|. A custom theme is
-defined and activated using xcolor expressions:
+Themes are switched through \verb|\SynapticSetup{theme=name}|. Define an
+immutable custom theme with xcolor expressions, then activate it explicitly:
 
 \begin{verbatim}
 \SynapticDefineTheme{brand}{blue!70!black}{gray!80!black}[orange]
+\SynapticSetup{theme=brand}
 \end{verbatim}
 
-The definition arguments are primary, secondary, and optional accent colours.
+The arguments are a lowercase slug, primary and secondary colours, and an
+optional accent. Existing theme names cannot be replaced.
 The semantic tokens below are always available for extensions and always
 derive from the active theme:
 
@@ -348,13 +351,13 @@ Notes mode provides \texttt{synkeyidea}, \texttt{synquestion},
 
 \section{Book workflow and acknowledgments}
 
-Use \SynapticCmd{SynapticFrontMatter}, \SynapticCmd{SynapticMainMatter}, and
-\SynapticCmd{SynapticBackMatter} around the corresponding parts of a book.
-\SynapticCmd{SynapticBookContents}, chapter subtitles, epigraphs, and
+Use \DocCmd{SynapticFrontMatter}, \DocCmd{SynapticMainMatter}, and
+\DocCmd{SynapticBackMatter} around the corresponding parts of a book.
+\DocCmd{SynapticBookContents}, chapter subtitles, epigraphs, and
 list/appendix helpers complete the long-form workflow. Notes mode provides
 \texttt{synkeyidea}, \texttt{synquestion}, \texttt{syntodo}, and
 \texttt{synsummary}; class-level two-column layouts are supported. The
-\SynapticCmd{SynapticAcknowledgments} command creates a chapter in book mode and
+\DocCmd{SynapticAcknowledgments} command creates a chapter in book mode and
 a section in other modes. Its starred form suppresses the TOC entry.
 
 \section{Troubleshooting}
@@ -382,39 +385,12 @@ a section in other modes. Its starred form suppresses the TOC entry.
     paper size; select it in the class options.
 \end{itemize}
 
-\section{Migrating to 3.0}
-
-Version 3.0 removes every backward-compatibility shim. Use the namespaced forms
-throughout:
-
-{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l Y@{}}
-  \toprule
-  \textbf{Removed} & \textbf{Replacement} \\
-  \midrule
-  \texttt{\textbackslash pkg} & \SynapticCmd{SynapticPkg} \\
-  \texttt{\textbackslash cmd} & \SynapticCmd{SynapticCmd} \\
-  \texttt{\textbackslash acknowledgments} & \SynapticCmd{SynapticAcknowledgments} \\
-  \texttt{\textbackslash synapticfrontmatter} & \SynapticCmd{SynapticFrontMatter} \\
-  \texttt{\textbackslash synapticmainmatter} & \SynapticCmd{SynapticMainMatter} \\
-  \texttt{\textbackslash synapticbackmatter} & \SynapticCmd{SynapticBackMatter} \\
-  \texttt{\textbackslash title}/\texttt{\textbackslash author}/\texttt{\textbackslash date} & \SynapticCmd{SynapticTitle} etc. \\
-  \texttt{synexample}/\texttt{synremark}/\texttt{synwarning}/\texttt{synexercise}/\texttt{synbox} & \texttt{example}/\texttt{remark}/\texttt{warning}/\texttt{exercise} \\
-  \texttt{box-numbering} & \texttt{numbering} \\
-  \texttt{title-layout=cover} & \texttt{title-layout=sequence} \\
-  \bottomrule
-\end{tabularx}}
-
-The statement environments (\texttt{example}, \texttt{exercise}, \texttt{warning}
-included) are now first-class members of the built-in family in every mode and
-share the theorem counter.
-
 \section{Development commands}
 
 \begin{verbatim}
-l3build unpack   # regenerate .sty and .def files from synaptic.dtx
-l3build check    # run the LuaLaTeX regression suite
-l3build doc      # build the documented source and manuals
-l3build ctan     # create release archives
+./scripts/verify # tests, manuals, examples, diagnostic scan
+l3build unpack   # extract .sty and .def files from synaptic.dtx
+l3build ctan     # create tested TDS and CTAN archives
 \end{verbatim}
 
 \SynapticAcknowledgments*

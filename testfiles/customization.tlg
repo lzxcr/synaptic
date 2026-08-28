@@ -1,7 +1,7 @@
 This is a generated file for the l3build validation system.
 Don't change this file in any respect.
 mode=notes
-theme=paper
+theme=regression
 toc-layout=page
 ! Package synaptic-base Error: Option `mode' is structural and fixed after loading.
 See the synaptic-base package documentation for explanation.
@@ -9,9 +9,48 @@ Type  H <return>  for immediate help.
  ...                                              
 l. ...\SynapticSetup{mode=book}
 Set it in the \usepackageoptions, or use theme, toc, and toc-layout here.
+! Package synaptic-color Error: Invalid theme name `Invalid'.
+See the synaptic-color package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+l. ...\SynapticDefineTheme
+                         {regression}{red}{blue}
+Use a lowercase identifier containing letters, digits, or hyphens.
+! Package synaptic-color Error: Theme `regression' already exists.
+See the synaptic-color package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+l. ...\SynapticNewTheorem
+                        {observation}{Observation}
+Choose a new theme name; themes are immutable.
+! Package synaptic-theorem Error: Invalid statement name `observation'.
+See the synaptic-theorem package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+l. ...\SynapticNewTheorem{observation}{Observation}
+Use a lowercase alphanumeric environment name beginning with `syn'.
+! Package synaptic-theorem Error: Invalid statement name `synObservation'.
+See the synaptic-theorem package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+l. ......ticNewTheorem{synObservation}{Observation}
+Use a lowercase alphanumeric environment name beginning with `syn'.
+! Package synaptic-theorem Error: Statement environment `synobservation' already exists.
+See the synaptic-theorem package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+l. ......ticNewTheorem{synobservation}{Observation}
+Choose a new environment name in the synaptic namespace.
+! Package synaptic-theorem Error: Unknown statement style `legacy'.
+See the synaptic-theorem package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+l. ......apticNewTheorem[legacy]{synlegacy}{Legacy}
+Use plain, definition, or remark.
+strict-extension-validation=ok
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `LatinModernSans' (encoding: TU).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
-Package hyperref Info: bookmark level for unknown observation defaults to 0 on input line ....
+Package hyperref Info: bookmark level for unknown synobservation defaults to 0 on input line ....
 custom-theme-and-theorem=ok

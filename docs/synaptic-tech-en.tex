@@ -11,21 +11,22 @@
 ]{synaptic}
 \usepackage{booktabs,tabularx}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\DocCmd}[1]{\textcolor{syn-primary!80!black}{\texttt{\textbackslash#1}}}
 
 \SynapticHeader{Synaptic Technical Reference}
 \SynapticSubHeader{Architecture, invariants, and release workflow}
-\SynapticPreprint{v3.0.0}
+\SynapticPreprint{v4.0.0}
 \SynapticTitle{synaptic Technical Reference}
 \SynapticAuthor{synaptic project}
 \SynapticAffiliation{Open-source LaTeX community}
-\SynapticSubject{Technical reference for synaptic version 3.0.0}
+\SynapticSubject{Technical reference for synaptic version 4.0.0}
 \SynapticKeywords{LaTeX3, architecture, l3build, regression testing}
 
-\begin{abstract}
+\begin{synabstract}
   This reference describes synaptic's module graph, load-time invariants,
   namespace rules, font and colour subsystems, extension points, generated-file
   policy, automated verification workflow, and packaging details.
-\end{abstract}
+\end{synabstract}
 
 \begin{document}
 \SynapticMakeTitle
@@ -48,11 +49,11 @@ synaptic.sty
           `-- synaptic-notes.sty       notes
 \end{verbatim}
 
-The thin shell forwards user options to \texttt{synaptic-base} and defines a
-small set of documentation helpers. The base module checks
-the engine and class, parses options, loads labels, validates book mode, and
-dispatches core and mode-specific modules. Language definition files are loaded
-before any module so every label constant is available everywhere.
+The thin shell forwards user options to \texttt{synaptic-base} and provides the
+namespaced acknowledgments command. The base module checks the engine and
+class, parses options, loads labels, validates structural requirements, and
+dispatches core and mode-specific modules. Language definitions load before
+the modules that consume them.
 
 \subsection{Module responsibilities}
 
@@ -60,7 +61,7 @@ before any module so every label constant is available everywhere.
   \toprule
   \textbf{Module} & \textbf{Kind} & \textbf{Responsibility} \\
   \midrule
-  \texttt{synaptic.sty} & shell & option forwarding, documentation helpers \\
+  \texttt{synaptic.sty} & shell & option forwarding, acknowledgments \\
   \texttt{synaptic-base.sty} & core & engine/class checks, keys, dispatch, setup \\
   \texttt{synaptic-lang-*.def} & data & bilingual label constants \\
   \texttt{synaptic-color.sty} & core & theme registry, semantic tokens, delivery \\
@@ -90,11 +91,11 @@ before any module so every label constant is available everywhere.
 
 The package-level \texttt{synaptic} key family is evaluated before module
 loading. Mode, language, font set, title layout, measure, density, numbering,
-delivery colour mode, extra math alphabets, and fine-breaking behaviour
-therefore become structural invariants. The runtime key family
+delivery colour mode, theorem style, and binding offset therefore become
+structural invariants. The runtime key family
 exposes only the state that can be applied without reloading packages:
 \texttt{theme}, \texttt{toc}, and \texttt{toc-layout}. Structural or unknown
-keys in a runtime request are errors; unknown package options are warnings.
+keys in a runtime request are errors; unknown package options are errors too.
 
 Book mode is rejected unless both chapter and front-matter interfaces exist.
 LuaLaTeX and KOMA-Script requirements are fatal diagnostics rather than delayed
@@ -115,8 +116,8 @@ protected by the regression suite.
     the class; journal titles do not silently restart numbering.
   \item \textbf{One Unicode conversion.} PDF metadata is passed to hyperref as
     source tokens; pre-conversion would double-encode.
-  \item \textbf{Collision-resistant public names.} Generic aliases are
-    installed only when free.
+  \item \textbf{Owned public names.} Every public command and environment is
+    namespaced; generic environments supplied by other packages stay untouched.
   \item \textbf{Semantic colour architecture.} Components consume semantic
     tokens; themes and delivery modes change tokens, never component logic.
 \end{itemize}
@@ -135,11 +136,11 @@ colour.
 
 \begin{verbatim}
 \SynapticDefineTheme{name}{primary}{secondary}[accent]
-\SynapticUseTheme{name}
+\SynapticSetup{theme=name}
 \end{verbatim}
 
-The arguments are xcolor expressions. Defining a custom theme registers and
-activates it.
+The colour arguments are xcolor expressions. Theme identifiers are validated
+lowercase slugs, definitions are immutable, and activation is explicit.
 
 \subsection{Font selection}
 
@@ -180,32 +181,35 @@ theme token.
 
 \subsection{Titles and metadata}
 
-Title values are held in expl3 token lists and sequences. Authors and their
+Title values are held in global expl3 token lists and sequences because they
+are document-wide state. Authors and their
 affiliation marks use parallel sequences; affiliations and emails are
 repeatable. A common metadata model feeds four renderers: inline journal,
 book title sequence, course masthead, and compact notes masthead. The title
 command validates a non-empty title and controls optional TOC placement without
-silently resetting the user's page numbering. Standard LaTeX metadata is an
-input adapter, not a redefinition of \verb|\maketitle|.
+silently resetting the user's page numbering. The namespaced
+\texttt{synabstract} environment captures abstract text; standard
+\texttt{abstract} and \verb|\maketitle| remain untouched.
 
 PDF information is passed as source tokens to hyperref. Hyperref performs the
 Unicode PDF-string conversion once; pre-converting and then calling
 \verb|\hypersetup| would double-encode metadata.
 
-\subsection{Theorems}
+\subsection{Statements}
 
 thmtools defines plain, definition, and remark styles on top of amsthm. The
-built-in statement family (\texttt{theorem}, \texttt{lemma},
-\texttt{proposition}, \texttt{definition}, \texttt{corollary}, \texttt{axiom},
-\texttt{conjecture}, \texttt{claim}, \texttt{property}, \texttt{example},
-\texttt{exercise}, \texttt{criterion}, \texttt{convention},
-\texttt{problem}, \texttt{solution}, \texttt{remark}, \texttt{note}, and
-\texttt{warning}) uses a mode-aware shared counter: chapter scope for books and
+built-in statement family (\texttt{syntheorem}, \texttt{synlemma},
+\texttt{synproposition}, \texttt{syndefinition}, \texttt{syncorollary}, \texttt{synaxiom},
+\texttt{synconjecture}, \texttt{synclaim}, \texttt{synproperty}, \texttt{synexample},
+\texttt{synexercise}, \texttt{syncriterion}, \texttt{synconvention},
+\texttt{synproblem}, \texttt{synsolution}, \texttt{synremark}, \texttt{synnote}, and
+\texttt{synwarning}) uses a mode-aware shared counter: chapter scope for books and
 section scope elsewhere by default. Under \texttt{theorem-style=boxed} the
 numbered statement environments are wrapped with tcolorbox (a theme-tinted
-background with a west accent bar) at \texttt{\string\begin{document}}; proofs
-stay unboxed. \texttt{theorem-style=plain} disables that wrapping. Examples and
-exercises are plain-style statements; warnings use the remark presentation.
+background with a west accent bar) at \texttt{\string\begin{document}};
+\texttt{synproof} stays unboxed and the standard \texttt{proof} is not
+redefined. \texttt{theorem-style=plain} disables statement wrapping. Examples
+and exercises are plain-style statements; warnings use the remark presentation.
 Because every statement shares the theorem counter, the module rebuilds each
 environment's hyperlink anchor (\texttt{theH<name>}) against the real structural
 parent so links stay unique across sections and chapters.
@@ -216,19 +220,26 @@ parent so links stay unique across sections and chapters.
   \toprule
   \textbf{Scope} & \textbf{Pattern} & \textbf{Example} \\
   \midrule
-  Public command & \texttt{\textbackslash Synaptic\ldots} & \SynapticCmd{SynapticDefineTheme} \\
+  Public command & \texttt{\textbackslash Synaptic\ldots} & \DocCmd{SynapticDefineTheme} \\
   Public environment & \texttt{syn...} & \texttt{synsummary} \\
+  Public colour token & \texttt{syn-...} & \texttt{syn-primary} \\
   Internal function & \texttt{\textbackslash\_\_synaptic\_\ldots:} & title rendering helper \\
-  Module interface & \texttt{\textbackslash synaptic\_\ldots:} & mode accessor \\
-  Local state & \texttt{\textbackslash l\_synaptic\_\ldots} & selected theme token list \\
-  Global registry & \texttt{\textbackslash g\_synaptic\_\ldots} & theme property list \\
-  Label constant & \texttt{\textbackslash c\_synaptic\_label\_\ldots} & theorem label \\
+  Private local state & \texttt{\textbackslash l\_\_synaptic\_\ldots} & title-layout scratch value \\
+  Private global state & \texttt{\textbackslash g\_\_synaptic\_\ldots} & mode, metadata, or registry \\
+  Private constant & \texttt{\textbackslash c\_\_synaptic\_\ldots} & label or environment family \\
   \bottomrule
 \end{tabularx}}
 
-New public names should avoid common nouns. Statement environments are part of
-the built-in family: declare new ones with \verb|\SynapticNewTheorem| rather
-than adding aliases.
+The expl3 prefixes \texttt{g} and \texttt{l} describe lifetime, not ownership.
+Ownership is carried independently by the \texttt{synaptic} module name and
+the private double underscore. Document-wide state is therefore still private
+\texttt{g\_\_synaptic\_...} state; short-lived scratch values use
+\texttt{l\_\_synaptic\_...}.
+
+New public names must follow the same ownership rules. Custom statement
+environment names accepted by \verb|\SynapticNewTheorem| begin with
+\texttt{syn} and contain only lowercase letters and digits; duplicate or
+unnamespaced names are errors.
 
 \section{Extension points}
 
@@ -249,9 +260,9 @@ than adding aliases.
 
 \texttt{synaptic.dtx} is the source of truth. DocStrip uses
 \texttt{synaptic.ins} to generate the installable \texttt{.sty} and
-\texttt{.def} files. The generated copies under
-\texttt{tex/latex/synaptic/} are committed for zero-install use and must remain
-byte-identical to fresh extraction.
+\texttt{.def} files under \texttt{build/unpacked}. Extracted modules, compiled
+PDFs, and release archives are deliberately untracked, so there is only one
+implementation source to review and update.
 
 The regression suite is organised as follows:
 
@@ -268,24 +279,25 @@ The regression suite is organised as follows:
   \texttt{customization} & runtime setup, custom theorems \\
   \texttt{toc-layouts}, \texttt{title-layouts} & TOC and title compositions \\
   \texttt{layout-profiles} & density, measure, binding offset \\
+  \texttt{theorem-boxes}, \texttt{strict-options} & full statement family,
+  namespace validation, and strict option errors \\
   \texttt{book-full} & complete title sequence and matter workflow \\
   \texttt{lecture-continuous} & continuous numbering profile \\
-  \texttt{extra-math} & optional Unicode math alphabets \\
   \bottomrule
 \end{tabularx}}
 
 Each group typesets a document with the standard engine and compares the
-normalised log against its committed expectation file. CI runs the suite and
-additionally builds the documented source, four manuals, and all examples,
-failing on warnings, overfull boxes, or missing characters.
+normalised log against its committed expectation file. The shared
+\texttt{scripts/verify} entry point runs the suite, builds the documented
+source, four manuals, and all examples, then fails on warnings, overfull boxes,
+missing characters, or TeX errors. CI invokes the same entry point.
 
 \section{Source and release workflow}
 
 \begin{verbatim}
-l3build unpack     # regenerate .sty/.def into build/local
-l3build check      # run the regression suite
-l3build doc        # build the documented source, manuals
-l3build ctan       # create TDS and CTAN archives
+./scripts/verify  # tests, manuals, examples, diagnostics
+l3build unpack    # extract .sty/.def into build/unpacked
+l3build ctan      # create tested TDS and CTAN archives
 l3build install   # copy package files into the texmf tree
 l3build uninstall # remove a previous installation
 \end{verbatim}
@@ -293,18 +305,7 @@ l3build uninstall # remove a previous installation
 The \texttt{ctan} target emits \texttt{synaptic-ctan.zip} (the source tree
 plus generated documentation and examples) together with the nested
 \texttt{synaptic.tds.zip} in TDS layout. Installation replaces the previous
-version in place; because the generated file set is stable,
-\texttt{l3build install} is safe to rerun after every release.
-
-\section{Migrating to 3.0}
-
-Version 3.0 removes every backward-compatibility layer: the \verb|\pkg| and
-\verb|\cmd| aliases, the lowercase book matter helpers, the import of standard
-\verb|\title|/\verb|\author|/\verb|\date| metadata, the \texttt{box-numbering}
-option, and the \texttt{synaptic-boxes} module. Examples, warnings, and
-exercises are now first-class members of the built-in statement family;
-\texttt{title-layout=cover} became \texttt{title-layout=sequence}; re-declaring
-an environment with \verb|\SynapticNewTheorem| is a hard error. New documents
-should use the namespaced public forms exclusively.
+version in place. The repository does not retain compatibility copies or
+migration shims; the changelog records removed interfaces.
 
 \end{document}

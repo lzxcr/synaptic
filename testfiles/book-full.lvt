@@ -14,12 +14,12 @@
 \SynapticISBN{978-0-00-000000-0}
 \SynapticCopyright{Copyright \textcopyright\ 2026 Regression Press.}
 \SynapticDedicated{For the regression suite.}
-\begin{abstract}This book exercises the full title sequence and matter helpers.\end{abstract}
+\begin{synabstract}This book exercises the full title sequence and matter helpers.\end{synabstract}
 
 \begin{document}
 \START
 \ExplSyntaxOn
-\TYPE{mode=\synaptic_mode:}
+\TYPE{mode=\__synaptic_mode:}
 \ExplSyntaxOff
 \SynapticMakeTitle
 \SynapticFrontMatter
@@ -37,7 +37,7 @@ Front matter at chapter scale.
   \rule{\linewidth}{1.5cm}
   \caption{A regression figure.}
 \end{figure}
-\begin{theorem}Chapter-level numbering applies.\end{theorem}
+\begin{syntheorem}Chapter-level numbering applies.\end{syntheorem}
 \begin{equation}E = mc^2\end{equation}
 \SynapticAppendices
 \chapter{Appendix Material}

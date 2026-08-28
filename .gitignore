@@ -1,48 +1,40 @@
-# Build artifacts
+# TeX intermediates
 *.aux
-*.log
-*.out
-*.toc
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.glg
 *.glo
 *.gls
+*.hd
 *.idx
 *.ilg
 *.ind
-*.bbl
-*.blg
+*.log
+*.out
 *.synctex.gz
-*.fls
-*.fdb_latexmk
-
-# LuaLaTeX font cache
-.cache/
+*.toc
 
 # l3build output
-build/
+/build/
 /synaptic.pdf
 /synaptic-ctan.zip
 /synaptic.tds.zip
-/.rcs
 
-# Development specs (completed)
-openspec/
+# Generated release material
+/docs/*.pdf
+/examples/*.pdf
+/tex/
+/*.pdf
 
-# Root-level stray compilation output
-synaptic.log
+# Local caches and workspaces
+/.cache/
+/.jspace/
+/.rcs/
 
-# Backup files
+# Editor and operating-system files
 *~
 *.bak
-
-# OS files
 .DS_Store
 Thumbs.db
-
-# Docstrip header byproducts
-*.hd
-
-# Skill / task workspace (not project source)
-.jspace/
-
-# Reference materials provided alongside the project (not source)
-上升之海代數幾何引論Ravi_Vakil.pdf

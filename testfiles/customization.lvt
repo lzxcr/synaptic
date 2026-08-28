@@ -3,19 +3,26 @@
 \usepackage[mode=notes,theme=graphite,fontset=lm]{synaptic}
 
 \SynapticDefineTheme{regression}{red!70!black}{blue!70!black}[orange!80!black]
-\SynapticSetup{theme=paper,toc=false,toc-layout=page}
-\SynapticNewTheorem[remark]{observation}{Observation}
+\SynapticSetup{theme=regression,toc=false,toc-layout=page}
+\SynapticNewTheorem[remark]{synobservation}{Observation}
 
 \begin{document}
 \START
 \ExplSyntaxOn
-\TYPE{mode=\synaptic_mode:}
-\TYPE{theme=\synaptic_theme:}
-\TYPE{toc-layout=\synaptic_toc_layout:}
+\TYPE{mode=\__synaptic_mode:}
+\TYPE{theme=\__synaptic_theme:}
+\TYPE{toc-layout=\__synaptic_toc_layout:}
 \ExplSyntaxOff
 \SynapticSetup{mode=book}
+\SynapticDefineTheme{Invalid}{red}{blue}
+\SynapticDefineTheme{regression}{red}{blue}
+\SynapticNewTheorem{observation}{Observation}
+\SynapticNewTheorem{synObservation}{Observation}
+\SynapticNewTheorem{synobservation}{Observation}
+\SynapticNewTheorem[legacy]{synlegacy}{Legacy}
+\TYPE{strict-extension-validation=ok}
 \section{Customization}
-\begin{observation}Custom theorem styles compile.\end{observation}
+\begin{synobservation}Custom theorem styles compile.\end{synobservation}
 \TYPE{custom-theme-and-theorem=ok}
 \END
 \end{document}

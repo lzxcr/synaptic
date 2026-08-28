@@ -9,8 +9,8 @@
 \begin{document}
 \START
 \ExplSyntaxOn
-\TYPE{mode=\synaptic_mode:}
-\TYPE{density=\synaptic_density:}
+\TYPE{mode=\__synaptic_mode:}
+\TYPE{density=\__synaptic_density:}
 \ExplSyntaxOff
 \SynapticMakeTitle
 \section{Notes}

@@ -1,0 +1,9 @@
+This is a generated file for the l3build validation system.
+Don't change this file in any respect.
+! Package synaptic-base Error: Unknown option `obsolete-option'.
+See the synaptic-base package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+l. ......:nn { synaptic } { obsolete-option = true }
+Remove the option or use a documented synaptic key.
+unknown-package-option-rejected=ok

@@ -9,12 +9,12 @@
 \begin{document}
 \START
 \ExplSyntaxOn
-\TYPE{color-mode=\synaptic_color_mode:}
+\TYPE{color-mode=\__synaptic_color_mode:}
 \ExplSyntaxOff
 \SynapticMakeTitle
 \section{Print}
 The print delivery mode keeps semantic colours but darkens links for paper.
-\begin{theorem}Print-safe theorem colouring.\end{theorem}
+\begin{syntheorem}Print-safe theorem colouring.\end{syntheorem}
 \TYPE{print-color-mode=ok}
 \END
 \end{document}

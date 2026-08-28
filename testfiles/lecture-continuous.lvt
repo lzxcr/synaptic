@@ -11,18 +11,18 @@
 \begin{document}
 \START
 \ExplSyntaxOn
-\TYPE{numbering=\synaptic_numbering:}
+\TYPE{numbering=\__synaptic_numbering:}
 \ExplSyntaxOff
 \SynapticMakeTitle
 \section{First}
-\begin{theorem}A continuous theorem.\end{theorem}
-\begin{example}[Example]A continuously numbered example.\end{example}
+\begin{syntheorem}A continuous theorem.\end{syntheorem}
+\begin{synexample}[Example]A continuously numbered example.\end{synexample}
 \section{Second}
-\begin{theorem}Another continuous theorem.\end{theorem}
-\begin{remark}[Remark]A continuous remark.\end{remark}
-\begin{warning}[Warning]A continuous warning.\end{warning}
+\begin{syntheorem}Another continuous theorem.\end{syntheorem}
+\begin{synremark}[Remark]A continuous remark.\end{synremark}
+\begin{synwarning}[Warning]A continuous warning.\end{synwarning}
 \ExplSyntaxOn
-\TYPE{theorem-counter=\thetheorem}
+\TYPE{theorem-counter=\thesyntheorem}
 \ExplSyntaxOff
 \TYPE{continuous-shared-numbering=ok}
 \END

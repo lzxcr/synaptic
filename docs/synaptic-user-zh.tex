@@ -6,29 +6,29 @@
   mode=journal,
   theme=ocean,
   fontset=lm,
-  extra-math=true,
   toc=true,
   toc-layout=page
 ]{synaptic}
 \usepackage{booktabs,tabularx}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\DocCmd}[1]{\textcolor{syn-primary!80!black}{\texttt{\textbackslash#1}}}
 
-\SynapticNewTheorem[remark]{observation}{观察}
+\SynapticNewTheorem[remark]{synobservation}{观察}
 \SynapticHeader{synaptic 用户手册}
 \SynapticSubHeader{面向 LuaLaTeX 的稳定学术排版}
-\SynapticPreprint{v3.0.0}
+\SynapticPreprint{v4.0.0}
 \SynapticTitle{synaptic 宏包用户手册}
 \SynapticAuthor{synaptic 项目}
 \SynapticAffiliation{开源 LaTeX 社区}
 \SynapticEmail{synaptic@example.com}
-\SynapticSubject{synaptic 3.0.0 用户手册}
+\SynapticSubject{synaptic 4.0.0 用户手册}
 \SynapticKeywords{synaptic, LaTeX3, LuaLaTeX, 学术排版}
 
-\begin{abstract}
+\begin{synabstract}
   \textbf{synaptic} 是一套模块化 LaTeX3 学术文档设计系统，适用于期刊
   论文、书籍、讲义与笔记。本手册介绍它的安装方式、环境要求、安全配置
   模型、排版系统、元数据 API、定理体系、主题与自定义工具以及各模式功能。
-\end{abstract}
+\end{synabstract}
 
 \begin{document}
 \SynapticMakeTitle
@@ -43,7 +43,7 @@
 \usepackage[mode=journal]{synaptic}
 \SynapticTitle{一篇短文}
 \SynapticAuthor{作者}
-\begin{abstract}摘要。\end{abstract}
+\begin{synabstract}摘要。\end{synabstract}
 \begin{document}
 \SynapticMakeTitle
 \section{引言}
@@ -55,10 +55,11 @@
 
 \subsection{不安装直接使用仓库副本}
 
-仓库已包含生成好的宏包文件，可将 \texttt{TEXINPUTS} 指向它们：
+先提取宏包模块，再将 \texttt{TEXINPUTS} 指向构建输出：
 
 \begin{verbatim}
-export TEXINPUTS=/path/to/synaptic/tex/latex/synaptic//:$TEXINPUTS
+l3build unpack
+export TEXINPUTS=/path/to/synaptic/build/unpacked//:$TEXINPUTS
 lualatex document.tex
 \end{verbatim}
 
@@ -108,8 +109,6 @@ l3build ctan        # 生成 TDS/CTAN 压缩包
   \texttt{measure} & auto & narrow、standard、wide 或模式默认值 \\
   \texttt{theorem-style} & boxed & boxed 或 plain \\
   \texttt{binding-offset} & 0pt & 书籍装订补偿尺寸 \\
-  \texttt{extra-math} & false & 便捷 Unicode 数学字母命令 \\
-  \texttt{fine-breaking} & true & 适度放宽断行容忍度 \\
   \bottomrule
 \end{tabularx}}
 
@@ -214,21 +213,21 @@ journal 的 \texttt{inline}、book 的 \texttt{sequence} 以及 lecture 与 note
   \toprule
   \textbf{命令} & \textbf{含义} \\
   \midrule
-  \SynapticCmd{SynapticTitle} & 必填标题与 PDF 标题 \\
-  \SynapticCmd{SynapticSubtitle} & 可选副标题 \\
-  \SynapticCmd{SynapticShortTitle} & 运行页眉短标题 \\
-  \SynapticCmd{SynapticDate} & 显式日期 \\
-  \SynapticCmd{SynapticAuthor} & 作者及可选机构标记，可重复 \\
-  \SynapticCmd{SynapticAffiliation} & 机构，可重复 \\
-  \SynapticCmd{SynapticEmail} & 可点击联系方式，可重复 \\
-  \SynapticCmd{SynapticSubject} & PDF 主题 \\
-  \SynapticCmd{SynapticKeywords} & 页面关键词与 PDF 关键词 \\
-  \SynapticCmd{SynapticHeader} & 投稿抬头 \\
-  \SynapticCmd{SynapticSubHeader} & 次级抬头 \\
-  \SynapticCmd{SynapticPreprint} & 预印本编号 \\
-  \SynapticCmd{SynapticArxiv} & arXiv 链接 \\
-  \SynapticCmd{SynapticDedicated} & 献词 \\
-  \SynapticCmd{SynapticMakeTitle} & 验证并输出标题信息 \\
+  \DocCmd{SynapticTitle} & 必填标题与 PDF 标题 \\
+  \DocCmd{SynapticSubtitle} & 可选副标题 \\
+  \DocCmd{SynapticShortTitle} & 运行页眉短标题 \\
+  \DocCmd{SynapticDate} & 显式日期 \\
+  \DocCmd{SynapticAuthor} & 作者及可选机构标记，可重复 \\
+  \DocCmd{SynapticAffiliation} & 机构，可重复 \\
+  \DocCmd{SynapticEmail} & 可点击联系方式，可重复 \\
+  \DocCmd{SynapticSubject} & PDF 主题 \\
+  \DocCmd{SynapticKeywords} & 页面关键词与 PDF 关键词 \\
+  \DocCmd{SynapticHeader} & 投稿抬头 \\
+  \DocCmd{SynapticSubHeader} & 次级抬头 \\
+  \DocCmd{SynapticPreprint} & 预印本编号 \\
+  \DocCmd{SynapticArxiv} & arXiv 链接 \\
+  \DocCmd{SynapticDedicated} & 献词 \\
+  \DocCmd{SynapticMakeTitle} & 验证并输出标题信息 \\
   \bottomrule
 \end{tabularx}}
 
@@ -237,55 +236,56 @@ journal 支持出版信息、通讯信息与作者注；book 支持半扉页、�
 利益冲突声明可用 \verb|\SynapticStatement{标题}{正文}|，其星号形式不写入目录。
 PDF 字符串只进行一次 Unicode 安全转换。
 
-\section{定理与数学}
+\section{陈述与数学}
 
-内置 \texttt{theorem}、\texttt{lemma}、\texttt{proposition}、
-\texttt{definition}、\texttt{corollary}、\texttt{axiom}、\texttt{conjecture}、
-\texttt{claim}、\texttt{property}、\texttt{criterion}、\texttt{convention}、
-\texttt{problem}、\texttt{solution}、\texttt{example}、\texttt{exercise}、
-\texttt{remark}、\texttt{note} 与 \texttt{warning} 共享一个计数器。书籍默认按
+内置 \texttt{syntheorem}、\texttt{synlemma}、\texttt{synproposition}、
+\texttt{syndefinition}、\texttt{syncorollary}、\texttt{synaxiom}、\texttt{synconjecture}、
+\texttt{synclaim}、\texttt{synproperty}、\texttt{syncriterion}、\texttt{synconvention}、
+\texttt{synproblem}、\texttt{synsolution}、\texttt{synexample}、\texttt{synexercise}、
+\texttt{synremark}、\texttt{synnote} 与 \texttt{synwarning} 共享一个计数器。书籍默认按
 章编号，短文档默认按节编号。定义正文使用正体；中文命题类正文保持正体，避免
 伪斜体造成的阅读干扰。例题与练习为 plain 样式陈述，警告使用注记呈现。
 
 默认（\texttt{theorem-style=boxed}）下，编号的陈述环境以精致的卡片呈现：微
 妙的主题色背景、语义西侧强调条、淡发丝线与克制圆角，与教学与笔记卡片语言保持一致。
-\texttt{proof} 保持干净、不加框。选择 \texttt{theorem-style=plain} 可恢复无框
-经典样式。
+\texttt{synproof} 保持干净、不加框，同时不修改标准 \texttt{proof} 环境。
+选择 \texttt{theorem-style=plain} 可恢复无框经典样式。
 
-\begin{theorem}[高斯积分]
+\begin{syntheorem}[高斯积分]
   \[
     \int_0^\infty e^{-x^2}\,\mathrm{d}x=\frac{\sqrt{\pi}}{2}.
   \]
-\end{theorem}
+\end{syntheorem}
 
-\begin{proof}
+\begin{synproof}
   对积分求平方，转换为极坐标，再计算径向积分。
-\end{proof}
+\end{synproof}
 
-自定义定理可选择 \texttt{plain}、\texttt{definition} 或 \texttt{remark} 样式：
-自定义定理也会自动加框。对已有名称重复声明会直接报错：内置定理族加上
-\verb|\SynapticNewTheorem| 声明的环境合起来构成完整的环境集合。
+自定义陈述可选择 \texttt{plain}、\texttt{definition} 或 \texttt{remark} 样式，
+并会自动加框。环境名必须是以 \texttt{syn} 开头的小写字母数字标识符；
+未命名空间化或重名都会报错。
 
 \begin{verbatim}
-\SynapticNewTheorem[remark]{observation}{观察}
+\SynapticNewTheorem[remark]{synobservation}{观察}
 \end{verbatim}
 
-\begin{observation}
-  开启 \texttt{extra-math=true} 后可使用 \(\symbb{R}\)、\(\symcal{F}\) 与
-  \(\symfrak{g}\) 等命令。
-\end{observation}
+\begin{synobservation}
+  可直接使用 unicode-math 提供的 \(\symbb{R}\)、\(\symcal{F}\) 与
+  \(\symfrak{g}\)，无需额外生成单字母别名。
+\end{synobservation}
 
 \section{主题与自定义}
 
-使用 \verb|\SynapticUseTheme{名称}| 切换主题。下列命令使用 xcolor 颜色表达式
-定义并立即启用自定义主题：
+通过 \verb|\SynapticSetup{theme=名称}| 切换主题。先使用 xcolor 颜色表达式定义
+不可变的自定义主题，再显式启用：
 
 \begin{verbatim}
 \SynapticDefineTheme{brand}{blue!70!black}{gray!80!black}[orange]
+\SynapticSetup{theme=brand}
 \end{verbatim}
 
-参数依次为主色、次级色与可选强调色。以下语义令牌始终可用于扩展，并始终
-由当前主题推导：
+参数依次为小写标识符、主色、次级色与可选强调色；已有主题不可被原地覆盖。
+以下语义令牌始终可用于扩展，并始终由当前主题推导：
 
 {\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l l Y@{}}
   \toprule
@@ -312,10 +312,10 @@ PDF 字符串只进行一次 Unicode 安全转换。
 
 \section{书籍流程与致谢}
 
-书籍中可使用 \SynapticCmd{SynapticFrontMatter}、\SynapticCmd{SynapticMainMatter} 和
-\SynapticCmd{SynapticBackMatter}，以及目录、图表目录、附录、章副标题与题词辅助命令。
+书籍中可使用 \DocCmd{SynapticFrontMatter}、\DocCmd{SynapticMainMatter} 和
+\DocCmd{SynapticBackMatter}，以及目录、图表目录、附录、章副标题与题词辅助命令。
 notes 模式提供 \texttt{synkeyidea}、\texttt{synquestion}、\texttt{syntodo} 和
-\texttt{synsummary}，并兼容文档类的双栏布局。\SynapticCmd{SynapticAcknowledgments} 在书籍模式中生成章，
+\texttt{synsummary}，并兼容文档类的双栏布局。\DocCmd{SynapticAcknowledgments} 在书籍模式中生成章，
 其他模式中生成节；带星号的形式不加入目录。
 
 \section{常见问题}
@@ -341,37 +341,12 @@ notes 模式提供 \texttt{synkeyidea}、\texttt{synquestion}、\texttt{syntodo}
     选项中指定。
 \end{itemize}
 
-\section{迁移到 3.0}
-
-3.0 移除了全部向后兼容层，请统一使用带命名空间的公开形式：
-
-{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l Y@{}}
-  \toprule
-  \textbf{已移除} & \textbf{替代} \\
-  \midrule
-  \texttt{\textbackslash pkg} & \SynapticCmd{SynapticPkg} \\
-  \texttt{\textbackslash cmd} & \SynapticCmd{SynapticCmd} \\
-  \texttt{\textbackslash acknowledgments} & \SynapticCmd{SynapticAcknowledgments} \\
-  \texttt{\textbackslash synapticfrontmatter} & \SynapticCmd{SynapticFrontMatter} \\
-  \texttt{\textbackslash synapticmainmatter} & \SynapticCmd{SynapticMainMatter} \\
-  \texttt{\textbackslash synapticbackmatter} & \SynapticCmd{SynapticBackMatter} \\
-  \texttt{\textbackslash title}/\texttt{\textbackslash author}/\texttt{\textbackslash date} & \SynapticCmd{SynapticTitle} 等 \\
-  \texttt{synexample}/\texttt{synremark}/\texttt{synwarning}/\texttt{synexercise}/\texttt{synbox} & \texttt{example}/\texttt{remark}/\texttt{warning}/\texttt{exercise} \\
-  \texttt{box-numbering} & \texttt{numbering} \\
-  \texttt{title-layout=cover} & \texttt{title-layout=sequence} \\
-  \bottomrule
-\end{tabularx}}
-
-陈述环境（含 \texttt{example}、\texttt{exercise}、\texttt{warning}）现在在
-所有模式中都是内置定理族的一等成员，并共享定理计数器。
-
 \section{开发命令}
 
 \begin{verbatim}
-l3build unpack   # 从 synaptic.dtx 重新生成宏包文件
-l3build check    # 运行 LuaLaTeX 回归测试
-l3build doc      # 生成源码文档与手册
-l3build ctan     # 创建发布压缩包
+./scripts/verify # 测试、手册、示例与诊断扫描
+l3build unpack   # 从 synaptic.dtx 提取宏包文件
+l3build ctan     # 创建经过测试的 TDS/CTAN 压缩包
 \end{verbatim}
 
 \SynapticAcknowledgments*

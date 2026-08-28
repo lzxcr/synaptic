@@ -1,0 +1,12 @@
+\input regression-test.tex
+\documentclass[11pt]{scrartcl}
+\usepackage[mode=journal,fontset=lm]{synaptic}
+
+\begin{document}
+\START
+\ExplSyntaxOn
+\keys_set:nn { synaptic } { obsolete-option = true }
+\ExplSyntaxOff
+\TYPE{unknown-package-option-rejected=ok}
+\END
+\end{document}

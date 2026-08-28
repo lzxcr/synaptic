@@ -9,12 +9,12 @@
 \SynapticMakeTitle
 \section{中文回归测试}
 中英文混排与标点。
-\begin{theorem}定理环境中的中文。\end{theorem}
+\begin{syntheorem}定理环境中的中文。\end{syntheorem}
 \begin{synkeyidea}中文知识卡与全角标点。\end{synkeyidea}
 \START
 \ExplSyntaxOn
-\TYPE{mode=\synaptic_mode:}
-\TYPE{language=\synaptic_lang:}
+\TYPE{mode=\__synaptic_mode:}
+\TYPE{language=\__synaptic_lang:}
 \ExplSyntaxOff
 \TYPE{cjk-typesetting=ok}
 \END

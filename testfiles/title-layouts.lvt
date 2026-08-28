@@ -11,7 +11,7 @@
 \begin{document}
 \START
 \ExplSyntaxOn
-\TYPE{title-layout=\synaptic_title_layout:}
+\TYPE{title-layout=\__synaptic_title_layout:}
 \ExplSyntaxOff
 \SynapticMakeTitle
 \section{After Title}

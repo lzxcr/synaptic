@@ -11,18 +11,18 @@
 \SynapticPublicationInfo{Regression preprint}
 \SynapticSubject{Journal regression test}
 \SynapticKeywords{regression, journal}
-\begin{abstract}A short abstract.\end{abstract}
+\begin{synabstract}A short abstract.\end{synabstract}
 
 \begin{document}
 \START
 \ExplSyntaxOn
-\TYPE{mode=\synaptic_mode:}
-\TYPE{theme=\synaptic_theme:}
+\TYPE{mode=\__synaptic_mode:}
+\TYPE{theme=\__synaptic_theme:}
 \ExplSyntaxOff
 \SynapticMakeTitle
 \section{Result}
-\begin{theorem}The theorem environment is available.\end{theorem}
-\begin{definition}Definitions use their dedicated style.\end{definition}
+\begin{syntheorem}The theorem environment is available.\end{syntheorem}
+\begin{syndefinition}Definitions use their dedicated style.\end{syndefinition}
 \SynapticStatement{Funding}{No external funding.}
 \TYPE{journal-inline-title-and-statements=ok}
 \END
