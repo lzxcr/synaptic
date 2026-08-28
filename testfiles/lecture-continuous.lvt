@@ -1,7 +1,6 @@
 \input regression-test.tex
 \documentclass[11pt]{scrartcl}
-\usepackage[mode=lecture,theme=ocean,fontset=lm,numbering=continuous,
-  box-numbering=separate]{synaptic}
+\usepackage[mode=lecture,theme=ocean,fontset=lm,numbering=continuous]{synaptic}
 
 \SynapticCourseCode{CS 101}
 \SynapticCourse{Continuous Regression}
@@ -13,24 +12,18 @@
 \START
 \ExplSyntaxOn
 \TYPE{numbering=\synaptic_numbering:}
-\TYPE{box-numbering=\synaptic_box_numbering:}
 \ExplSyntaxOff
 \SynapticMakeTitle
 \section{First}
 \begin{theorem}A continuous theorem.\end{theorem}
-\begin{synexample}[Example]A separately numbered example.\end{synexample}
-\ExplSyntaxOn
-\TYPE{example-in-first=\use:c { thetcb@cnt@synapticexample }}
-\ExplSyntaxOff
+\begin{example}[Example]A continuously numbered example.\end{example}
 \section{Second}
 \begin{theorem}Another continuous theorem.\end{theorem}
-\begin{synremark}[Remark]A separately numbered remark.\end{synremark}
-\begin{synwarning}[Warning]Unnumbered warning.\end{synwarning}
+\begin{remark}[Remark]A continuous remark.\end{remark}
+\begin{warning}[Warning]A continuous warning.\end{warning}
 \ExplSyntaxOn
 \TYPE{theorem-counter=\thetheorem}
-\TYPE{remark-in-second=\use:c { thetcb@cnt@synapticremark }}
-\TYPE{warning-in-second=\use:c { thetcb@cnt@synapticwarning }}
 \ExplSyntaxOff
-\TYPE{continuous-and-separate-numbering=ok}
+\TYPE{continuous-shared-numbering=ok}
 \END
 \end{document}

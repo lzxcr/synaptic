@@ -1,7 +1,7 @@
 \input regression-test.tex
 \documentclass{scrartcl}
 \usepackage[mode=lecture,fontset=lm,color-mode=mono,measure=narrow,
-  numbering=none,box-numbering=none]{synaptic}
+  numbering=none]{synaptic}
 
 \SynapticTitle{Unnumbered Lecture}
 
@@ -12,7 +12,6 @@
 \TYPE{color-mode=\synaptic_color_mode:}
 \TYPE{measure=\synaptic_measure:}
 \TYPE{numbering=\synaptic_numbering:}
-\TYPE{box-numbering=\synaptic_box_numbering:}
 \ExplSyntaxOff
 \SynapticMakeTitle
 \section{Options}
@@ -20,7 +19,7 @@
 \begin{align}a&=b\\c&=d\end{align}
 \begin{alignat}{2}a&=b&\qquad c&=d\end{alignat}
 \begin{theorem}An unnumbered theorem.\end{theorem}
-\begin{synexample}[Unnumbered]An unnumbered example.\end{synexample}
+\begin{example}An unnumbered example.\end{example}
 \TYPE{unnumbered-display-and-components=ok}
 \END
 \end{document}

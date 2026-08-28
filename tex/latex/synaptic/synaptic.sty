@@ -23,9 +23,8 @@
 
 
 
-
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic}{2026-08-28}{2.6.1}
+\ProvidesExplPackage{synaptic}{2026-08-28}{3.0.0}
   {Modern~Academic~Typesetting~Framework}
 
 \RequirePackageWithOptions{synaptic-base}
@@ -36,8 +35,6 @@
   { {\color{syn-primary}\texttt{\seqsplit{#1}}} }
 \NewDocumentCommand{\SynapticCmd}{m}
   { {\color{syn-primary!80}\texttt{\textbackslash\seqsplit{#1}}} }
-\ProvideDocumentCommand{\pkg}{m}{\SynapticPkg{#1}}
-\ProvideDocumentCommand{\cmd}{m}{\SynapticCmd{#1}}
 
 \NewDocumentCommand{\SynapticAcknowledgments}{s O{\c_synaptic_label_acknowledgments_tl}}
   {
@@ -51,8 +48,5 @@
           { \addcontentsline{toc}{section}{#2} }
       }
   }
-
-\ProvideDocumentCommand{\acknowledgments}{s O{\c_synaptic_label_acknowledgments_tl}}
-  { \IfBooleanTF{#1}{\SynapticAcknowledgments*[#2]}{\SynapticAcknowledgments[#2]} }
 
 

@@ -4,7 +4,6 @@ mode=lecture
 color-mode=mono
 measure=narrow
 numbering=none
-box-numbering=none
 Package hyperref Info: Option `unicode' set `true' on input line ....
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `LatinModernSans' (encoding: TU).
@@ -15,4 +14,5 @@ Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
 Package hyperref Info: bookmark level for unknown theorem defaults to 0 on input line ....
+Package hyperref Info: bookmark level for unknown example defaults to 0 on input line ....
 unnumbered-display-and-components=ok

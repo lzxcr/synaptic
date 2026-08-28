@@ -12,7 +12,7 @@
 %%
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-base}{2026-08-28}{2.6.1}
+\ProvidesExplPackage{synaptic-base}{2026-08-28}{3.0.0}
   {Synaptic~Core~Infrastructure}
 
 \msg_new:nnn { synaptic } { luatex-required }
@@ -35,19 +35,14 @@
 \tl_new:N  \l_synaptic_toc_layout_tl
 \tl_new:N  \l_synaptic_title_layout_tl
 \tl_new:N  \l_synaptic_numbering_tl
-\tl_new:N  \l_synaptic_box_numbering_tl
 \tl_new:N  \l_synaptic_color_mode_tl
 \tl_new:N  \l_synaptic_density_tl
 \tl_new:N  \l_synaptic_measure_tl
 \tl_new:N  \l_synaptic_theorem_style_tl
 \bool_new:N \l_synaptic_toc_bool
-\bool_new:N \l_synaptic_toc_explicit_bool
 \bool_new:N \l_synaptic_extra_math_bool
 \bool_new:N \l_synaptic_fine_breaking_bool
 \dim_new:N  \l_synaptic_binding_offset_dim
-
-\bool_set_true:N  \l_synaptic_toc_bool
-\bool_set_false:N \l_synaptic_toc_explicit_bool
 
 \cs_new_protected:Npn \__synaptic_base_unknown_warning:n #1
   {
@@ -90,18 +85,9 @@
     fontset .initial:n = auto,
 
     % --- generic booleans ---
-    toc .choice:,
-    toc / true .code:n =
-      {
-        \bool_set_true:N \l_synaptic_toc_bool
-        \bool_set_true:N \l_synaptic_toc_explicit_bool
-      },
-    toc / false .code:n =
-      {
-        \bool_set_false:N \l_synaptic_toc_bool
-        \bool_set_true:N \l_synaptic_toc_explicit_bool
-      },
-    toc .default:n = true,
+    toc .bool_set:N = \l_synaptic_toc_bool,
+    toc .default:n  = true,
+    toc .initial:n  = false,
 
     extra-math .bool_set:N = \l_synaptic_extra_math_bool,
     extra-math .initial:n  = false,
@@ -118,11 +104,11 @@
 
     % --- title composition ---
     title-layout .choice:,
-    title-layout / auto    .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { auto },
-    title-layout / inline  .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { inline },
-    title-layout / compact .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { compact },
-    title-layout / page    .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { page },
-    title-layout / cover   .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { cover },
+    title-layout / auto     .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { auto },
+    title-layout / inline   .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { inline },
+    title-layout / compact  .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { compact },
+    title-layout / page     .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { page },
+    title-layout / sequence .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { sequence },
     title-layout .initial:n = auto,
 
     % --- structural numbering ---
@@ -133,12 +119,6 @@
     numbering / continuous .code:n = \tl_set:Nn \l_synaptic_numbering_tl { continuous },
     numbering / none       .code:n = \tl_set:Nn \l_synaptic_numbering_tl { none },
     numbering .initial:n = auto,
-
-    box-numbering .choice:,
-    box-numbering / shared   .code:n = \tl_set:Nn \l_synaptic_box_numbering_tl { shared },
-    box-numbering / separate .code:n = \tl_set:Nn \l_synaptic_box_numbering_tl { separate },
-    box-numbering / none     .code:n = \tl_set:Nn \l_synaptic_box_numbering_tl { none },
-    box-numbering .initial:n = shared,
 
     % --- visual delivery and rhythm ---
     color-mode .choice:,
@@ -168,18 +148,6 @@
     binding-offset .dim_set:N = \l_synaptic_binding_offset_dim,
     binding-offset .initial:n = 0pt,
 
-    % --- legacy: emit errors for old options ---
-    style .code:n =
-      {
-        \PackageError{synaptic-base}{Option~`style'~is~obsolete}
-          {Use~`mode=journal'~or~`mode=notes'~instead.}
-      },
-    color .code:n =
-      {
-        \PackageError{synaptic-base}{Option~`color'~is~obsolete}
-          {Use~`theme=ocean'~or~`theme=graphite'~etc.~instead.}
-      },
-
     % --- unknown ---
     unknown .code:n = \__synaptic_base_unknown_warning:n { \l_keys_key_tl },
   }
@@ -202,41 +170,17 @@
           { \synaptic_color_use_theme:n {#1} }
           { \PackageWarning{synaptic-base}{Theme~system~is~not~loaded~yet} }
       },
-    mode .code:n = \PackageWarning{synaptic-base}
-      {Option~`mode'~is~frozen~after~package~loading},
-    lang .code:n = \PackageWarning{synaptic-base}
-      {Option~`lang'~is~frozen~after~package~loading},
-    fontset .code:n = \PackageWarning{synaptic-base}
-      {Option~`fontset'~is~frozen~after~package~loading},
-    extra-math .code:n = \PackageWarning{synaptic-base}
-      {Option~`extra-math'~is~frozen~after~package~loading},
-    fine-breaking .code:n = \PackageWarning{synaptic-base}
-      {Option~`fine-breaking'~is~frozen~after~package~loading},
-    title-layout .code:n = \PackageWarning{synaptic-base}
-      {Option~`title-layout'~is~frozen~after~package~loading},
-    numbering .code:n = \PackageWarning{synaptic-base}
-      {Option~`numbering'~is~frozen~after~package~loading},
-    box-numbering .code:n = \PackageWarning{synaptic-base}
-      {Option~`box-numbering'~is~frozen~after~package~loading},
-    color-mode .code:n = \PackageWarning{synaptic-base}
-      {Option~`color-mode'~is~frozen~after~package~loading},
-    density .code:n = \PackageWarning{synaptic-base}
-      {Option~`density'~is~frozen~after~package~loading},
-    measure .code:n = \PackageWarning{synaptic-base}
-      {Option~`measure'~is~frozen~after~package~loading},
-    theorem-style .code:n = \PackageWarning{synaptic-base}
-      {Option~`theorem-style'~is~frozen~after~package~loading},
-    binding-offset .code:n = \PackageWarning{synaptic-base}
-      {Option~`binding-offset'~is~frozen~after~package~loading},
-    unknown .code:n = \__synaptic_base_unknown_warning:n { \l_keys_key_tl },
+    unknown .code:n =
+      {
+        \PackageError{synaptic-base}
+          {Option~`\l_keys_key_tl'~is~structural~and~fixed~after~loading}
+          {Set~it~in~the~\string\usepackage~options,~or~use~theme,~toc,~
+            and~toc-layout~here.}
+      },
   }
 
 \ProcessKeyOptions[synaptic]
 
-\bool_if:NF \l_synaptic_toc_explicit_bool
-  { \bool_set_false:N \l_synaptic_toc_bool }
-\str_if_eq:VnT \l_synaptic_numbering_tl { none }
-  { \tl_set:Nn \l_synaptic_box_numbering_tl { none } }
 
 \cs_new:Npn \synaptic_mode:    { \l_synaptic_mode_tl }
 \cs_new:Npn \synaptic_theme:   { \l_synaptic_theme_tl }
@@ -244,7 +188,6 @@
 \cs_new:Npn \synaptic_fontset: { \l_synaptic_fontset_tl }
 \cs_new:Npn \synaptic_title_layout: { \l_synaptic_title_layout_tl }
 \cs_new:Npn \synaptic_numbering: { \l_synaptic_numbering_tl }
-\cs_new:Npn \synaptic_box_numbering: { \l_synaptic_box_numbering_tl }
 \cs_new:Npn \synaptic_color_mode: { \l_synaptic_color_mode_tl }
 \cs_new:Npn \synaptic_density: { \l_synaptic_density_tl }
 \cs_new:Npn \synaptic_measure: { \l_synaptic_measure_tl }
@@ -298,7 +241,6 @@
         { lecture }
           {
             \RequirePackage{synaptic-lecture}
-            \RequirePackage{synaptic-boxes}
           }
         { notes }
           {
@@ -309,7 +251,6 @@
 
 \__synaptic_load_core_modules:
 \__synaptic_load_mode_modules:
-
 
 
 

@@ -18,15 +18,12 @@
 \section{Lecture}
 \begin{example}\TYPE{generic-example-preserved=ok}\end{example}
 \begin{theorem}Theorems are boxed in lecture mode.\end{theorem}
-\begin{synexample}[Example][example]
-  Collision-resistant example environment.
-\end{synexample}
-\begin{synremark}[Remark]A semantic remark.\end{synremark}
-\begin{synwarning}[Warning]A semantic warning.\end{synwarning}
-\begin{synexercise}[Exercise]A semantic exercise.\end{synexercise}
-\begin{synbox}[Generic]A generic box.\end{synbox}
+\begin{definition}Shared counter siblings.\end{definition}
+\begin{remark}[Remark]A semantic remark.\end{remark}
+\begin{warning}[Warning]A semantic warning.\end{warning}
+\begin{exercise}[Exercise]A semantic exercise.\end{exercise}
 \begin{synlecturesummary}A short summary.\end{synlecturesummary}
 \TYPE{shared-teaching-counter=\thetheorem}
-\TYPE{lecture-navigation-and-boxes=ok}
+\TYPE{lecture-navigation-and-statements=ok}
 \END
 \end{document}

@@ -3,7 +3,12 @@ Don't change this file in any respect.
 mode=notes
 theme=paper
 toc-layout=page
-Package synaptic-base Warning: Option `mode' is frozen after package loading on input line ....
+! Package synaptic-base Error: Option `mode' is structural and fixed after loading.
+See the synaptic-base package documentation for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+l. ...\SynapticSetup{mode=book}
+Set it in the \usepackageoptions, or use theme, toc, and toc-layout here.
 Package microtype Info: Loading generic protrusion settings for font family
 (microtype)             `LatinModernSans' (encoding: TU).
 (microtype)             For optimal results, create family-specific settings.

@@ -16,12 +16,12 @@
 \SynapticNewTheorem[remark]{observation}{Observation}
 \SynapticHeader{Synaptic User Manual}
 \SynapticSubHeader{Reliable academic typesetting with LuaLaTeX}
-\SynapticPreprint{v2.6.1}
+\SynapticPreprint{v3.0.0}
 \SynapticTitle{The synaptic Package: User Manual}
 \SynapticAuthor{synaptic project}
 \SynapticAffiliation{Open-source LaTeX community}
 \SynapticEmail{synaptic@example.com}
-\SynapticSubject{User manual for synaptic version 2.6.1}
+\SynapticSubject{User manual for synaptic version 3.0.0}
 \SynapticKeywords{synaptic, LaTeX3, LuaLaTeX, academic typesetting}
 
 \begin{abstract}
@@ -105,9 +105,8 @@ directly into the same structure.
   \texttt{fontset} & auto & auto, xcharter, libertinus, stix2, or lm \\
   \texttt{toc} & false & whether the title workflow prints a TOC \\
   \texttt{toc-layout} & top & top, inline, or page \\
-  \texttt{title-layout} & auto & inline, compact, page, cover, or mode default \\
+  \texttt{title-layout} & auto & inline, compact, page, sequence, or mode default \\
   \texttt{numbering} & auto & section, chapter, continuous, none, or mode default \\
-  \texttt{box-numbering} & shared & shared, separate, or none \\
   \texttt{color-mode} & screen & screen, print, or mono \\
   \texttt{density} & balanced & compact, balanced, or airy \\
   \texttt{measure} & auto & narrow, standard, wide, or mode default \\
@@ -126,8 +125,8 @@ settings:
 \end{verbatim}
 
 Mode, language, font, and load-time typography options are frozen after package
-loading. Attempts to change them issue a warning instead of producing a
-half-reconfigured document.
+loading. Attempts to change them through \texttt{\string\SynapticSetup} raise an
+error instead of producing a half-reconfigured document.
 
 \subsection{Modes}
 
@@ -197,7 +196,7 @@ symmetry.
 \subsection{Title composition}
 
 \textbf{title-layout} selects how each mode renders its title area. The
-\texttt{auto} value resolves to \texttt{inline} (journal), \texttt{cover}
+\texttt{auto} value resolves to \texttt{inline} (journal), \texttt{sequence}
 (book), and \texttt{compact} (lecture, notes). \texttt{page} dedicates a
 full title page and \texttt{inline} forces the first-page composition.
 All title renderers reuse an asymmetric “synaptic rail”: a short primary rule,
@@ -262,18 +261,19 @@ book mode accepts half-title, publisher, edition, ISBN, and copyright fields;
 lecture mode accepts course, code, lecture number, instructor, and semester.
 Use \verb|\SynapticStatement{heading}{body}| for journal funding, data, ethics,
 or conflict statements; the starred form omits its table-of-contents entry.
-Standard \verb|\title|, \verb|\author|, and \verb|\date| are imported when the
-Synaptic field is empty. PDF metadata receives one Unicode-safe conversion.
+PDF metadata receives one Unicode-safe conversion.
 
 \section{Theorems and mathematics}
 
 The built-in \texttt{theorem}, \texttt{lemma}, \texttt{proposition},
 \texttt{definition}, \texttt{corollary}, \texttt{axiom}, \texttt{conjecture},
 \texttt{claim}, \texttt{property}, \texttt{criterion}, \texttt{convention},
-\texttt{problem}, \texttt{solution}, \texttt{example}, \texttt{remark}, and
-\texttt{note} environments share one counter. Books use chapter scope by
-default; shorter modes use sections. Definitions use upright body text;
-proposition-style statements use italics in English and upright CJK text.
+\texttt{problem}, \texttt{solution}, \texttt{example}, \texttt{exercise},
+\texttt{remark}, \texttt{note}, and \texttt{warning} environments share one
+counter. Books use chapter scope by default; shorter modes use sections.
+Definitions use upright body text; proposition-style statements use italics in
+English and upright CJK text. Examples and exercises are plain-style
+statements; warnings use the remark presentation.
 
 By default (\texttt{theorem-style=boxed}) the numbered statement environments
 are presented as refined cards: a subtle theme-tinted background, a semantic
@@ -301,10 +301,9 @@ New theorem types accept a style:
 \end{verbatim}
 
 The available styles are \texttt{plain}, \texttt{definition}, and
-\texttt{remark}; a custom theorem is boxed automatically. Repeating a
-declaration for an existing environment is safe: synaptic keeps the established
-definition and emits a warning, which lets older documents coexist with the
-expanded built-in theorem set.
+\texttt{remark}; a custom theorem is boxed automatically. Declaring a name that
+already exists is a hard error: the built-in family plus anything declared with
+\verb|\SynapticNewTheorem| is the complete environment set.
 
 \begin{observation}
   With \texttt{extra-math=true}, commands such as \(\symbb{R}\),
@@ -342,20 +341,10 @@ derive from the active theme:
   \bottomrule
 \end{tabularx}}
 
-Lecture mode adds collision-resistant teaching environments. Each takes an
-optional title and an optional label:
-
-\begin{itemize}\itemsep0pt
-  \item \SynapticPkg{synexample} --- worked examples, share the theorem
-    counter by default
-  \item \SynapticPkg{synremark} --- remarks, unnumbered by default
-  \item \SynapticPkg{synwarning} --- warnings, unnumbered by default
-  \item \SynapticPkg{synexercise} --- exercises, share the theorem counter
-  \item \SynapticPkg{synbox} --- generic box with an optional title
-\end{itemize}
-
-The generic v2.0 aliases are created only when their names are free. Course
-units may also use \texttt{synlearninggoals} and \texttt{synlecturesummary}.
+Lecture mode adds teaching-card environments: \texttt{synlearninggoals},
+\texttt{synlecturesummary}, and the course metadata commands described above.
+Notes mode provides \texttt{synkeyidea}, \texttt{synquestion},
+\texttt{syntodo}, and \texttt{synsummary}.
 
 \section{Book workflow and acknowledgments}
 
@@ -381,44 +370,49 @@ a section in other modes. Its starred form suppresses the TOC entry.
   \item \textbf{``Incomplete XCharter/Libertinus/STIX Two font bundle''} --- the
     explicit \texttt{fontset} is missing a companion font. Install the bundle,
     or use \texttt{fontset=auto} to fall back automatically.
-  \item \textbf{Options frozen after loading} --- \texttt{mode}, \texttt{lang},
-    \texttt{fontset}, and typography keys are structural. Re-select them in
-    \verb|\usepackage|; do not attempt runtime changes.
+  \item \textbf{``Options frozen after loading''} --- \texttt{mode},
+    \texttt{lang}, \texttt{fontset}, and typography keys are structural.
+    Re-select them in \verb|\usepackage|; runtime changes via
+    \verb|\SynapticSetup| are errors.
   \item \textbf{No CJK font found} --- install Noto CJK SC or the Fandol fonts
     used as the TeX Live fallback.
-  \item \textbf{``Document title is empty''} --- set \verb|\SynapticTitle| (or
-    \verb|\title|) before calling \verb|\SynapticMakeTitle|.
+  \item \textbf{``Document title is empty''} --- set
+    \verb|\SynapticTitle| before calling \verb|\SynapticMakeTitle|.
   \item \textbf{Paper size unwanted} --- the package never overrides the class
     paper size; select it in the class options.
 \end{itemize}
 
-\section{Migrating from earlier versions}
+\section{Migrating to 3.0}
 
-Version 2.x replaced the v1 option and command surface. The removed
-\texttt{style=} and \texttt{color=} options remain explicit errors with
-migration hints.
+Version 3.0 removes every backward-compatibility shim. Use the namespaced forms
+throughout:
 
 {\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l Y@{}}
   \toprule
-  \textbf{v1} & \textbf{v2.5} \\
+  \textbf{Removed} & \textbf{Replacement} \\
   \midrule
-  \texttt{color=ocean} & \texttt{theme=ocean} \\
-  \texttt{style=modern/minimal} & \texttt{mode=journal/notes} \\
-  \texttt{\textbackslash title} & \SynapticCmd{SynapticTitle} \\
-  \texttt{\textbackslash author} & \SynapticCmd{SynapticAuthor} \\
-  \texttt{\textbackslash maketitle} & \SynapticCmd{SynapticMakeTitle} \\
+  \texttt{\textbackslash pkg} & \SynapticCmd{SynapticPkg} \\
+  \texttt{\textbackslash cmd} & \SynapticCmd{SynapticCmd} \\
+  \texttt{\textbackslash acknowledgments} & \SynapticCmd{SynapticAcknowledgments} \\
+  \texttt{\textbackslash synapticfrontmatter} & \SynapticCmd{SynapticFrontMatter} \\
+  \texttt{\textbackslash synapticmainmatter} & \SynapticCmd{SynapticMainMatter} \\
+  \texttt{\textbackslash synapticbackmatter} & \SynapticCmd{SynapticBackMatter} \\
+  \texttt{\textbackslash title}/\texttt{\textbackslash author}/\texttt{\textbackslash date} & \SynapticCmd{SynapticTitle} etc. \\
+  \texttt{synexample}/\texttt{synremark}/\texttt{synwarning}/\texttt{synexercise}/\texttt{synbox} & \texttt{example}/\texttt{remark}/\texttt{warning}/\texttt{exercise} \\
+  \texttt{box-numbering} & \texttt{numbering} \\
+  \texttt{title-layout=cover} & \texttt{title-layout=sequence} \\
   \bottomrule
 \end{tabularx}}
 
-The v2.5 API remains compatible with v2.2. Lower-case book matter helpers and generic
-lecture box names remain conditional v2.0 compatibility aliases; new documents
-should use the namespaced public forms.
+The statement environments (\texttt{example}, \texttt{exercise}, \texttt{warning}
+included) are now first-class members of the built-in family in every mode and
+share the theorem counter.
 
 \section{Development commands}
 
 \begin{verbatim}
 l3build unpack   # regenerate .sty and .def files from synaptic.dtx
-l3build check    # run the LuaLaTeX regression suite (18 groups)
+l3build check    # run the LuaLaTeX regression suite
 l3build doc      # build the documented source and manuals
 l3build ctan     # create release archives
 \end{verbatim}

@@ -68,9 +68,8 @@ The package respects the paper size selected by the class. It does not force A4.
 | `fontset` | `auto` | `auto`, `xcharter`, `libertinus`, `stix2`, `lm` | No |
 | `toc` | `false` | Boolean | Yes |
 | `toc-layout` | `top` | `top`, `inline`, `page` | Yes |
-| `title-layout` | `auto` | `auto`, `inline`, `compact`, `page`, `cover` | No |
+| `title-layout` | `auto` | `auto`, `inline`, `compact`, `page`, `sequence` | No |
 | `numbering` | `auto` | `auto`, `section`, `chapter`, `continuous`, `none` | No |
-| `box-numbering` | `shared` | `shared`, `separate`, `none` | No |
 | `color-mode` | `screen` | `screen`, `print`, `mono` | No |
 | `density` | `balanced` | `compact`, `balanced`, `airy` | No |
 | `measure` | `auto` | `auto`, `narrow`, `standard`, `wide` | No |
@@ -79,14 +78,14 @@ The package respects the paper size selected by the class. It does not force A4.
 | `extra-math` | `false` | Boolean | No |
 | `fine-breaking` | `true` | Boolean | No |
 
-Only theme and title-page TOC settings can change safely after package loading:
+Only `theme`, `toc`, and `toc-layout` change after loading:
 
 ```latex
 \SynapticSetup{theme=paper,toc=false,toc-layout=page}
 ```
 
-Structural runtime changes emit a warning instead of leaving the document in a
-partially reconfigured state.
+Structural keys are fixed after loading; `\SynapticSetup` treats them as an
+error rather than silently ignoring them.
 
 ### Modes
 
@@ -135,9 +134,7 @@ fallback.
 
 The same title API is available in all four modes. `journal` renders an inline
 article heading by default, `book` renders a book title sequence, and `lecture`
-and `notes` use compact mode-specific mastheads. Standard `\title`, `\author`,
-and `\date` values are imported when the corresponding Synaptic fields are
-empty and `\SynapticMakeTitle` is called.
+and `notes` use compact mode-specific mastheads.
 
 PDF title, author, subject, and keywords use Unicode-safe conversion. The PDF
 catalog language is set to `en-US` or `zh-CN`.
@@ -176,23 +173,13 @@ unboxed look:
 ```
 
 The optional style is `plain`, `definition`, or `remark`; a custom theorem is
-also boxed automatically. Repeating a declaration for an existing environment
-is safe: synaptic keeps the established definition and emits a warning. This
-lets older documents coexist with the expanded built-in theorem set.
+also boxed automatically. Declaring a name that already exists is a hard
+error: the built-in family plus anything you declare via `\SynapticNewTheorem`
+is the complete environment set.
 
-Lecture mode adds `synexample`, `synremark`, `synwarning`, `synexercise`, and
-`synbox`. The first optional argument is a title and the second is a label.
-Examples and exercises share the theorem counter by default; warnings and
-remarks remain unnumbered:
-
-```latex
-\begin{synexample}[Worked example][worked]
-  Example content.
-\end{synexample}
-```
-
-The short v2.0 environment names (`example`, `remark`, `warning`, `exercise`)
-are provided only when no existing package or class has already claimed them.
+`example`, `exercise`, and `warning` are first-class members of the family in
+every mode: examples and exercises are plain-style statements, warnings are
+remark-style statements, and all three share the theorem counter.
 
 ### Typography
 
@@ -257,13 +244,13 @@ l3build ctan     # create a TDS/CTAN release archive
 
 `synaptic.dtx` is the source of truth. Generated `.sty` and `.def` files under
 `tex/latex/synaptic/` are committed so the repository can be used directly.
-CI runs the eighteen-group regression suite and compiles the documentation and
-examples.
+CI runs the regression suite and compiles the documentation and examples.
 
 The regression suite exercises all four modes in English and Chinese, every
 built-in theme plus custom themes, both colour-delivery alternatives, TOC and
-title layouts, numbering profiles, the full book title sequence, and the
-optional mathematics alphabets.
+title layouts, numbering profiles, the full book title sequence, the complete
+statement family and its boxed presentation, and the optional mathematics
+alphabets.
 
 ## Documentation
 

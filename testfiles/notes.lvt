@@ -2,9 +2,9 @@
 \documentclass[10pt,twocolumn]{scrartcl}
 \usepackage[mode=notes,theme=graphite,fontset=lm,density=compact]{synaptic}
 
-\title{Standard Metadata Notes}
-\author{Test Student}
-\date{Week 3}
+\SynapticTitle{Standard Metadata Notes}
+\SynapticAuthor{Test Student}
+\SynapticDate{Week 3}
 
 \begin{document}
 \START
@@ -19,6 +19,6 @@
 \begin{syntodo}A follow-up task.\end{syntodo}
 \begin{synsummary}A compact summary.\end{synsummary}
 \SynapticBalanceColumns
-\TYPE{notes-standard-metadata-and-cards=ok}
+\TYPE{notes-metadata-and-cards=ok}
 \END
 \end{document}

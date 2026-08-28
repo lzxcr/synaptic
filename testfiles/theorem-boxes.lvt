@@ -7,7 +7,7 @@
 \SynapticAffiliation[1]{Test Institute}
 \SynapticEmail{test@example.org}
 \SynapticNewTheorem[remark]{observation}{Observation}
-\SynapticNewTheorem[remark]{solution}{Answer}
+\SynapticNewTheorem[plain]{conclusion}{Conclusion}
 
 \begin{document}
 \START
@@ -32,10 +32,13 @@
 \begin{problem}A boxed problem.\end{problem}
 \begin{solution}A boxed solution.\end{solution}
 \begin{example}[An example]A boxed example.\end{example}
+\begin{exercise}[An exercise]A boxed exercise.\end{exercise}
 \begin{remark}[A remark]A boxed remark.\end{remark}
 \begin{note}A boxed note.\end{note}
+\begin{warning}[A warning]A boxed warning.\end{warning}
 \begin{proof}A clean, unboxed proof.\end{proof}
 \begin{observation}A custom boxed theorem.\end{observation}
+\begin{conclusion}A custom plain theorem.\end{conclusion}
 \TYPE{shared-counter=\thetheorem}
 \TYPE{theorem-family-and-boxes=ok}
 \END

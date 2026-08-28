@@ -1,6 +1,34 @@
 # Changelog
 
-## [2.6.1] — 2026-08-28
+## [3.0.0] — 2026-08-28
+
+### Removed
+
+- Dropped every backward-compatibility shim. The `\pkg`, `\cmd`, and
+  `\acknowledgments` aliases and the lowercase `\synapticfrontmatter`,
+  `\synapticmainmatter`, and `\synapticbackmatter` aliases are gone; use the
+  `\Synaptic…` forms. The import of standard `\title`, `\author`, and `\date`
+  metadata is gone: declare metadata with `\SynapticTitle` and friends.
+- Removed the obsolete `style` and `color` option-error traps and the
+  `box-numbering` option. Statements now have one numbering model.
+- Removed the `synaptic-boxes` module and its `synexample`, `synremark`,
+  `synwarning`, `synexercise`, and `synbox` environments. Their functionality
+  is provided by the theorem family (see below) and by `synlearninggoals`,
+  `synlecturesummary`, and the notes cards.
+
+### Changed
+
+- Unified the statement environments onto the shared theorem counter. `example`
+  and `exercise` are now plain-style statements, and `warning` is a
+  remark-style statement, in every mode and in book/chapter or
+  section numbering alike. Collision protection for *foreign* environment
+  names remains, but `\SynapticNewTheorem` on an already-declared environment
+  is now a hard error instead of a warning.
+- Renamed `title-layout=cover` to `title-layout=sequence` after the book title
+  sequence it actually produces.
+- `\SynapticSetup` now errors on structural keys instead of warning and
+  silently ignoring them; only `theme`, `toc`, and `toc-layout` are mutable
+  after loading.
 
 ### Fixed
 
@@ -15,6 +43,13 @@
   real parent (`section` or `chapter`), so anchors stay unique and links land
   correctly. Applies to the built-in environments and to anything declared via
   `\SynapticNewTheorem`.
+
+## [2.6.1] — 2026-08-28
+
+### Fixed
+
+- Stopped the pdf backend from reporting duplicate destinations for numbered
+  theorem environments (brought forward into 3.0.0).
 
 ## [2.6.0] — 2026-08-28
 

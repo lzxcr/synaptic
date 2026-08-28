@@ -21,7 +21,7 @@
 \hfuzz=6pt
 \AtBeginDocument{\hypersetup{pdftitle={synaptic bundle},
   linkcolor=blue!60!black,urlcolor=teal}}
-\ProvidesFile{synaptic.dtx}[2026-08-28 v2.6.1 synaptic documented source]
+\ProvidesFile{synaptic.dtx}[2026-08-28 v3.0.0 synaptic documented source]
 \EnableCrossrefs\CodelineIndex\RecordChanges
 \begin{document}
 \DocInput{synaptic.dtx}
@@ -63,6 +63,14 @@
 % counter.  thmtools registers the parent only for display and reset, not in
 % hyperref's \texttt{cl@<counter>} list, so the shared anchor repeated across
 % sections and produced the \texttt{duplicate destination} warning.}
+% \changes{v3.0.0}{2026-08-28}{Removed the backward-compatibility layer: the
+% \texttt{\char`\\pkg} and \texttt{\char`\\cmd} aliases, lowercase matter
+% helpers, the standard \texttt{\char`\\title}/\texttt{\char`\\author}/
+% \texttt{\char`\\date} import, the obsolete style/color error traps, and the
+% box-numbering option; merged lecture example/remark/warning/exercise cards
+% into the theorem family; renamed \texttt{title-layout=cover} to
+% \texttt{sequence}; and made duplicate \texttt{\char`\\SynapticNewTheorem}
+% declarations a hard error.}
 % \textbf{synaptic} is a modular \LaTeX3 design system for academic documents.
 % It provides a clean, non-invasive API with mode-aware module loading
 % and deterministic font-bundle auto-detection through \textsf{fontspec}.
@@ -82,15 +90,14 @@
 % \texttt{lang}=en or zh;
 % \texttt{fontset}=auto, xcharter, libertinus, stix2, or lm;
 % \texttt{toc-layout}=top, inline, or page;
-% \texttt{title-layout}=auto, inline, compact, page, or cover;
+% \texttt{title-layout}=auto, inline, compact, page, or sequence;
 % \texttt{numbering}=auto, section, chapter, continuous, or none;
-% \texttt{box-numbering}=shared, separate, or none;
 % \texttt{color-mode}=screen, print, or mono;
 % \texttt{density}=compact, balanced, or airy;
 % \texttt{measure}=auto, narrow, standard, or wide;
 % \texttt{theorem-style}=boxed or plain;
 % \texttt{extra-math} and \texttt{fine-breaking} are booleans.
-% Structural keys are frozen after loading; only \texttt{theme},
+% Structural keys are fixed after loading; only \texttt{theme},
 % \texttt{toc}, and \texttt{toc-layout} may change at runtime through
 % \texttt{\string\SynapticSetup}.
 %
@@ -113,8 +120,8 @@
 % \item \texttt{synaptic-title.sty}: shared metadata model and the four
 %   mode-aware title renderers.
 % \item \texttt{synaptic-journal.sty}, \texttt{synaptic-book.sty},
-%   \texttt{synaptic-lecture.sty} (with \texttt{synaptic-boxes.sty}), and
-%   \texttt{synaptic-notes.sty}: mode-specific design and navigation layers.
+%   \texttt{synaptic-lecture.sty}, and \texttt{synaptic-notes.sty}:
+%   mode-specific design and navigation layers.
 % \end{itemize}
 %
 % \section{User API}
@@ -159,7 +166,7 @@
 %    \begin{macrocode}
 %<*base>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-base}{2026-08-28}{2.6.1}
+\ProvidesExplPackage{synaptic-base}{2026-08-28}{3.0.0}
   {Synaptic~Core~Infrastructure}
 
 \msg_new:nnn { synaptic } { luatex-required }
@@ -191,19 +198,14 @@
 \tl_new:N  \l_synaptic_toc_layout_tl
 \tl_new:N  \l_synaptic_title_layout_tl
 \tl_new:N  \l_synaptic_numbering_tl
-\tl_new:N  \l_synaptic_box_numbering_tl
 \tl_new:N  \l_synaptic_color_mode_tl
 \tl_new:N  \l_synaptic_density_tl
 \tl_new:N  \l_synaptic_measure_tl
 \tl_new:N  \l_synaptic_theorem_style_tl
 \bool_new:N \l_synaptic_toc_bool
-\bool_new:N \l_synaptic_toc_explicit_bool
 \bool_new:N \l_synaptic_extra_math_bool
 \bool_new:N \l_synaptic_fine_breaking_bool
 \dim_new:N  \l_synaptic_binding_offset_dim
-
-\bool_set_true:N  \l_synaptic_toc_bool
-\bool_set_false:N \l_synaptic_toc_explicit_bool
 
 % ---------------------------------------------------------------------------
 % \SynapticSetup — unified configuration interface
@@ -249,18 +251,9 @@
     fontset .initial:n = auto,
 
     % --- generic booleans ---
-    toc .choice:,
-    toc / true .code:n =
-      {
-        \bool_set_true:N \l_synaptic_toc_bool
-        \bool_set_true:N \l_synaptic_toc_explicit_bool
-      },
-    toc / false .code:n =
-      {
-        \bool_set_false:N \l_synaptic_toc_bool
-        \bool_set_true:N \l_synaptic_toc_explicit_bool
-      },
-    toc .default:n = true,
+    toc .bool_set:N = \l_synaptic_toc_bool,
+    toc .default:n  = true,
+    toc .initial:n  = false,
 
     extra-math .bool_set:N = \l_synaptic_extra_math_bool,
     extra-math .initial:n  = false,
@@ -277,11 +270,11 @@
 
     % --- title composition ---
     title-layout .choice:,
-    title-layout / auto    .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { auto },
-    title-layout / inline  .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { inline },
-    title-layout / compact .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { compact },
-    title-layout / page    .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { page },
-    title-layout / cover   .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { cover },
+    title-layout / auto     .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { auto },
+    title-layout / inline   .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { inline },
+    title-layout / compact  .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { compact },
+    title-layout / page     .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { page },
+    title-layout / sequence .code:n = \tl_set:Nn \l_synaptic_title_layout_tl { sequence },
     title-layout .initial:n = auto,
 
     % --- structural numbering ---
@@ -292,12 +285,6 @@
     numbering / continuous .code:n = \tl_set:Nn \l_synaptic_numbering_tl { continuous },
     numbering / none       .code:n = \tl_set:Nn \l_synaptic_numbering_tl { none },
     numbering .initial:n = auto,
-
-    box-numbering .choice:,
-    box-numbering / shared   .code:n = \tl_set:Nn \l_synaptic_box_numbering_tl { shared },
-    box-numbering / separate .code:n = \tl_set:Nn \l_synaptic_box_numbering_tl { separate },
-    box-numbering / none     .code:n = \tl_set:Nn \l_synaptic_box_numbering_tl { none },
-    box-numbering .initial:n = shared,
 
     % --- visual delivery and rhythm ---
     color-mode .choice:,
@@ -327,23 +314,13 @@
     binding-offset .dim_set:N = \l_synaptic_binding_offset_dim,
     binding-offset .initial:n = 0pt,
 
-    % --- legacy: emit errors for old options ---
-    style .code:n =
-      {
-        \PackageError{synaptic-base}{Option~`style'~is~obsolete}
-          {Use~`mode=journal'~or~`mode=notes'~instead.}
-      },
-    color .code:n =
-      {
-        \PackageError{synaptic-base}{Option~`color'~is~obsolete}
-          {Use~`theme=ocean'~or~`theme=graphite'~etc.~instead.}
-      },
-
     % --- unknown ---
     unknown .code:n = \__synaptic_base_unknown_warning:n { \l_keys_key_tl },
   }
 
 % Runtime settings deliberately exclude options which require module reloads.
+% Attempting to change a structural key after loading is a clear error rather
+% than a silent no-op; only theme, contents, and contents layout may change.
 \NewDocumentCommand{\SynapticSetup}{m}
   {
     \keys_set:nn { synaptic / runtime } {#1}
@@ -362,44 +339,21 @@
           { \synaptic_color_use_theme:n {#1} }
           { \PackageWarning{synaptic-base}{Theme~system~is~not~loaded~yet} }
       },
-    mode .code:n = \PackageWarning{synaptic-base}
-      {Option~`mode'~is~frozen~after~package~loading},
-    lang .code:n = \PackageWarning{synaptic-base}
-      {Option~`lang'~is~frozen~after~package~loading},
-    fontset .code:n = \PackageWarning{synaptic-base}
-      {Option~`fontset'~is~frozen~after~package~loading},
-    extra-math .code:n = \PackageWarning{synaptic-base}
-      {Option~`extra-math'~is~frozen~after~package~loading},
-    fine-breaking .code:n = \PackageWarning{synaptic-base}
-      {Option~`fine-breaking'~is~frozen~after~package~loading},
-    title-layout .code:n = \PackageWarning{synaptic-base}
-      {Option~`title-layout'~is~frozen~after~package~loading},
-    numbering .code:n = \PackageWarning{synaptic-base}
-      {Option~`numbering'~is~frozen~after~package~loading},
-    box-numbering .code:n = \PackageWarning{synaptic-base}
-      {Option~`box-numbering'~is~frozen~after~package~loading},
-    color-mode .code:n = \PackageWarning{synaptic-base}
-      {Option~`color-mode'~is~frozen~after~package~loading},
-    density .code:n = \PackageWarning{synaptic-base}
-      {Option~`density'~is~frozen~after~package~loading},
-    measure .code:n = \PackageWarning{synaptic-base}
-      {Option~`measure'~is~frozen~after~package~loading},
-    theorem-style .code:n = \PackageWarning{synaptic-base}
-      {Option~`theorem-style'~is~frozen~after~package~loading},
-    binding-offset .code:n = \PackageWarning{synaptic-base}
-      {Option~`binding-offset'~is~frozen~after~package~loading},
-    unknown .code:n = \__synaptic_base_unknown_warning:n { \l_keys_key_tl },
+    unknown .code:n =
+      {
+        \PackageError{synaptic-base}
+          {Option~`\l_keys_key_tl'~is~structural~and~fixed~after~loading}
+          {Set~it~in~the~\string\usepackage~options,~or~use~theme,~toc,~
+            and~toc-layout~here.}
+      },
   }
 
 % Also accept options via \usepackage[...]
 \ProcessKeyOptions[synaptic]
 
-% Automatic contents are opt-in.  In particular, book users normally call
-% \tableofcontents after entering front matter, not from the title renderer.
-\bool_if:NF \l_synaptic_toc_explicit_bool
-  { \bool_set_false:N \l_synaptic_toc_bool }
-\str_if_eq:VnT \l_synaptic_numbering_tl { none }
-  { \tl_set:Nn \l_synaptic_box_numbering_tl { none } }
+% Automatic contents are opt-in: only a document that asks for `toc=${true}`
+% gets one.  Book users normally call \tableofcontents from the front matter.
+% A display-numbering request of `none` also suppresses box numbers.
 
 % ---------------------------------------------------------------------------
 % Public option accessors (for other modules)
@@ -410,7 +364,6 @@
 \cs_new:Npn \synaptic_fontset: { \l_synaptic_fontset_tl }
 \cs_new:Npn \synaptic_title_layout: { \l_synaptic_title_layout_tl }
 \cs_new:Npn \synaptic_numbering: { \l_synaptic_numbering_tl }
-\cs_new:Npn \synaptic_box_numbering: { \l_synaptic_box_numbering_tl }
 \cs_new:Npn \synaptic_color_mode: { \l_synaptic_color_mode_tl }
 \cs_new:Npn \synaptic_density: { \l_synaptic_density_tl }
 \cs_new:Npn \synaptic_measure: { \l_synaptic_measure_tl }
@@ -472,7 +425,6 @@
         { lecture }
           {
             \RequirePackage{synaptic-lecture}
-            \RequirePackage{synaptic-boxes}
           }
         { notes }
           {
@@ -495,7 +447,7 @@
 %    \begin{macrocode}
 %<*color>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-color}{2026-08-28}{2.6.1}
+\ProvidesExplPackage{synaptic-color}{2026-08-28}{3.0.0}
   {Synaptic~Theme~Colour~System}
 
 \RequirePackage{xcolor}
@@ -611,7 +563,7 @@
 %    \begin{macrocode}
 %<*fonts>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-fonts}{2026-08-28}{2.6.1}
+\ProvidesExplPackage{synaptic-fonts}{2026-08-28}{3.0.0}
   {Synaptic~Font~System}
 
 \RequirePackage{fontspec}
@@ -847,7 +799,7 @@
 %    \begin{macrocode}
 %<*layout>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-layout}{2026-08-28}{2.6.1}
+\ProvidesExplPackage{synaptic-layout}{2026-08-28}{3.0.0}
   {Synaptic~Page~Layout}
 
 \RequirePackage{geometry}
@@ -1288,7 +1240,7 @@
 %    \begin{macrocode}
 %<*theorem>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-theorem}{2026-08-28}{2.6.1}
+\ProvidesExplPackage{synaptic-theorem}{2026-08-28}{3.0.0}
   {Synaptic~Theorem~Environments}
 
 \RequirePackage{amsthm}
@@ -1404,7 +1356,8 @@
   {
     \clist_map_inline:nn
       { theorem,lemma,proposition,corollary,axiom,conjecture,claim,property,
-        definition,criterion,convention,problem,solution,example,remark,note }
+        example,exercise,definition,criterion,convention,problem,solution,
+        remark,note,warning }
       { \__synaptic_theorem_repair_anchor:n {##1} }
   }
 
@@ -1416,15 +1369,13 @@
 
 \cs_new_protected:Npn \__synaptic_theorem_declare_siblings:
   {
-    \clist_map_inline:nn { lemma,proposition,corollary,axiom,conjecture,claim,property }
+    \clist_map_inline:nn
+      { lemma,proposition,corollary,axiom,conjecture,claim,property,example,exercise }
       { \__synaptic_theorem_declare_sibling:nn {##1} { syn-theorem-plain } }
     \clist_map_inline:nn { definition,criterion,convention,problem,solution }
       { \__synaptic_theorem_declare_sibling:nn {##1} { syn-theorem-definition } }
-    \clist_map_inline:nn { remark,note }
+    \clist_map_inline:nn { remark,note,warning }
       { \__synaptic_theorem_declare_sibling:nn {##1} { syn-theorem-remark } }
-    \cs_if_exist:cF { example }
-      { \declaretheorem[style=syn-theorem-plain,
-          name=\c_synaptic_label_example_tl,sibling=theorem]{example} }
   }
 
 \cs_new_protected:Npn \__synaptic_theorem_declare_within:n #1
@@ -1463,15 +1414,13 @@
     \tl_gset:Nn \l__synaptic_theorem_parent_tl { }
     \declaretheorem[style=syn-theorem-plain,
       name=\c_synaptic_label_thm_tl,numbered=no]{theorem}
-    \clist_map_inline:nn { lemma,proposition,corollary,axiom,conjecture,claim,property }
+    \clist_map_inline:nn
+      { lemma,proposition,corollary,axiom,conjecture,claim,property,example,exercise }
       { \__synaptic_theorem_declare_unnumbered_sibling:nn {##1} { syn-theorem-plain } }
     \clist_map_inline:nn { definition,criterion,convention,problem,solution }
       { \__synaptic_theorem_declare_unnumbered_sibling:nn {##1} { syn-theorem-definition } }
-    \clist_map_inline:nn { remark,note }
+    \clist_map_inline:nn { remark,note,warning }
       { \__synaptic_theorem_declare_unnumbered_sibling:nn {##1} { syn-theorem-remark } }
-    \cs_if_exist:cF { example }
-      { \declaretheorem[style=syn-theorem-plain,
-          name=\c_synaptic_label_example_tl,numbered=no]{example} }
   }
 
 \str_case:VnF \l_synaptic_numbering_tl
@@ -1502,7 +1451,8 @@
     \str_if_eq:VnT \l_synaptic_theorem_style_tl { boxed }
       {
         \clist_map_inline:nn
-          { theorem,lemma,proposition,corollary,axiom,conjecture,claim,property,example }
+          { theorem,lemma,proposition,corollary,axiom,conjecture,claim,property,
+            example,exercise }
           {
             \cs_if_exist:cT {##1}
               {
@@ -1520,7 +1470,7 @@
               }
           }
         \clist_map_inline:nn
-          { remark,note }
+          { remark,note,warning }
           {
             \cs_if_exist:cT {##1}
               {
@@ -1541,8 +1491,10 @@
       { \cs_if_exist_p:c {#2} }
       { \cs_if_exist_p:c { c@#2 } }
       {
-        \PackageWarning{synaptic-theorem}
-          {Theorem~environment~`#2'~already~exists;~declaration~ignored}
+        \PackageError{synaptic-theorem}
+          {Theorem~environment~`#2'~already~exists}
+          {It~is~declared~by~synaptic~itself~or~by~another~package;
+            pick~a~different~environment~name.}
       }
       {
         \str_case:nnF {#1}
@@ -1650,7 +1602,7 @@
 %    \begin{macrocode}
 %<*title>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-title}{2026-08-28}{2.6.1}
+\ProvidesExplPackage{synaptic-title}{2026-08-28}{3.0.0}
   {Synaptic~Title~Page}
 
 % ---------------------------------------------------------------------------
@@ -1825,47 +1777,6 @@
 
 \tl_new:N \l_synaptic_pdf_author_tl
 
-% Import standard LaTeX metadata only when the Synaptic fields are empty.
-% This lets lecture and notes users migrate from \title/\author/\date without
-% forcing synaptic to redefine the class' \maketitle command.
-\cs_new_protected:Npn \__synaptic_title_import_standard:
-  {
-    \tl_if_empty:NT \l_synaptic_title_tl
-      {
-        \cs_if_exist:cT { @title }
-          {
-            \tl_set:Nx \l_tmpa_tl { \exp_not:v { @title } }
-            % The kernel's unset title/author values are warning-producing
-            % token lists, not empty macros.  Never import those sentinels.
-            \tl_if_in:NnF \l_tmpa_tl { \@latex@warning@no@line }
-              {
-                \tl_if_empty:NF \l_tmpa_tl
-                  { \tl_gset_eq:NN \l_synaptic_title_tl \l_tmpa_tl }
-              }
-          }
-      }
-    \seq_if_empty:NT \l_synaptic_authors_seq
-      {
-        \cs_if_exist:cT { @author }
-          {
-            \tl_set:Nx \l_tmpa_tl { \exp_not:v { @author } }
-            \tl_if_in:NnF \l_tmpa_tl { \@latex@warning@no@line }
-              {
-                \tl_if_empty:NF \l_tmpa_tl
-                  {
-                    \seq_gput_right:NV \l_synaptic_authors_seq \l_tmpa_tl
-                    \seq_gput_right:Nn \l_synaptic_author_marks_seq { }
-                  }
-              }
-          }
-      }
-    \tl_if_empty:NT \l_synaptic_date_tl
-      {
-        \cs_if_exist:cT { @date }
-          { \tl_gset:Nx \l_synaptic_date_tl { \exp_not:v { @date } } }
-      }
-  }
-
 \cs_new_protected:Npn \__synaptic_title_apply_pdf_metadata:
   {
     % Let hyperref perform the PDF-string conversion exactly once.  Feeding a
@@ -1963,7 +1874,7 @@
         \str_case:Vn \l_synaptic_mode_tl
           {
             { journal } { \tl_set:Nn \l__synaptic_title_layout_tl { inline } }
-            { book }    { \tl_set:Nn \l__synaptic_title_layout_tl { cover } }
+            { book }    { \tl_set:Nn \l__synaptic_title_layout_tl { sequence } }
             { lecture } { \tl_set:Nn \l__synaptic_title_layout_tl { compact } }
             { notes }   { \tl_set:Nn \l__synaptic_title_layout_tl { compact } }
           }
@@ -2416,11 +2327,10 @@
 % ---------------------------------------------------------------------------
 \NewDocumentCommand{\SynapticMakeTitle}{}
   {
-    \__synaptic_title_import_standard:
     \tl_if_empty:NT \l_synaptic_title_tl
       {
         \PackageError{synaptic-title}{Document~title~is~empty}
-          {Set~it~with~\string\SynapticTitle\{...\}~or~\string\title\{...\}.}
+          {Set~it~with~\string\SynapticTitle\{...\}.}
       }
     \__synaptic_title_apply_pdf_metadata:
     \__synaptic_title_resolve_layout:
@@ -2445,7 +2355,7 @@
 %    \begin{macrocode}
 %<*journal>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-journal}{2026-08-28}{2.6.1}
+\ProvidesExplPackage{synaptic-journal}{2026-08-28}{3.0.0}
   {Synaptic~Journal~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -2492,7 +2402,7 @@
 %    \begin{macrocode}
 %<*book>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-book}{2026-08-28}{2.6.1}
+\ProvidesExplPackage{synaptic-book}{2026-08-28}{3.0.0}
   {Synaptic~Book~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -2569,11 +2479,6 @@
     \setkomafont{chapter}
       {\normalfont\LARGE\bfseries\sffamily\color{syn-primary}}
   }
-
-% Compatibility aliases retained for v2.0 documents.
-\ProvideDocumentCommand{\synapticfrontmatter}{}{\SynapticFrontMatter}
-\ProvideDocumentCommand{\synapticmainmatter}{}{\SynapticMainMatter}
-\ProvideDocumentCommand{\synapticbackmatter}{}{\SynapticBackMatter}
 
 % ---------------------------------------------------------------------------
 % Part style
@@ -2658,7 +2563,7 @@
 %    \begin{macrocode}
 %<*lecture>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-lecture}{2026-08-28}{2.6.1}
+\ProvidesExplPackage{synaptic-lecture}{2026-08-28}{3.0.0}
   {Synaptic~Lecture~Mode}
 
 % ---------------------------------------------------------------------------
@@ -2753,170 +2658,6 @@
 %</lecture>
 %    \end{macrocode}
 
-% \subsection{synaptic-boxes.sty}
-%
-% \paragraph{tcolorbox environments: example, remark, warning, exercise, synbox.}
-%
-%    \begin{macrocode}
-%<*boxes>
-\NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-boxes}{2026-08-28}{2.6.1}
-  {Synaptic~Box~Environments}
-
-\RequirePackage{tcolorbox}
-\tcbuselibrary{skins, breakable, theorems}
-
-\tcbset{
-  synaptic/base/.style={
-    enhanced,breakable,
-    fonttitle=\bfseries\sffamily,
-    coltext=syn-text-dark,
-    boxrule=0.4pt,left=10pt,right=9pt,top=8pt,bottom=8pt,
-    arc=1.5pt,outer~arc=1.5pt,
-    before~skip=10pt,after~skip=10pt
-  },
-  synaptic/example/.style={
-    synaptic/base,colback=syn-surface,colframe=syn-border,
-    colbacktitle=syn-surface-strong,coltitle=syn-primary,
-    borderline~west={2.2pt}{0pt}{syn-primary}
-  },
-  synaptic/remark/.style={
-    synaptic/base,colback=syn-secondary!3!white,
-    colframe=syn-secondary!30!white,colbacktitle=syn-secondary!8!white,
-    coltitle=syn-secondary,
-    borderline~west={2.2pt}{0pt}{syn-secondary!70!white}
-  },
-  synaptic/warning/.style={
-    synaptic/base,colback=syn-warning!4!white,
-    colframe=syn-warning!35!white,colbacktitle=syn-warning!10!white,
-    coltitle=syn-warning,
-    borderline~west={2.2pt}{0pt}{syn-warning}
-  },
-  synaptic/exercise/.style={
-    synaptic/base,colback=syn-success!4!white,
-    colframe=syn-success!35!white,colbacktitle=syn-success!10!white,
-    coltitle=syn-success,
-    borderline~west={2.2pt}{0pt}{syn-success}
-  }
-}
-
-\cs_new:Npn \__synaptic_box_title:nn #1#2
-  { #1\tl_if_blank:nF {#2} {\c_synaptic_colon_tl\enspace#2} }
-
-\cs_new_protected:Npn \__synaptic_box_define_unnumbered_all:
-  {
-    \NewDocumentEnvironment{synexample}{ O{} O{} }
-      {\begin{tcolorbox}[synaptic/example,
-         title={\__synaptic_box_title:nn{\c_synaptic_label_example_tl}{##1}}]
-       \tl_if_blank:nF {##2}{\phantomsection\label{ex:##2}}}
-      {\end{tcolorbox}}
-    \NewDocumentEnvironment{synremark}{ O{} O{} }
-      {\begin{tcolorbox}[synaptic/remark,
-         title={\__synaptic_box_title:nn{\c_synaptic_label_remark_tl}{##1}}]
-       \tl_if_blank:nF {##2}{\phantomsection\label{rem:##2}}}
-      {\end{tcolorbox}}
-    \NewDocumentEnvironment{synwarning}{ O{} O{} }
-      {\begin{tcolorbox}[synaptic/warning,
-         title={\__synaptic_box_title:nn{\c_synaptic_label_warning_tl}{##1}}]
-       \tl_if_blank:nF {##2}{\phantomsection\label{warn:##2}}}
-      {\end{tcolorbox}}
-    \NewDocumentEnvironment{synexercise}{ O{} O{} }
-      {\begin{tcolorbox}[synaptic/exercise,
-         title={\__synaptic_box_title:nn{\c_synaptic_label_exercise_tl}{##1}}]
-       \tl_if_blank:nF {##2}{\phantomsection\label{exr:##2}}}
-      {\end{tcolorbox}}
-  }
-
-\str_case:Vn \l_synaptic_box_numbering_tl
-  {
-    { shared }
-      {
-        \newtcbtheorem[use~counter=theorem]
-          {synapticexample}{\c_synaptic_label_example_tl}{synaptic/example}{ex}
-        \newtcbtheorem[use~counter=theorem]
-          {synapticexercise}{\c_synaptic_label_exercise_tl}{synaptic/exercise}{exr}
-        \NewDocumentEnvironment{synexample}{ O{} O{} }
-          {\begin{synapticexample}{#1}{#2}}{\end{synapticexample}}
-        \NewDocumentEnvironment{synexercise}{ O{} O{} }
-          {\begin{synapticexercise}{#1}{#2}}{\end{synapticexercise}}
-        \NewDocumentEnvironment{synremark}{ O{} O{} }
-          {\begin{tcolorbox}[synaptic/remark,
-             title={\__synaptic_box_title:nn{\c_synaptic_label_remark_tl}{#1}}]
-           \tl_if_blank:nF {#2}{\phantomsection\label{rem:#2}}}
-          {\end{tcolorbox}}
-        \NewDocumentEnvironment{synwarning}{ O{} O{} }
-          {\begin{tcolorbox}[synaptic/warning,
-             title={\__synaptic_box_title:nn{\c_synaptic_label_warning_tl}{#1}}]
-           \tl_if_blank:nF {#2}{\phantomsection\label{warn:#2}}}
-          {\end{tcolorbox}}
-      }
-    { separate }
-      {
-        \newtcbtheorem[number~within=section]
-          {synapticexample}{\c_synaptic_label_example_tl}{synaptic/example}{ex}
-        \newtcbtheorem[number~within=section]
-          {synapticremark}{\c_synaptic_label_remark_tl}{synaptic/remark}{rem}
-        \newtcbtheorem[number~within=section]
-          {synapticwarning}{\c_synaptic_label_warning_tl}{synaptic/warning}{warn}
-        \newtcbtheorem[number~within=section]
-          {synapticexercise}{\c_synaptic_label_exercise_tl}{synaptic/exercise}{exr}
-        \NewDocumentEnvironment{synexample}{ O{} O{} }
-          {\begin{synapticexample}{#1}{#2}}{\end{synapticexample}}
-        \NewDocumentEnvironment{synremark}{ O{} O{} }
-          {\begin{synapticremark}{#1}{#2}}{\end{synapticremark}}
-        \NewDocumentEnvironment{synwarning}{ O{} O{} }
-          {\begin{synapticwarning}{#1}{#2}}{\end{synapticwarning}}
-        \NewDocumentEnvironment{synexercise}{ O{} O{} }
-          {\begin{synapticexercise}{#1}{#2}}{\end{synapticexercise}}
-      }
-    { none }
-      { \__synaptic_box_define_unnumbered_all: }
-  }
-
-% v2.0 aliases are installed only when a generic name is still available.
-\cs_if_exist:NF \example
-  { \NewDocumentEnvironment{example}{ O{} O{} }
-      { \begin{synapticexample}{#1}{#2} } { \end{synapticexample} } }
-\cs_if_exist:NF \remark
-  { \NewDocumentEnvironment{remark}{ O{} O{} }
-      { \begin{synapticremark}{#1}{#2} } { \end{synapticremark} } }
-\cs_if_exist:NF \warning
-  { \NewDocumentEnvironment{warning}{ O{} O{} }
-      { \begin{synapticwarning}{#1}{#2} } { \end{synapticwarning} } }
-\cs_if_exist:NF \exercise
-  { \NewDocumentEnvironment{exercise}{ O{} O{} }
-      { \begin{synapticexercise}{#1}{#2} } { \end{synapticexercise} } }
-
-% ---------------------------------------------------------------------------
-% Generic synbox
-% ---------------------------------------------------------------------------
-\NewDocumentEnvironment{synbox}{ O{} }
-  {
-    \begin{tcolorbox}[
-      enhanced,
-      colback       = syn-surface,
-      colframe      = syn-primary,
-      coltitle      = white,
-      fonttitle     = \bfseries\sffamily,
-      title         = {#1},
-      left          = 6pt,
-      right         = 6pt,
-      top           = 4pt,
-      bottom        = 4pt,
-      boxsep        = 4pt,
-      arc           = 1.5pt,
-      outer~arc     = 1.5pt,
-      borderline~west = {2.2pt}{0pt}{syn-accent},
-      breakable
-    ]
-  }
-  {
-    \end{tcolorbox}
-  }
-
-%</boxes>
-%    \end{macrocode}
-
 % \subsection{synaptic-notes.sty}
 %
 % \paragraph{Notes mode: compact navigation and lightweight knowledge cards.}
@@ -2924,7 +2665,7 @@
 %    \begin{macrocode}
 %<*notes>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-notes}{2026-08-28}{2.6.1}
+\ProvidesExplPackage{synaptic-notes}{2026-08-28}{3.0.0}
   {Synaptic~Notes~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -3131,7 +2872,7 @@
 %    \begin{macrocode}
 %<*package>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic}{2026-08-28}{2.6.1}
+\ProvidesExplPackage{synaptic}{2026-08-28}{3.0.0}
   {Modern~Academic~Typesetting~Framework}
 
 % Forward all user options to synaptic-base
@@ -3140,14 +2881,12 @@
 \RequirePackage{seqsplit}
 
 % ---------------------------------------------------------------------------
-% Collision-resistant convenience commands
+% Convenience commands for documenting synaptic itself
 % ---------------------------------------------------------------------------
 \NewDocumentCommand{\SynapticPkg}{m}
   { {\color{syn-primary}\texttt{\seqsplit{#1}}} }
 \NewDocumentCommand{\SynapticCmd}{m}
   { {\color{syn-primary!80}\texttt{\textbackslash\seqsplit{#1}}} }
-\ProvideDocumentCommand{\pkg}{m}{\SynapticPkg{#1}}
-\ProvideDocumentCommand{\cmd}{m}{\SynapticCmd{#1}}
 
 % ---------------------------------------------------------------------------
 % Acknowledgments; the starred form is omitted from the table of contents.
@@ -3164,9 +2903,6 @@
           { \addcontentsline{toc}{section}{#2} }
       }
   }
-
-\ProvideDocumentCommand{\acknowledgments}{s O{\c_synaptic_label_acknowledgments_tl}}
-  { \IfBooleanTF{#1}{\SynapticAcknowledgments*[#2]}{\SynapticAcknowledgments[#2]} }
 
 %</package>
 %    \end{macrocode}

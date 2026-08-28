@@ -14,11 +14,11 @@
 
 \SynapticHeader{Synaptic Technical Reference}
 \SynapticSubHeader{Architecture, invariants, and release workflow}
-\SynapticPreprint{v2.6.1}
+\SynapticPreprint{v3.0.0}
 \SynapticTitle{synaptic Technical Reference}
 \SynapticAuthor{synaptic project}
 \SynapticAffiliation{Open-source LaTeX community}
-\SynapticSubject{Technical reference for synaptic version 2.6.1}
+\SynapticSubject{Technical reference for synaptic version 3.0.0}
 \SynapticKeywords{LaTeX3, architecture, l3build, regression testing}
 
 \begin{abstract}
@@ -45,12 +45,11 @@ synaptic.sty
           |-- synaptic-journal.sty     journal
           |-- synaptic-book.sty        book
           |-- synaptic-lecture.sty     lecture
-          |-- synaptic-boxes.sty       lecture
           `-- synaptic-notes.sty       notes
 \end{verbatim}
 
 The thin shell forwards user options to \texttt{synaptic-base} and defines a
-small set of collision-resistant convenience commands. The base module checks
+small set of documentation helpers. The base module checks
 the engine and class, parses options, loads labels, validates book mode, and
 dispatches core and mode-specific modules. Language definition files are loaded
 before any module so every label constant is available everywhere.
@@ -61,7 +60,7 @@ before any module so every label constant is available everywhere.
   \toprule
   \textbf{Module} & \textbf{Kind} & \textbf{Responsibility} \\
   \midrule
-  \texttt{synaptic.sty} & shell & option forwarding, doc helpers, acknowledgments \\
+  \texttt{synaptic.sty} & shell & option forwarding, documentation helpers \\
   \texttt{synaptic-base.sty} & core & engine/class checks, keys, dispatch, setup \\
   \texttt{synaptic-lang-*.def} & data & bilingual label constants \\
   \texttt{synaptic-color.sty} & core & theme registry, semantic tokens, delivery \\
@@ -72,7 +71,6 @@ before any module so every label constant is available everywhere.
   \texttt{synaptic-journal.sty} & mode & journal navigation and statements \\
   \texttt{synaptic-book.sty} & mode & chapter/part style, matter helpers \\
   \texttt{synaptic-lecture.sty} & mode & masthead, teaching cards, navigation \\
-  \texttt{synaptic-boxes.sty} & mode & example/remark/warning/exercise cards \\
   \texttt{synaptic-notes.sty} & mode & notes masthead and knowledge cards \\
   \bottomrule
 \end{tabularx}}
@@ -83,7 +81,7 @@ before any module so every label constant is available everywhere.
   \midrule
   journal & KOMA article/report & journal \\
   book & chapter-based KOMA class with front matter & book \\
-  lecture & KOMA article/report & lecture, boxes \\
+  lecture & KOMA article/report & lecture \\
   notes & KOMA article/report & notes \\
   \bottomrule
 \end{tabularx}}
@@ -95,8 +93,8 @@ loading. Mode, language, font set, title layout, measure, density, numbering,
 delivery colour mode, extra math alphabets, and fine-breaking behaviour
 therefore become structural invariants. The runtime key family
 exposes only the state that can be applied without reloading packages:
-\texttt{theme}, \texttt{toc}, and \texttt{toc-layout}. Frozen or unknown keys
-produce diagnostic warnings.
+\texttt{theme}, \texttt{toc}, and \texttt{toc-layout}. Structural or unknown
+keys in a runtime request are errors; unknown package options are warnings.
 
 Book mode is rejected unless both chapter and front-matter interfaces exist.
 LuaLaTeX and KOMA-Script requirements are fatal diagnostics rather than delayed
@@ -194,24 +192,23 @@ PDF information is passed as source tokens to hyperref. Hyperref performs the
 Unicode PDF-string conversion once; pre-converting and then calling
 \verb|\hypersetup| would double-encode metadata.
 
-\subsection{Theorems and boxes}
+\subsection{Theorems}
 
 thmtools defines plain, definition, and remark styles on top of amsthm. The
-built-in theorem family (\texttt{theorem}, \texttt{lemma},
+built-in statement family (\texttt{theorem}, \texttt{lemma},
 \texttt{proposition}, \texttt{definition}, \texttt{corollary}, \texttt{axiom},
-\texttt{conjecture}, \texttt{claim}, \texttt{property}, \texttt{criterion},
-\texttt{convention}, \texttt{problem}, \texttt{solution}, \texttt{example},
-\texttt{remark}, and \texttt{note}) uses a mode-aware shared counter: chapter
-scope for books and section scope elsewhere by default. Under
-\texttt{theorem-style=boxed} the numbered statement environments are wrapped
-with tcolorbox (a theme-tinted background with a west accent bar) at
-\texttt{\string\begin{document}}; proofs stay unboxed.
-\texttt{theorem-style=plain} disables that wrapping. Lecture mode adds its
-box-card environments; examples and exercises can share the theorem counter,
-while warning and remark cards remain unnumbered by default. Public short names use the
-\texttt{syn} prefix; v2.0 generic aliases are conditional compatibility shims.
-In the separate numbering profile, tcolorbox theorem counters follow the
-\texttt{tcb@cnt@<environment>} naming convention.
+\texttt{conjecture}, \texttt{claim}, \texttt{property}, \texttt{example},
+\texttt{exercise}, \texttt{criterion}, \texttt{convention},
+\texttt{problem}, \texttt{solution}, \texttt{remark}, \texttt{note}, and
+\texttt{warning}) uses a mode-aware shared counter: chapter scope for books and
+section scope elsewhere by default. Under \texttt{theorem-style=boxed} the
+numbered statement environments are wrapped with tcolorbox (a theme-tinted
+background with a west accent bar) at \texttt{\string\begin{document}}; proofs
+stay unboxed. \texttt{theorem-style=plain} disables that wrapping. Examples and
+exercises are plain-style statements; warnings use the remark presentation.
+Because every statement shares the theorem counter, the module rebuilds each
+environment's hyperlink anchor (\texttt{theH<name>}) against the real structural
+parent so links stay unique across sections and chapters.
 
 \section{Namespace policy}
 
@@ -220,7 +217,7 @@ In the separate numbering profile, tcolorbox theorem counters follow the
   \textbf{Scope} & \textbf{Pattern} & \textbf{Example} \\
   \midrule
   Public command & \texttt{\textbackslash Synaptic\ldots} & \SynapticCmd{SynapticDefineTheme} \\
-  Public environment & \texttt{syn...} & \texttt{synwarning} \\
+  Public environment & \texttt{syn...} & \texttt{synsummary} \\
   Internal function & \texttt{\textbackslash\_\_synaptic\_\ldots:} & title rendering helper \\
   Module interface & \texttt{\textbackslash synaptic\_\ldots:} & mode accessor \\
   Local state & \texttt{\textbackslash l\_synaptic\_\ldots} & selected theme token list \\
@@ -229,8 +226,9 @@ In the separate numbering profile, tcolorbox theorem counters follow the
   \bottomrule
 \end{tabularx}}
 
-New public names should avoid common nouns. Compatibility aliases must use
-\verb|\ProvideDocumentCommand| or an explicit existence check.
+New public names should avoid common nouns. Statement environments are part of
+the built-in family: declare new ones with \verb|\SynapticNewTheorem| rather
+than adding aliases.
 
 \section{Extension points}
 
@@ -255,7 +253,7 @@ New public names should avoid common nouns. Compatibility aliases must use
 \texttt{tex/latex/synaptic/} are committed for zero-install use and must remain
 byte-identical to fresh extraction.
 
-The eighteen-group regression suite is organised as follows:
+The regression suite is organised as follows:
 
 {\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l Y@{}}
   \toprule
@@ -271,7 +269,7 @@ The eighteen-group regression suite is organised as follows:
   \texttt{toc-layouts}, \texttt{title-layouts} & TOC and title compositions \\
   \texttt{layout-profiles} & density, measure, binding offset \\
   \texttt{book-full} & complete title sequence and matter workflow \\
-  \texttt{lecture-continuous} & continuous and separate numbering profiles \\
+  \texttt{lecture-continuous} & continuous numbering profile \\
   \texttt{extra-math} & optional Unicode math alphabets \\
   \bottomrule
 \end{tabularx}}
@@ -298,12 +296,15 @@ plus generated documentation and examples) together with the nested
 version in place; because the generated file set is stable,
 \texttt{l3build install} is safe to rerun after every release.
 
-\section{Compatibility notes}
+\section{Migrating to 3.0}
 
-Version 2.3 retains the v2.2 API unchanged. Lower-case book matter helpers and
-generic lecture box names remain conditional v2.0 aliases, the \texttt{theme}
-key remains the palette selection interface, and new documents should use the
-namespaced public forms. Removed \texttt{style=} and \texttt{color=} options
-remain explicit errors with migration hints.
+Version 3.0 removes every backward-compatibility layer: the \verb|\pkg| and
+\verb|\cmd| aliases, the lowercase book matter helpers, the import of standard
+\verb|\title|/\verb|\author|/\verb|\date| metadata, the \texttt{box-numbering}
+option, and the \texttt{synaptic-boxes} module. Examples, warnings, and
+exercises are now first-class members of the built-in statement family;
+\texttt{title-layout=cover} became \texttt{title-layout=sequence}; re-declaring
+an environment with \verb|\SynapticNewTheorem| is a hard error. New documents
+should use the namespaced public forms exclusively.
 
 \end{document}

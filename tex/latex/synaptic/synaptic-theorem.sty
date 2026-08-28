@@ -16,7 +16,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-theorem}{2026-08-28}{2.6.1}
+\ProvidesExplPackage{synaptic-theorem}{2026-08-28}{3.0.0}
   {Synaptic~Theorem~Environments}
 
 \RequirePackage{amsthm}
@@ -112,7 +112,8 @@
   {
     \clist_map_inline:nn
       { theorem,lemma,proposition,corollary,axiom,conjecture,claim,property,
-        definition,criterion,convention,problem,solution,example,remark,note }
+        example,exercise,definition,criterion,convention,problem,solution,
+        remark,note,warning }
       { \__synaptic_theorem_repair_anchor:n {##1} }
   }
 
@@ -124,15 +125,13 @@
 
 \cs_new_protected:Npn \__synaptic_theorem_declare_siblings:
   {
-    \clist_map_inline:nn { lemma,proposition,corollary,axiom,conjecture,claim,property }
+    \clist_map_inline:nn
+      { lemma,proposition,corollary,axiom,conjecture,claim,property,example,exercise }
       { \__synaptic_theorem_declare_sibling:nn {##1} { syn-theorem-plain } }
     \clist_map_inline:nn { definition,criterion,convention,problem,solution }
       { \__synaptic_theorem_declare_sibling:nn {##1} { syn-theorem-definition } }
-    \clist_map_inline:nn { remark,note }
+    \clist_map_inline:nn { remark,note,warning }
       { \__synaptic_theorem_declare_sibling:nn {##1} { syn-theorem-remark } }
-    \cs_if_exist:cF { example }
-      { \declaretheorem[style=syn-theorem-plain,
-          name=\c_synaptic_label_example_tl,sibling=theorem]{example} }
   }
 
 \cs_new_protected:Npn \__synaptic_theorem_declare_within:n #1
@@ -171,15 +170,13 @@
     \tl_gset:Nn \l__synaptic_theorem_parent_tl { }
     \declaretheorem[style=syn-theorem-plain,
       name=\c_synaptic_label_thm_tl,numbered=no]{theorem}
-    \clist_map_inline:nn { lemma,proposition,corollary,axiom,conjecture,claim,property }
+    \clist_map_inline:nn
+      { lemma,proposition,corollary,axiom,conjecture,claim,property,example,exercise }
       { \__synaptic_theorem_declare_unnumbered_sibling:nn {##1} { syn-theorem-plain } }
     \clist_map_inline:nn { definition,criterion,convention,problem,solution }
       { \__synaptic_theorem_declare_unnumbered_sibling:nn {##1} { syn-theorem-definition } }
-    \clist_map_inline:nn { remark,note }
+    \clist_map_inline:nn { remark,note,warning }
       { \__synaptic_theorem_declare_unnumbered_sibling:nn {##1} { syn-theorem-remark } }
-    \cs_if_exist:cF { example }
-      { \declaretheorem[style=syn-theorem-plain,
-          name=\c_synaptic_label_example_tl,numbered=no]{example} }
   }
 
 \str_case:VnF \l_synaptic_numbering_tl
@@ -205,7 +202,8 @@
     \str_if_eq:VnT \l_synaptic_theorem_style_tl { boxed }
       {
         \clist_map_inline:nn
-          { theorem,lemma,proposition,corollary,axiom,conjecture,claim,property,example }
+          { theorem,lemma,proposition,corollary,axiom,conjecture,claim,property,
+            example,exercise }
           {
             \cs_if_exist:cT {##1}
               {
@@ -223,7 +221,7 @@
               }
           }
         \clist_map_inline:nn
-          { remark,note }
+          { remark,note,warning }
           {
             \cs_if_exist:cT {##1}
               {
@@ -241,8 +239,10 @@
       { \cs_if_exist_p:c {#2} }
       { \cs_if_exist_p:c { c@#2 } }
       {
-        \PackageWarning{synaptic-theorem}
-          {Theorem~environment~`#2'~already~exists;~declaration~ignored}
+        \PackageError{synaptic-theorem}
+          {Theorem~environment~`#2'~already~exists}
+          {It~is~declared~by~synaptic~itself~or~by~another~package;
+            pick~a~different~environment~name.}
       }
       {
         \str_case:nnF {#1}
@@ -333,7 +333,6 @@
           { \exp_args:Nc \providecommand { symfrak#1 } { \mathfrak{#1} } }
       }
   }
-
 
 
 

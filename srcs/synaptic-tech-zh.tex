@@ -14,11 +14,11 @@
 
 \SynapticHeader{synaptic 技术参考}
 \SynapticSubHeader{架构、不变量与发布流程}
-\SynapticPreprint{v2.6.1}
+\SynapticPreprint{v3.0.0}
 \SynapticTitle{synaptic 技术参考}
 \SynapticAuthor{synaptic 项目}
 \SynapticAffiliation{开源 LaTeX 社区}
-\SynapticSubject{synaptic 2.6.1 技术参考}
+\SynapticSubject{synaptic 3.0.0 技术参考}
 \SynapticKeywords{LaTeX3, 架构, l3build, 回归测试}
 
 \begin{abstract}
@@ -44,11 +44,10 @@ synaptic.sty
           |-- synaptic-journal.sty     journal
           |-- synaptic-book.sty        book
           |-- synaptic-lecture.sty     lecture
-          |-- synaptic-boxes.sty       lecture
           `-- synaptic-notes.sty       notes
 \end{verbatim}
 
-薄封装层把用户选项转发给 \texttt{synaptic-base}，并定义少量不易冲突的便捷命令。
+薄封装层把用户选项转发给 \texttt{synaptic-base}，并定义少量文档辅助命令。
 基础模块负责检查引擎与文档类、解析选项、加载标签、验证书籍模式，然后分发核心
 模块和模式模块。语言定义文件先于所有模块加载，保证标签常量随处可用。
 
@@ -58,7 +57,7 @@ synaptic.sty
   \toprule
   \textbf{模块} & \textbf{类别} & \textbf{职责} \\
   \midrule
-  \texttt{synaptic.sty} & 封装 & 选项转发、文档辅助命令、致谢 \\
+  \texttt{synaptic.sty} & 封装 & 选项转发、文档辅助命令 \\
   \texttt{synaptic-base.sty} & 核心 & 引擎/文档类检查、键系统、分发 \\
   \texttt{synaptic-lang-*.def} & 数据 & 双语标签常量 \\
   \texttt{synaptic-color.sty} & 核心 & 主题登记、语义令牌、交付模式 \\
@@ -69,7 +68,6 @@ synaptic.sty
   \texttt{synaptic-journal.sty} & 模式 & 期刊导航与声明 \\
   \texttt{synaptic-book.sty} & 模式 & 章/部分样式、前后文命令 \\
   \texttt{synaptic-lecture.sty} & 模式 & 信息条、教学卡片、导航 \\
-  \texttt{synaptic-boxes.sty} & 模式 & 例题/注记/警告/练习卡片 \\
   \texttt{synaptic-notes.sty} & 模式 & 笔记信息条与知识卡 \\
   \bottomrule
 \end{tabularx}}
@@ -80,7 +78,7 @@ synaptic.sty
   \midrule
   journal & KOMA 文章/报告类 & journal \\
   book & 含章和前文接口的 KOMA 类 & book \\
-  lecture & KOMA 文章/报告类 & lecture, boxes \\
+  lecture & KOMA 文章/报告类 & lecture \\
   notes & KOMA 文章/报告类 & notes \\
   \bottomrule
 \end{tabularx}}
@@ -90,7 +88,8 @@ synaptic.sty
 宏包级 \texttt{synaptic} 键系统在模块加载前执行。模式、语言、字体组、标题布局、
 版心尺度、密度、编号、输出颜色模式、数学扩展和断行策略因此成为结构不变量。
 运行时键系统只暴露无需重载宏包就能应用的
-\texttt{theme}、\texttt{toc} 和 \texttt{toc-layout}。冻结键与未知键会产生明确警告。
+\texttt{theme}、\texttt{toc} 和 \texttt{toc-layout}。运行时请求中的结构键与未知键
+直接报错；宏包选项中的未知键给出警告。
 
 书籍模式要求章和前文接口同时存在。LuaLaTeX 与 KOMA-Script 要求在不满足时立即给出
 致命诊断，而不是延迟到后续的未定义命令。
@@ -108,7 +107,8 @@ synaptic.sty
     悄悄重新开始页码。
   \item \textbf{只做一次 Unicode 转换}。PDF 元数据以源词元交给 hyperref；
     预先转换会造成双重编码。
-  \item \textbf{公开名抗冲突}。通用名仅在空闲时安装。
+  \item \textbf{公开名抗冲突}。陈述环境属于内置定理族；新声明必须
+    通过 \verb|\SynapticNewTheorem| 进行，重名即报错。
   \item \textbf{语义颜色架构}。组件只消费语义令牌；主题与交付模式只改变
     令牌，不改变组件逻辑。
 \end{itemize}
@@ -166,20 +166,19 @@ microtype、图表标题标点、列表与模式化公式编号由布局模块�
 PDF 信息以源词元传给 hyperref，由 hyperref 只执行一次 Unicode PDF 字符串转换。预先
 \verb|\pdfstringdef| 再传给 \verb|\hypersetup| 会导致双重编码，因此已禁止这种路径。
 
-\subsection{定理与盒子}
+\subsection{定理}
 
-thmtools 在 amsthm 之上定义 plain、definition 和 remark 三种样式。内置定理家族
+thmtools 在 amsthm 之上定义 plain、definition 和 remark 三种样式。内置陈述族
 （\texttt{theorem}、\texttt{lemma}、\texttt{proposition}、
 \texttt{definition}、\texttt{corollary}、\texttt{axiom}、\texttt{conjecture}、
-\texttt{claim}、\texttt{property}、\texttt{criterion}、\texttt{convention}、
-\texttt{problem}、\texttt{solution}、\texttt{example}、\texttt{remark} 与
-\texttt{note}）使用模式化共享计数器：书籍默认按章，其他模式默认按节。在
-\texttt{theorem-style=boxed} 之下，编号的陈述环境在 \texttt{\string\begin{document}}
-处由 tcolorbox 包装（主题色背景配西侧强调条）；\texttt{proof} 保持无框。
-\texttt{theorem-style=plain} 关闭该包装。讲义模式额外提供盒式卡片环境；例题与
-练习可共享定理计数器，警告与注记默认不编号。新公开短名使用 \texttt{syn} 前缀；
-v2.0 通用名是有条件的兼容层。独立编号档案中的 tcolorbox 定理计数器遵循
-\texttt{tcb@cnt@<环境名>} 命名约定。
+\texttt{claim}、\texttt{property}、\texttt{example}、\texttt{exercise}、
+\texttt{criterion}、\texttt{convention}、\texttt{problem}、\texttt{solution}、
+\texttt{remark}、\texttt{note} 与 \texttt{warning}）使用模式化共享计数器：
+书籍默认按章，其他模式默认按节。在 \texttt{theorem-style=boxed} 之下，编号的陈述
+环境在 \texttt{\string\begin{document}} 处由 tcolorbox 包装（主题色背景配西侧强调条）；
+\texttt{proof} 保持无框。\texttt{theorem-style=plain} 关闭该包装。例题与练习为
+plain 样式陈述，警告使用注记呈现。由于所有陈述共享定理计数器，本模块还会按真实结构
+父级重建每个环境的超链接锚点（\texttt{theH<名称>}），保证跨章跨节的链接唯一。
 
 \section{命名空间规则}
 
@@ -188,7 +187,7 @@ v2.0 通用名是有条件的兼容层。独立编号档案中的 tcolorbox 定�
   \textbf{范围} & \textbf{模式} & \textbf{示例} \\
   \midrule
   公开命令 & \texttt{\textbackslash Synaptic\ldots} & \SynapticCmd{SynapticDefineTheme} \\
-  公开环境 & \texttt{syn...} & \texttt{synwarning} \\
+  公开环境 & \texttt{syn...} & \texttt{synsummary} \\
   内部函数 & \texttt{\textbackslash\_\_synaptic\_\ldots:} & 标题渲染辅助函数 \\
   模块接口 & \texttt{\textbackslash synaptic\_\ldots:} & 模式访问器 \\
   局部状态 & \texttt{\textbackslash l\_synaptic\_\ldots} & 当前主题词元表 \\
@@ -197,7 +196,8 @@ v2.0 通用名是有条件的兼容层。独立编号档案中的 tcolorbox 定�
   \bottomrule
 \end{tabularx}}
 
-新公开名应避免常见名词。兼容别名必须使用 \verb|\ProvideDocumentCommand| 或显式存在性检查。
+新公开名应避免常见名词。陈述环境属于内置定理族：新声明应通过
+\verb|\SynapticNewTheorem| 完成，而不是添加别名。
 
 \section{扩展点}
 
@@ -215,7 +215,7 @@ v2.0 通用名是有条件的兼容层。独立编号档案中的 tcolorbox 定�
 \texttt{.sty} 和 \texttt{.def} 文件。\texttt{tex/latex/synaptic/} 下的生成副本为了零安装使用而
 提交，必须与新解包结果字节级一致。
 
-十八组回归测试的组织方式如下：
+回归测试的组织方式如下：
 
 {\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l Y@{}}
   \toprule
@@ -231,7 +231,7 @@ v2.0 通用名是有条件的兼容层。独立编号档案中的 tcolorbox 定�
   \texttt{toc-layouts}、\texttt{title-layouts} & 目录与标题构成 \\
   \texttt{layout-profiles} & 密度、版心尺度、装订偏移 \\
   \texttt{book-full} & 完整标题序列与前后文流程 \\
-  \texttt{lecture-continuous} & 连续与独立编号档案 \\
+  \texttt{lecture-continuous} & 连续编号档案 \\
   \texttt{extra-math} & 可选 Unicode 数学字母表 \\
   \bottomrule
 \end{tabularx}}
@@ -243,7 +243,7 @@ CI 运行套件并额外构建源码文档、四份手册和所有示例，出�
 
 \begin{verbatim}
 l3build unpack     # 重新生成 .sty/.def 到 build/local
-l3build check      # 运行十八组回归套件
+l3build check      # 运行 LuaLaTeX 回归套件
 l3build doc        # 构建源码文档、手册与示例
 l3build ctan       # 生成 TDS 与 CTAN 压缩包
 l3build install    # 复制宏包文件到用户 texmf 目录树
@@ -254,10 +254,13 @@ l3build uninstall  # 移除先前安装
 \texttt{synaptic.tds.zip}（TDS 布局）。安装会就地替换旧版本；由于生成文件集合稳定，
 每次发布后重复执行 \texttt{l3build install} 都是安全的。
 
-\section{兼容性说明}
+\section{从旧版本迁移}
 
-2.3 保持 2.2 的公开 API 不变。小写书籍前后文命令和讲义盒子通用名仍作为有条件的
-v2.0 兼容别名保留，\texttt{theme} 键仍是调色板选择接口，新文档应使用带命名空间的
-公开形式。已移除的 \texttt{style=} 和 \texttt{color=} 选项仍会报错，并提供迁移提示。
+3.0 移除了全部向后兼容层：\texttt{\backslash pkg} 与 \texttt{\backslash cmd} 等
+别名、小写书籍前后文命令、对标准 \texttt{\backslash title}/\texttt{\backslash author}/\texttt{\backslash date}
+的导入、\texttt{box-numbering} 选项与 \texttt{synaptic-boxes} 模块。示例、警告与
+练习现在是内置定理族的一等成员；\texttt{title-layout=cover} 更名为
+\texttt{title-layout=sequence}；重复声明 \verb|\SynapticNewTheorem| 会直接报错。
+新文档应完全使用带命名空间的公开形式。
 
 \end{document}

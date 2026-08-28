@@ -17,7 +17,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-title}{2026-08-28}{2.6.1}
+\ProvidesExplPackage{synaptic-title}{2026-08-28}{3.0.0}
   {Synaptic~Title~Page}
 
 \tl_new:N   \l_synaptic_title_tl
@@ -175,44 +175,6 @@
 
 \tl_new:N \l_synaptic_pdf_author_tl
 
-\cs_new_protected:Npn \__synaptic_title_import_standard:
-  {
-    \tl_if_empty:NT \l_synaptic_title_tl
-      {
-        \cs_if_exist:cT { @title }
-          {
-            \tl_set:Nx \l_tmpa_tl { \exp_not:v { @title } }
-            % The kernel's unset title/author values are warning-producing
-            % token lists, not empty macros.  Never import those sentinels.
-            \tl_if_in:NnF \l_tmpa_tl { \@latex@warning@no@line }
-              {
-                \tl_if_empty:NF \l_tmpa_tl
-                  { \tl_gset_eq:NN \l_synaptic_title_tl \l_tmpa_tl }
-              }
-          }
-      }
-    \seq_if_empty:NT \l_synaptic_authors_seq
-      {
-        \cs_if_exist:cT { @author }
-          {
-            \tl_set:Nx \l_tmpa_tl { \exp_not:v { @author } }
-            \tl_if_in:NnF \l_tmpa_tl { \@latex@warning@no@line }
-              {
-                \tl_if_empty:NF \l_tmpa_tl
-                  {
-                    \seq_gput_right:NV \l_synaptic_authors_seq \l_tmpa_tl
-                    \seq_gput_right:Nn \l_synaptic_author_marks_seq { }
-                  }
-              }
-          }
-      }
-    \tl_if_empty:NT \l_synaptic_date_tl
-      {
-        \cs_if_exist:cT { @date }
-          { \tl_gset:Nx \l_synaptic_date_tl { \exp_not:v { @date } } }
-      }
-  }
-
 \cs_new_protected:Npn \__synaptic_title_apply_pdf_metadata:
   {
     % Let hyperref perform the PDF-string conversion exactly once.  Feeding a
@@ -304,7 +266,7 @@
         \str_case:Vn \l_synaptic_mode_tl
           {
             { journal } { \tl_set:Nn \l__synaptic_title_layout_tl { inline } }
-            { book }    { \tl_set:Nn \l__synaptic_title_layout_tl { cover } }
+            { book }    { \tl_set:Nn \l__synaptic_title_layout_tl { sequence } }
             { lecture } { \tl_set:Nn \l__synaptic_title_layout_tl { compact } }
             { notes }   { \tl_set:Nn \l__synaptic_title_layout_tl { compact } }
           }
@@ -754,11 +716,10 @@
 
 \NewDocumentCommand{\SynapticMakeTitle}{}
   {
-    \__synaptic_title_import_standard:
     \tl_if_empty:NT \l_synaptic_title_tl
       {
         \PackageError{synaptic-title}{Document~title~is~empty}
-          {Set~it~with~\string\SynapticTitle\{...\}~or~\string\title\{...\}.}
+          {Set~it~with~\string\SynapticTitle\{...\}.}
       }
     \__synaptic_title_apply_pdf_metadata:
     \__synaptic_title_resolve_layout:
@@ -772,7 +733,6 @@
     \__synaptic_title_render_toc:
     \setcounter{footnote}{0}
   }
-
 
 
 

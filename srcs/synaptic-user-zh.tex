@@ -16,12 +16,12 @@
 \SynapticNewTheorem[remark]{observation}{观察}
 \SynapticHeader{synaptic 用户手册}
 \SynapticSubHeader{面向 LuaLaTeX 的稳定学术排版}
-\SynapticPreprint{v2.6.1}
+\SynapticPreprint{v3.0.0}
 \SynapticTitle{synaptic 宏包用户手册}
 \SynapticAuthor{synaptic 项目}
 \SynapticAffiliation{开源 LaTeX 社区}
 \SynapticEmail{synaptic@example.com}
-\SynapticSubject{synaptic 2.6.1 用户手册}
+\SynapticSubject{synaptic 3.0.0 用户手册}
 \SynapticKeywords{synaptic, LaTeX3, LuaLaTeX, 学术排版}
 
 \begin{abstract}
@@ -101,9 +101,8 @@ l3build ctan        # 生成 TDS/CTAN 压缩包
   \texttt{fontset} & auto & auto、xcharter、libertinus、stix2 或 lm \\
   \texttt{toc} & false & 标题流程是否输出目录 \\
   \texttt{toc-layout} & top & top、inline 或 page \\
-  \texttt{title-layout} & auto & inline、compact、page、cover 或模式默认值 \\
+  \texttt{title-layout} & auto & inline、compact、page、sequence 或模式默认值 \\
   \texttt{numbering} & auto & section、chapter、continuous、none 或模式默认值 \\
-  \texttt{box-numbering} & shared & shared、separate 或 none \\
   \texttt{color-mode} & screen & screen、print 或 mono \\
   \texttt{density} & balanced & compact、balanced 或 airy \\
   \texttt{measure} & auto & narrow、standard、wide 或模式默认值 \\
@@ -120,8 +119,8 @@ l3build ctan        # 生成 TDS/CTAN 压缩包
 \SynapticSetup{theme=paper,toc=false,toc-layout=page}
 \end{verbatim}
 
-模式、语言、字体与其他加载期排版选项会被冻结。运行时尝试修改时，宏包会给出
-警告，而不是留下只完成一半的配置。
+模式、语言、字体与其他加载期排版选项会被冻结。运行时通过
+\texttt{\string\SynapticSetup} 修改这些键会直接报错，而不是留下只完成一半的配置。
 
 \subsection{模式}
 
@@ -181,7 +180,7 @@ synaptic 的默认外观是确定的而非装饰性的。以下设计原则贯�
 \subsection{标题构成}
 
 \textbf{title-layout} 决定各模式标题区的渲染方式。\texttt{auto} 解析为
-journal 的 \texttt{inline}、book 的 \texttt{cover} 以及 lecture 与 notes 的
+journal 的 \texttt{inline}、book 的 \texttt{sequence} 以及 lecture 与 notes 的
 \texttt{compact}。\texttt{page} 生成整页标题；\texttt{inline} 强制第一页
 内联构成。所有标题渲染器共用一组非对称“连接轨道”：短主色线、强调节点与
 淡色延伸线。书籍将其用于标题页和版权页的建筑性边缘，讲义与笔记则将其与
@@ -236,7 +235,6 @@ journal 的 \texttt{inline}、book 的 \texttt{cover} 以及 lecture 与 notes �
 journal 支持出版信息、通讯信息与作者注；book 支持半扉页、出版社、版次、ISBN 与
 版权；lecture 支持课程、课程代码、讲次、教师与学期。论文的基金、数据、伦理或
 利益冲突声明可用 \verb|\SynapticStatement{标题}{正文}|，其星号形式不写入目录。
-未设置 Synaptic 字段时，\verb|\title|、\verb|\author| 和 \verb|\date| 可被导入。
 PDF 字符串只进行一次 Unicode 安全转换。
 
 \section{定理与数学}
@@ -244,9 +242,10 @@ PDF 字符串只进行一次 Unicode 安全转换。
 内置 \texttt{theorem}、\texttt{lemma}、\texttt{proposition}、
 \texttt{definition}、\texttt{corollary}、\texttt{axiom}、\texttt{conjecture}、
 \texttt{claim}、\texttt{property}、\texttt{criterion}、\texttt{convention}、
-\texttt{problem}、\texttt{solution}、\texttt{example}、\texttt{remark} 与
-\texttt{note} 共享一个计数器。书籍默认按章编号，短文档默认按节编号。定义正
-文使用正体；中文命题类正文保持正体，避免伪斜体造成的阅读干扰。
+\texttt{problem}、\texttt{solution}、\texttt{example}、\texttt{exercise}、
+\texttt{remark}、\texttt{note} 与 \texttt{warning} 共享一个计数器。书籍默认按
+章编号，短文档默认按节编号。定义正文使用正体；中文命题类正文保持正体，避免
+伪斜体造成的阅读干扰。例题与练习为 plain 样式陈述，警告使用注记呈现。
 
 默认（\texttt{theorem-style=boxed}）下，编号的陈述环境以精致的卡片呈现：微
 妙的主题色背景、语义西侧强调条、淡发丝线与克制圆角，与教学与笔记卡片语言保持一致。
@@ -264,8 +263,8 @@ PDF 字符串只进行一次 Unicode 安全转换。
 \end{proof}
 
 自定义定理可选择 \texttt{plain}、\texttt{definition} 或 \texttt{remark} 样式：
-自定义定理也会自动加框。对已有环境重复声明是安全的：synaptic 会保留既有
-定义并给出警告，以便旧文档与扩充后的内置定理集兼容。
+自定义定理也会自动加框。对已有名称重复声明会直接报错：内置定理族加上
+\verb|\SynapticNewTheorem| 声明的环境合起来构成完整的环境集合。
 
 \begin{verbatim}
 \SynapticNewTheorem[remark]{observation}{观察}
@@ -306,18 +305,10 @@ PDF 字符串只进行一次 Unicode 安全转换。
   \bottomrule
 \end{tabularx}}
 
-讲义模式增加抗冲突的教学环境。每个环境接受可选标题与可选标签：
-
-\begin{itemize}\itemsep0pt
-  \item \SynapticPkg{synexample} --- 例题，默认与定理共享计数器
-  \item \SynapticPkg{synremark} --- 注记，默认不编号
-  \item \SynapticPkg{synwarning} --- 警告，默认不编号
-  \item \SynapticPkg{synexercise} --- 练习，默认与定理共享计数器
-  \item \SynapticPkg{synbox} --- 通用盒子，可选标题
-\end{itemize}
-
-通用 v2.0 别名仅在原名空闲时创建。课程单元还可使用 \texttt{synlearninggoals}
-与 \texttt{synlecturesummary}。
+讲义模式提供教学卡片环境：\texttt{synlearninggoals} 与
+\texttt{synlecturesummary}，以及上文描述的课程元数据命令。笔记模式提供
+\texttt{synkeyidea}、\texttt{synquestion}、\texttt{syntodo} 与
+\texttt{synsummary}。
 
 \section{书籍流程与致谢}
 
@@ -340,40 +331,45 @@ notes 模式提供 \texttt{synkeyidea}、\texttt{synquestion}、\texttt{syntodo}
   \item \textbf{``Incomplete ... font bundle''} --- 显式指定的 \texttt{fontset}
     缺少配套字体。请安装完整组合，或改用 \texttt{fontset=auto} 自动回退。
   \item \textbf{选项在加载后冻结} --- \texttt{mode}、\texttt{lang}、
-    \texttt{fontset} 等为结构性选项，请在 \verb|\usepackage| 中设定。
+    \texttt{fontset} 等为结构性选项，请在 \verb|\usepackage| 中设定；
+    通过 \verb|\SynapticSetup| 修改会直接报错。
   \item \textbf{未找到中文字体} --- 请安装 Noto CJK SC 或 TeX Live 自带的
     Fandol 字体。
   \item \textbf{``Document title is empty''} --- 请在
-    \verb|\SynapticMakeTitle| 前设置 \verb|\SynapticTitle|（或 \verb|\title|）。
+    \verb|\SynapticMakeTitle| 前设置 \verb|\SynapticTitle|。
   \item \textbf{纸张尺寸不符} --- 宏包不会覆盖文档类的纸张设定，请在文档类
     选项中指定。
 \end{itemize}
 
-\section{从旧版本迁移}
+\section{迁移到 3.0}
 
-2.x 系列替换了 v1 的选项与命令表面。已移除的 \texttt{style=} 与
-\texttt{color=} 选项仍会明确报错并附带迁移提示。
+3.0 移除了全部向后兼容层，请统一使用带命名空间的公开形式：
 
 {\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l Y@{}}
   \toprule
-  \textbf{v1} & \textbf{v2.5} \\
+  \textbf{已移除} & \textbf{替代} \\
   \midrule
-  \texttt{color=ocean} & \texttt{theme=ocean} \\
-  \texttt{style=modern/minimal} & \texttt{mode=journal/notes} \\
-  \texttt{\textbackslash title} & \SynapticCmd{SynapticTitle} \\
-  \texttt{\textbackslash author} & \SynapticCmd{SynapticAuthor} \\
-  \texttt{\textbackslash maketitle} & \SynapticCmd{SynapticMakeTitle} \\
+  \texttt{\textbackslash pkg} & \SynapticCmd{SynapticPkg} \\
+  \texttt{\textbackslash cmd} & \SynapticCmd{SynapticCmd} \\
+  \texttt{\textbackslash acknowledgments} & \SynapticCmd{SynapticAcknowledgments} \\
+  \texttt{\textbackslash synapticfrontmatter} & \SynapticCmd{SynapticFrontMatter} \\
+  \texttt{\textbackslash synapticmainmatter} & \SynapticCmd{SynapticMainMatter} \\
+  \texttt{\textbackslash synapticbackmatter} & \SynapticCmd{SynapticBackMatter} \\
+  \texttt{\textbackslash title}/\texttt{\textbackslash author}/\texttt{\textbackslash date} & \SynapticCmd{SynapticTitle} 等 \\
+  \texttt{synexample}/\texttt{synremark}/\texttt{synwarning}/\texttt{synexercise}/\texttt{synbox} & \texttt{example}/\texttt{remark}/\texttt{warning}/\texttt{exercise} \\
+  \texttt{box-numbering} & \texttt{numbering} \\
+  \texttt{title-layout=cover} & \texttt{title-layout=sequence} \\
   \bottomrule
 \end{tabularx}}
 
-v2.5 的公开 API 继续兼容 v2.2。小写书籍前后文命令和讲义盒子通用名仍作为有条件的
-v2.0 兼容别名保留；新文档应使用带命名空间的公开形式。
+陈述环境（含 \texttt{example}、\texttt{exercise}、\texttt{warning}）现在在
+所有模式中都是内置定理族的一等成员，并共享定理计数器。
 
 \section{开发命令}
 
 \begin{verbatim}
 l3build unpack   # 从 synaptic.dtx 重新生成宏包文件
-l3build check    # 运行 LuaLaTeX 回归测试（18 组）
+l3build check    # 运行 LuaLaTeX 回归测试
 l3build doc      # 生成源码文档与手册
 l3build ctan     # 创建发布压缩包
 \end{verbatim}

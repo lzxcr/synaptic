@@ -19,7 +19,7 @@
 
 
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-book}{2026-08-28}{2.6.1}
+\ProvidesExplPackage{synaptic-book}{2026-08-28}{3.0.0}
   {Synaptic~Book~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -88,10 +88,6 @@
       {\normalfont\LARGE\bfseries\sffamily\color{syn-primary}}
   }
 
-\ProvideDocumentCommand{\synapticfrontmatter}{}{\SynapticFrontMatter}
-\ProvideDocumentCommand{\synapticmainmatter}{}{\SynapticMainMatter}
-\ProvideDocumentCommand{\synapticbackmatter}{}{\SynapticBackMatter}
-
 \AddToHook{begindocument/before}
   {
     \renewcommand*{\raggedpart}{\raggedright}
@@ -158,7 +154,6 @@
     \end{flushright}
     \addvspace{1.2em}
   }
-
 
 
 
