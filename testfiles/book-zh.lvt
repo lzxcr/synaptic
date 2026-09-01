@@ -1,6 +1,6 @@
 \input regression-test.tex
 \documentclass[11pt,twoside]{scrbook}
-\usepackage[mode=book,lang=zh,fontset=lm,toc=false]{synaptic}
+\usepackage[mode=book,lang=zh,toc=false]{synaptic}
 
 \SynapticTitle{中文书籍回归测试}
 \SynapticSubtitle{扉页、篇章与双面导航}

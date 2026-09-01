@@ -1,5 +1,25 @@
 # Changelog
 
+## [5.0.0] — 2026-08-31
+
+### Removed
+
+- Removed the `fontset` option and the XCharter, STIX Two, and Latin Modern
+  selection and fallback branches.
+- Removed Noto CJK and Fandol font probing. Chinese typography no longer
+  changes according to whichever TeX font bundle happens to be installed.
+
+### Changed
+
+- Standardized Latin text and mathematics on Libertinus Serif, Sans, Mono,
+  and Math installed as system fonts.
+- Defined bold mathematics as a deterministic synthetic weight of Libertinus
+  Math, whose upstream family does not ship a separate bold face.
+- Standardized Simplified Chinese on Source Han Serif/Sans CN, with LXGW
+  WenKai for emphasized Chinese text.
+- Missing fonts are now explicit configuration errors instead of triggering a
+  visually different fallback.
+
 ## [4.0.0] — 2026-08-28
 
 ### Removed

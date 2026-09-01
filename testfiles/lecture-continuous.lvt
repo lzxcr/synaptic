@@ -1,6 +1,6 @@
 \input regression-test.tex
 \documentclass[11pt]{scrartcl}
-\usepackage[mode=lecture,theme=ocean,fontset=lm,numbering=continuous]{synaptic}
+\usepackage[mode=lecture,theme=ocean,numbering=continuous]{synaptic}
 
 \SynapticCourseCode{CS 101}
 \SynapticCourse{Continuous Regression}

@@ -1,6 +1,6 @@
 \input regression-test.tex
 \documentclass[11pt]{scrartcl}
-\usepackage[mode=journal,theme=ocean,fontset=lm,title-layout=page]{synaptic}
+\usepackage[mode=journal,theme=ocean,title-layout=page]{synaptic}
 
 \SynapticTitle{Standalone Title Page Regression}
 \SynapticSubtitle{A dedicated full-page title composition}

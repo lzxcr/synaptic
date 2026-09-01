@@ -1,6 +1,6 @@
 \input regression-test.tex
 \documentclass[11pt]{scrartcl}
-\usepackage[mode=lecture,lang=zh,fontset=lm]{synaptic}
+\usepackage[mode=lecture,lang=zh]{synaptic}
 
 \SynapticCourseCode{数学 201}
 \SynapticCourse{数学分析}

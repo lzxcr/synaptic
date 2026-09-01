@@ -1,6 +1,6 @@
 \input regression-test.tex
 \documentclass{scrartcl}
-\usepackage[mode=lecture,fontset=lm,color-mode=mono,measure=narrow,
+\usepackage[mode=lecture,color-mode=mono,measure=narrow,
   numbering=none]{synaptic}
 
 \SynapticTitle{Unnumbered Lecture}

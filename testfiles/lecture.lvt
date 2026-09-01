@@ -2,7 +2,7 @@
 \documentclass[11pt]{scrartcl}
 \newenvironment{example}{}{}
 \newenvironment{theorem}{}{}
-\usepackage[mode=lecture,theme=forest,fontset=lm]{synaptic}
+\usepackage[mode=lecture,theme=forest]{synaptic}
 \SynapticCourseCode{TEST 101}
 \SynapticCourse{Regression Design}
 \SynapticLectureNumber{4}

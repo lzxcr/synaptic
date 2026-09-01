@@ -1,6 +1,6 @@
 \input regression-test.tex
 \documentclass[11pt]{scrartcl}
-\usepackage[mode=journal,fontset=lm]{synaptic}
+\usepackage[mode=journal]{synaptic}
 
 \begin{document}
 \START

@@ -5,19 +5,37 @@ measure=wide
 binding-offset=8.0pt
 Package hyperref Info: Option `unicode' set `true' on input line ....
 Package hyperref Info: Option `pageanchor' set `false' on input line ....
+LaTeX Font Info:    Font shape `TU/LibertinusSans(0)/m/n' will be
+(Font)              scaled to size 8.54997pt on input line ....
 Package microtype Info: Loading generic protrusion settings for font family
-(microtype)             `LatinModernSans' (encoding: TU).
+(microtype)             `LibertinusSans' (encoding: TU).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
+LaTeX Font Info:    Font shape `TU/LibertinusSans(0)/b/n' will be
+(Font)              scaled to size 8.54997pt on input line ....
+LaTeX Font Info:    Font shape `TU/LibertinusSans(0)/m/n' will be
+(Font)              scaled to size 13.67995pt on input line ....
+LaTeX Font Info:    Font shape `TU/LibertinusSans(0)/b/n' will be
+(Font)              scaled to size 13.67995pt on input line ....
 Package microtype Info: Loading generic protrusion settings for font family
-(microtype)             `LatinModernMath' (encoding: TU).
+(microtype)             `LibertinusMath' (encoding: TU).
 (microtype)             For optimal results, create family-specific settings.
 (microtype)             See the microtype manual for details.
+LaTeX Font Info:    Font shape `TU/LibertinusSans(0)/b/n' will be
+(Font)              scaled to size 9.49997pt on input line ....
 [1
 ] [2
 ]
 Package hyperref Info: Option `pageanchor' set `true' on input line ....
 chapter 1.
+LaTeX Font Info:    Font shape `TU/LibertinusSans(0)/m/n' will be
+(Font)              scaled to size 10.40245pt on input line ....
+LaTeX Font Info:    Font shape `TU/LibertinusSans(0)/b/n' will be
+(Font)              scaled to size 10.40245pt on input line ....
+LaTeX Font Info:    Font shape `TU/LibertinusSans(0)/b/n' will be
+(Font)              scaled to size 23.63593pt on input line ....
+LaTeX Font Info:    Font shape `TU/LibertinusSans(0)/m/n' will be
+(Font)              scaled to size 9.49997pt on input line ....
 [1
 ] [2
 ]

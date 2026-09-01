@@ -1,6 +1,6 @@
 \input regression-test.tex
 \documentclass[11pt]{scrartcl}
-\usepackage[mode=notes,theme=graphite,fontset=lm]{synaptic}
+\usepackage[mode=notes,theme=graphite]{synaptic}
 
 \SynapticDefineTheme{regression}{red!70!black}{blue!70!black}[orange!80!black]
 \SynapticSetup{theme=regression,toc=false,toc-layout=page}

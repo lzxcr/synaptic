@@ -1,6 +1,6 @@
 \input regression-test.tex
 \documentclass[11pt]{scrartcl}
-\usepackage[mode=journal,theme=ocean,fontset=lm,toc=true,toc-layout=top]{synaptic}
+\usepackage[mode=journal,theme=ocean,toc=true,toc-layout=top]{synaptic}
 
 \SynapticTitle{TOC Layout Regression}
 \SynapticAuthor{Test Author}

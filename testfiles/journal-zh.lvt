@@ -1,6 +1,6 @@
 \input regression-test.tex
 \documentclass[11pt]{scrartcl}
-\usepackage[mode=journal,lang=zh,theme=ocean,fontset=lm]{synaptic}
+\usepackage[mode=journal,lang=zh,theme=ocean]{synaptic}
 
 \SynapticTitle{中文期刊回归测试}
 \SynapticShortTitle{中文期刊}

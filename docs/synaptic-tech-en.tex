@@ -5,7 +5,6 @@
   lang=en,
   mode=journal,
   theme=graphite,
-  fontset=lm,
   toc=true,
   toc-layout=page
 ]{synaptic}
@@ -15,11 +14,11 @@
 
 \SynapticHeader{Synaptic Technical Reference}
 \SynapticSubHeader{Architecture, invariants, and release workflow}
-\SynapticPreprint{v4.0.0}
+\SynapticPreprint{v5.0.0}
 \SynapticTitle{synaptic Technical Reference}
 \SynapticAuthor{synaptic project}
 \SynapticAffiliation{Open-source LaTeX community}
-\SynapticSubject{Technical reference for synaptic version 4.0.0}
+\SynapticSubject{Technical reference for synaptic version 5.0.0}
 \SynapticKeywords{LaTeX3, architecture, l3build, regression testing}
 
 \begin{synabstract}
@@ -65,7 +64,7 @@ the modules that consume them.
   \texttt{synaptic-base.sty} & core & engine/class checks, keys, dispatch, setup \\
   \texttt{synaptic-lang-*.def} & data & bilingual label constants \\
   \texttt{synaptic-color.sty} & core & theme registry, semantic tokens, delivery \\
-  \texttt{synaptic-fonts.sty} & core & font bundles, auto selection, CJK fonts \\
+  \texttt{synaptic-fonts.sty} & core & fixed Latin and CJK font stack \\
   \texttt{synaptic-layout.sty} & core & geometry, typography, headings, numbering \\
   \texttt{synaptic-theorem.sty} & core & theorem styles, environments, proofs \\
   \texttt{synaptic-title.sty} & core & metadata model and four title renderers \\
@@ -90,7 +89,7 @@ the modules that consume them.
 \section{Configuration lifecycle}
 
 The package-level \texttt{synaptic} key family is evaluated before module
-loading. Mode, language, font set, title layout, measure, density, numbering,
+loading. Mode, language, title layout, measure, density, numbering,
 delivery colour mode, theorem style, and binding offset therefore become
 structural invariants. The runtime key family
 exposes only the state that can be applied without reloading packages:
@@ -107,9 +106,8 @@ The following properties are deliberately asserted by the implementation and
 protected by the regression suite.
 
 \begin{itemize}
-  \item \textbf{Deterministic typography.} Font auto-selection and theme
-    derivation never depend on the machine beyond installed fonts; line
-    spacing, measure, and heading sizes are explicit.
+  \item \textbf{Deterministic typography.} A fixed font stack and explicit
+    spacing, measure, and heading sizes prevent machine-dependent redesigns.
   \item \textbf{No global bad-box suppression.} Emergencystretch and tolerance
     are tuned; overfull and underfull warnings remain visible for the author.
   \item \textbf{No forced paper size or page-number reset.} Geometry follows
@@ -144,15 +142,13 @@ lowercase slugs, definitions are immutable, and activation is explicit.
 
 \subsection{Font selection}
 
-Font discovery is implemented entirely with \verb|\IfFontExistsTF|. Each
-candidate is a complete roman/sans/mono/math bundle; auto selection never picks
-a family whose companions are missing. The fixed priority is XCharter,
-Libertinus, STIX Two, then Latin Modern. An explicit incomplete choice emits a
-package error with the missing bundle requirements.
-
-For \texttt{lang=zh}, ctex is loaded without a preset font scheme. Noto CJK SC
-is preferred and Fandol is the TeX Live fallback. Synthetic weight/slant is
-limited to faces for which the preferred family has no native counterpart.
+Font discovery only validates the documented fixed stack. Latin text and
+mathematics use Libertinus Serif, Sans, Mono, and Math; the bold mathematics
+version is a deterministic synthetic weight of the same Libertinus Math face.
+For \texttt{lang=zh},
+ctex is loaded without a preset font scheme; Source Han Serif/Sans CN provide
+Chinese text and LXGW WenKai provides Chinese emphasis. Missing fonts are
+package errors rather than fallback triggers.
 
 \subsection{Layout and document structure}
 
@@ -246,8 +242,8 @@ unnamespaced names are errors.
 \begin{itemize}
   \item Add labels in a new \texttt{synaptic-lang-*.def} file, then extend the
     language key and definition-file dispatch.
-  \item Add a complete font predicate, setter, explicit dispatch branch, and a
-    deliberate location in the auto-selection chain.
+  \item Treat a font-stack change as an intentional design and dependency
+    migration; update validation, both manuals, and representative documents.
   \item Add modes in the base key family, layout dispatch, and mode-module
     loader. State the required KOMA class capability and test it.
   \item Build visual extensions from semantic colour tokens rather than fixed

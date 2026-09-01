@@ -1,6 +1,6 @@
 \input regression-test.tex
 \documentclass[11pt]{scrartcl}
-\usepackage[mode=journal,theme=forest,fontset=lm,color-mode=print]{synaptic}
+\usepackage[mode=journal,theme=forest,color-mode=print]{synaptic}
 
 \SynapticTitle{Print Delivery Regression}
 \SynapticAuthor{Test Author}

@@ -5,7 +5,6 @@
   lang=zh,
   mode=journal,
   theme=graphite,
-  fontset=lm,
   toc=true,
   toc-layout=page
 ]{synaptic}
@@ -15,11 +14,11 @@
 
 \SynapticHeader{synaptic 技术参考}
 \SynapticSubHeader{架构、不变量与发布流程}
-\SynapticPreprint{v4.0.0}
+\SynapticPreprint{v5.0.0}
 \SynapticTitle{synaptic 技术参考}
 \SynapticAuthor{synaptic 项目}
 \SynapticAffiliation{开源 LaTeX 社区}
-\SynapticSubject{synaptic 4.0.0 技术参考}
+\SynapticSubject{synaptic 5.0.0 技术参考}
 \SynapticKeywords{LaTeX3, 架构, l3build, 回归测试}
 
 \begin{synabstract}
@@ -62,7 +61,7 @@ synaptic.sty
   \texttt{synaptic-base.sty} & 核心 & 引擎/文档类检查、键系统、分发 \\
   \texttt{synaptic-lang-*.def} & 数据 & 双语标签常量 \\
   \texttt{synaptic-color.sty} & 核心 & 主题登记、语义令牌、交付模式 \\
-  \texttt{synaptic-fonts.sty} & 核心 & 字体组合、自动选择、CJK 字体 \\
+  \texttt{synaptic-fonts.sty} & 核心 & 固定的西文与中文字体栈 \\
   \texttt{synaptic-layout.sty} & 核心 & 页面几何、排版、标题、编号 \\
   \texttt{synaptic-theorem.sty} & 核心 & 定理样式、环境、证明 \\
   \texttt{synaptic-title.sty} & 核心 & 元数据模型与四种标题渲染器 \\
@@ -86,7 +85,7 @@ synaptic.sty
 
 \section{配置生命周期}
 
-宏包级 \texttt{synaptic} 键系统在模块加载前执行。模式、语言、字体组、标题布局、
+宏包级 \texttt{synaptic} 键系统在模块加载前执行。模式、语言、标题布局、
 版心尺度、密度、编号、输出颜色模式、定理样式和装订偏移因此成为结构不变量。
 运行时键系统只暴露无需重载宏包就能应用的
 \texttt{theme}、\texttt{toc} 和 \texttt{toc-layout}。运行时请求中的结构键与未知键
@@ -100,8 +99,8 @@ synaptic.sty
 以下性质由实现有意保证，并由回归套件守护。
 
 \begin{itemize}
-  \item \textbf{确定性排版}。字体自动选择与主题派生只依赖已安装字体；行距、
-    版心与标题尺寸全部显式。
+  \item \textbf{确定性排版}。固定字体栈，行距、版心与标题尺寸全部显式，
+    不因机器上的额外字体而改变设计。
   \item \textbf{不全局屏蔽坏盒子}。emergencystretch 与 tolerance 经过调校，
     溢出与欠满警告保留给作者。
   \item \textbf{不强制纸张、不重置页码}。几何布局跟随文档类；期刊标题不会
@@ -133,12 +132,10 @@ synaptic.sty
 
 \subsection{字体选择}
 
-字体发现完全由 \verb|\IfFontExistsTF| 实现。每个候选项都是完整的衬线/无衬线/等宽/数学
-组合；自动选择不会启用缺少配套字体的家族。固定优先级为 XCharter、Libertinus、
-STIX Two、Latin Modern。显式选择不完整字体组时，报错会列出必需字体。
-
-\texttt{lang=zh} 会以无预设字体方案加载 ctex。Noto CJK SC 优先，Fandol 作为 TeX Live
-后备。仅在优先字体没有原生字形时，才使用受控的伪粗体或伪斜体。
+字体探测只负责校验固定字体栈：西文正文与数学使用 Libertinus Serif、Sans、Mono
+和 Math；其粗体数学版本由同一 Libertinus Math 字面确定性合成。\texttt{lang=zh}
+以无预设字体方案加载 ctex，中文使用思源宋体/黑体 CN，
+中文强调使用霞鹜文楷。缺少字体直接报错，不触发另一套视觉设计。
 
 \subsection{版式与文档结构}
 

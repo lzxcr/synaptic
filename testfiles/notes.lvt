@@ -1,6 +1,6 @@
 \input regression-test.tex
 \documentclass[10pt,twocolumn]{scrartcl}
-\usepackage[mode=notes,theme=graphite,fontset=lm,density=compact]{synaptic}
+\usepackage[mode=notes,theme=graphite,density=compact]{synaptic}
 
 \SynapticTitle{Standard Metadata Notes}
 \SynapticAuthor{Test Student}

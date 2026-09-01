@@ -1,6 +1,6 @@
 \input regression-test.tex
 \documentclass[11pt]{scrartcl}
-\usepackage[mode=journal,theme=ocean,fontset=lm]{synaptic}
+\usepackage[mode=journal,theme=ocean]{synaptic}
 
 \SynapticTitle{Theorem Boxes Regression}
 \SynapticAuthor[1]{Test Author}

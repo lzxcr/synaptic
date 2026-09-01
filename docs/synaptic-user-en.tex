@@ -5,7 +5,6 @@
   lang=en,
   mode=journal,
   theme=ocean,
-  fontset=lm,
   toc=true,
   toc-layout=page
 ]{synaptic}
@@ -16,12 +15,12 @@
 \SynapticNewTheorem[remark]{synobservation}{Observation}
 \SynapticHeader{Synaptic User Manual}
 \SynapticSubHeader{Reliable academic typesetting with LuaLaTeX}
-\SynapticPreprint{v4.0.0}
+\SynapticPreprint{v5.0.0}
 \SynapticTitle{The synaptic Package: User Manual}
 \SynapticAuthor{synaptic project}
 \SynapticAffiliation{Open-source LaTeX community}
 \SynapticEmail{synaptic@example.com}
-\SynapticSubject{User manual for synaptic version 4.0.0}
+\SynapticSubject{User manual for synaptic version 5.0.0}
 \SynapticKeywords{synaptic, LaTeX3, LuaLaTeX, academic typesetting}
 
 \begin{synabstract}
@@ -90,8 +89,10 @@ directly into the same structure.
   \item A recent TeX distribution with \texttt{expl3}, \texttt{fontspec},
     \texttt{unicode-math}, \texttt{geometry}, \texttt{microtype},
     \texttt{thmtools}, and the other standard dependencies.
-  \item \texttt{tcolorbox} and PGF for teaching and notes cards; \texttt{ctex}
-    and a CJK font for \texttt{lang=zh}.
+  \item Libertinus Serif, Sans, Mono, and Math as system fonts.
+  \item \texttt{tcolorbox} and PGF for teaching and notes cards. For
+    \texttt{lang=zh}, install \texttt{ctex}, Source Han Serif/Sans CN, and
+    LXGW WenKai.
 \end{itemize}
 
 \section{Configuration}
@@ -103,7 +104,6 @@ directly into the same structure.
   \texttt{mode} & journal & journal, book, lecture, or notes \\
   \texttt{theme} & ocean & ocean, graphite, forest, midnight, or paper \\
   \texttt{lang} & en & en or zh; selects labels and CJK support \\
-  \texttt{fontset} & auto & auto, xcharter, libertinus, stix2, or lm \\
   \texttt{toc} & false & whether the title workflow prints a TOC \\
   \texttt{toc-layout} & top & top, inline, or page \\
   \texttt{title-layout} & auto & inline, compact, page, sequence, or mode default \\
@@ -123,7 +123,7 @@ settings:
 \SynapticSetup{theme=paper,toc=false,toc-layout=page}
 \end{verbatim}
 
-Mode, language, font, and load-time typography options are frozen after package
+Mode, language, and load-time typography options are frozen after package
 loading. Attempts to change them through \texttt{\string\SynapticSetup} raise an
 error instead of producing a half-reconfigured document.
 
@@ -158,11 +158,12 @@ supports class-level two-column composition with balanced final columns.
 
 \subsection{Fonts}
 
-The \texttt{auto} setting chooses the first \emph{complete} installed bundle:
-XCharter, Libertinus, STIX Two, then Latin Modern. An explicit choice reports a
-clear error if a required companion font is absent. Chinese documents prefer
-Noto Serif/Sans CJK SC and fall back to the Fandol fonts distributed with TeX
-Live.
+Synaptic deliberately uses one stack on every machine: Libertinus Serif,
+Sans, Mono, and Math for Latin text and mathematics. Because Libertinus Math
+has no separate bold face, bold mathematics uses a deterministic synthetic
+weight of the same design. Source Han Serif/Sans CN
+for Simplified Chinese; and LXGW WenKai for emphasized Chinese text. Missing
+fonts are configuration errors, so typography never changes silently.
 
 \section{The typographic system}
 
@@ -344,8 +345,12 @@ derive from the active theme:
   \bottomrule
 \end{tabularx}}
 
-Lecture mode adds teaching-card environments: \texttt{synlearninggoals},
-\texttt{synlecturesummary}, and the course metadata commands described above.
+Lecture mode includes two teaching cards:
+\begin{itemize}
+  \item \texttt{synlearninggoals} for the goals of a session;
+  \item \texttt{synlecturesummary} for its closing summary.
+\end{itemize}
+The course metadata commands described above complete the lecture workflow.
 Notes mode provides \texttt{synkeyidea}, \texttt{synquestion},
 \texttt{syntodo}, and \texttt{synsummary}.
 
@@ -370,15 +375,14 @@ a section in other modes. Its starred form suppresses the TOC entry.
   \item \textbf{``mode=book requires a chapter-based class''} --- use
     \texttt{scrbook} (or another KOMA class defining \texttt{chapter} and
     \texttt{frontmatter}).
-  \item \textbf{``Incomplete XCharter/Libertinus/STIX Two font bundle''} --- the
-    explicit \texttt{fontset} is missing a companion font. Install the bundle,
-    or use \texttt{fontset=auto} to fall back automatically.
+  \item \textbf{``Required font ... not found''} --- install the documented
+    system font packages; Synaptic does not substitute a different design.
   \item \textbf{``Options frozen after loading''} --- \texttt{mode},
-    \texttt{lang}, \texttt{fontset}, and typography keys are structural.
+    \texttt{lang}, and typography keys are structural.
     Re-select them in \verb|\usepackage|; runtime changes via
     \verb|\SynapticSetup| are errors.
-  \item \textbf{No CJK font found} --- install Noto CJK SC or the Fandol fonts
-    used as the TeX Live fallback.
+  \item \textbf{No CJK font found} --- install Source Han Serif/Sans CN and
+    LXGW WenKai.
   \item \textbf{``Document title is empty''} --- set
     \verb|\SynapticTitle| before calling \verb|\SynapticMakeTitle|.
   \item \textbf{Paper size unwanted} --- the package never overrides the class

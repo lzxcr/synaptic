@@ -1,6 +1,6 @@
 \input regression-test.tex
 \documentclass[11pt]{scrartcl}
-\usepackage[mode=notes,lang=zh,fontset=lm]{synaptic}
+\usepackage[mode=notes,lang=zh]{synaptic}
 \SynapticTitle{中文笔记回归测试}
 \SynapticAuthor{测试作者}
 \SynapticDate{第三周}

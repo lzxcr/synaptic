@@ -24,7 +24,7 @@ Then compile a KOMA-Script document with LuaLaTeX:
 
 ```latex
 \documentclass[11pt]{scrartcl}
-\usepackage[mode=journal,theme=ocean,fontset=auto]{synaptic}
+\usepackage[mode=journal,theme=ocean]{synaptic}
 
 \SynapticTitle{A Clear Academic Article}
 \SynapticAuthor[1]{Ada Author}
@@ -48,9 +48,10 @@ Ready-to-compile documents for every mode live in [`examples/`](examples/).
 - LuaLaTeX; pdfLaTeX and XeLaTeX are rejected.
 - A KOMA-Script class. Use `scrbook` for `mode=book`; the other modes
   normally use `scrartcl` or `scrreprt`.
+- The Libertinus Serif, Sans, Mono, and Math system fonts.
 - A recent TeX distribution containing `expl3`, `fontspec`, `unicode-math`,
   `geometry`, `microtype`, `thmtools`, `tcolorbox`, and PGF.
-- `ctex` and either Noto CJK SC or Fandol for `lang=zh`.
+- For `lang=zh`: `ctex`, Source Han Serif/Sans CN, and LXGW WenKai.
 
 The package respects the paper size selected by the class and never forces A4.
 
@@ -61,7 +62,6 @@ The package respects the paper size selected by the class and never forces A4.
 | `mode` | `journal` | `journal`, `book`, `lecture`, `notes` | No |
 | `theme` | `ocean` | `ocean`, `graphite`, `forest`, `midnight`, `paper` | Yes |
 | `lang` | `en` | `en`, `zh` | No |
-| `fontset` | `auto` | `auto`, `xcharter`, `libertinus`, `stix2`, `lm` | No |
 | `toc` | `false` | Boolean | Yes |
 | `toc-layout` | `top` | `top`, `inline`, `page` | Yes |
 | `title-layout` | `auto` | `auto`, `inline`, `compact`, `page`, `sequence` | No |
@@ -90,18 +90,15 @@ configuration mistakes are never silently ignored.
 | `lecture` | `scrartcl` / `scrreprt` | Course masthead and teaching cards |
 | `notes` | `scrartcl` | Compact masthead and knowledge cards |
 
-### Font sets
+### Typography
 
-`auto` selects the first complete installed bundle in this order: XCharter,
-Libertinus, STIX Two, then Latin Modern. Explicit font-set requests fail when
-any required companion is missing.
+Synaptic uses one deterministic font stack so a document cannot silently
+change appearance between machines.
 
-| Set | Roman | Sans | Mono | Math |
+| Script | Roman | Sans | Mono | Math / emphasis |
 |---|---|---|---|---|
-| `xcharter` | XCharter | Cabin | Inconsolatazi4 | XCharter Math |
-| `libertinus` | Libertinus Serif | Libertinus Sans | Libertinus Mono | Libertinus Math |
-| `stix2` | STIX Two Text | TeX Gyre Heros | Latin Modern Mono | STIX Two Math |
-| `lm` | Latin Modern Roman | Latin Modern Sans | Latin Modern Mono | Latin Modern Math |
+| Latin | Libertinus Serif | Libertinus Sans | Libertinus Mono | Libertinus Math |
+| Simplified Chinese | Source Han Serif CN | Source Han Sans CN | Source Han Sans CN | LXGW WenKai emphasis |
 
 ## Public API
 

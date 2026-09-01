@@ -5,7 +5,6 @@
   lang=zh,
   mode=journal,
   theme=ocean,
-  fontset=lm,
   toc=true,
   toc-layout=page
 ]{synaptic}
@@ -16,12 +15,12 @@
 \SynapticNewTheorem[remark]{synobservation}{观察}
 \SynapticHeader{synaptic 用户手册}
 \SynapticSubHeader{面向 LuaLaTeX 的稳定学术排版}
-\SynapticPreprint{v4.0.0}
+\SynapticPreprint{v5.0.0}
 \SynapticTitle{synaptic 宏包用户手册}
 \SynapticAuthor{synaptic 项目}
 \SynapticAffiliation{开源 LaTeX 社区}
 \SynapticEmail{synaptic@example.com}
-\SynapticSubject{synaptic 4.0.0 用户手册}
+\SynapticSubject{synaptic 5.0.0 用户手册}
 \SynapticKeywords{synaptic, LaTeX3, LuaLaTeX, 学术排版}
 
 \begin{synabstract}
@@ -86,8 +85,9 @@ l3build ctan        # 生成 TDS/CTAN 压缩包
   \item 较新的 TeX 发行版，包含 \texttt{expl3}、\texttt{fontspec}、
     \texttt{unicode-math}、\texttt{geometry}、\texttt{microtype}、
     \texttt{thmtools} 等标准依赖。
+  \item 系统中安装 Libertinus Serif、Sans、Mono 与 Math 字体。
   \item 教学与笔记卡片需要 \texttt{tcolorbox} 与 PGF；\texttt{lang=zh}
-    需要 \texttt{ctex} 与中文字体。
+    还需要 \texttt{ctex}、思源宋体/黑体 CN 与霞鹜文楷。
 \end{itemize}
 
 \section{配置}
@@ -99,7 +99,6 @@ l3build ctan        # 生成 TDS/CTAN 压缩包
   \texttt{mode} & journal & journal、book、lecture 或 notes \\
   \texttt{theme} & ocean & ocean、graphite、forest、midnight 或 paper \\
   \texttt{lang} & en & en 或 zh，决定标签语言与中文支持 \\
-  \texttt{fontset} & auto & auto、xcharter、libertinus、stix2 或 lm \\
   \texttt{toc} & false & 标题流程是否输出目录 \\
   \texttt{toc-layout} & top & top、inline 或 page \\
   \texttt{title-layout} & auto & inline、compact、page、sequence 或模式默认值 \\
@@ -118,7 +117,7 @@ l3build ctan        # 生成 TDS/CTAN 压缩包
 \SynapticSetup{theme=paper,toc=false,toc-layout=page}
 \end{verbatim}
 
-模式、语言、字体与其他加载期排版选项会被冻结。运行时通过
+模式、语言与其他加载期排版选项会被冻结。运行时通过
 \texttt{\string\SynapticSetup} 修改这些键会直接报错，而不是留下只完成一半的配置。
 
 \subsection{模式}
@@ -148,9 +147,10 @@ l3build ctan        # 生成 TDS/CTAN 压缩包
 
 \subsection{字体}
 
-\texttt{auto} 依次选择第一套完整安装的组合：XCharter、Libertinus、STIX Two、
-Latin Modern。显式选择字体组时，如果缺少必要的配套字体，宏包会清晰报错。
-中文优先使用 Noto CJK SC，并以 TeX Live 自带的 Fandol 作为后备。
+Synaptic 在所有机器上固定使用同一套字体：西文正文与数学使用 Libertinus Serif、
+Sans、Mono 和 Math；Libertinus Math 没有独立粗体，粗体数学由同一字面确定性合成；
+简体中文使用思源宋体/黑体 CN；中文强调使用霞鹜文楷。
+缺少字体会直接报配置错误，绝不静默切换设计。
 
 \section{排版系统}
 
@@ -239,8 +239,8 @@ PDF 字符串只进行一次 Unicode 安全转换。
 \section{陈述与数学}
 
 内置 \texttt{syntheorem}、\texttt{synlemma}、\texttt{synproposition}、
-\texttt{syndefinition}、\texttt{syncorollary}、\texttt{synaxiom}、\texttt{synconjecture}、
-\texttt{synclaim}、\texttt{synproperty}、\texttt{syncriterion}、\texttt{synconvention}、
+\texttt{syndefinition}、\texttt{syncorollary}、\texttt{synaxiom}、\texttt{synconjecture}、\linebreak
+\texttt{synclaim}、\texttt{synproperty}、\texttt{syncriterion}、\texttt{synconvention}、\linebreak
 \texttt{synproblem}、\texttt{synsolution}、\texttt{synexample}、\texttt{synexercise}、
 \texttt{synremark}、\texttt{synnote} 与 \texttt{synwarning} 共享一个计数器。书籍默认按
 章编号，短文档默认按节编号。定义正文使用正体；中文命题类正文保持正体，避免
@@ -312,10 +312,15 @@ PDF 字符串只进行一次 Unicode 安全转换。
 
 \section{书籍流程与致谢}
 
-书籍中可使用 \DocCmd{SynapticFrontMatter}、\DocCmd{SynapticMainMatter} 和
-\DocCmd{SynapticBackMatter}，以及目录、图表目录、附录、章副标题与题词辅助命令。
-notes 模式提供 \texttt{synkeyidea}、\texttt{synquestion}、\texttt{syntodo} 和
-\texttt{synsummary}，并兼容文档类的双栏布局。\DocCmd{SynapticAcknowledgments} 在书籍模式中生成章，
+书籍结构由三个命令明确划分：
+\begin{itemize}
+  \item \DocCmd{SynapticFrontMatter} 进入前置部分；
+  \item \DocCmd{SynapticMainMatter} 进入正文；
+  \item \DocCmd{SynapticBackMatter} 进入后置部分。
+\end{itemize}
+另有目录、图表目录、附录、章副标题与题词辅助命令。notes 模式兼容文档类的
+双栏布局，并提供 \texttt{synkeyidea}、\texttt{synquestion}、\texttt{syntodo} 和
+\texttt{synsummary}。\DocCmd{SynapticAcknowledgments} 在书籍模式中生成章，
 其他模式中生成节；带星号的形式不加入目录。
 
 \section{常见问题}
@@ -328,13 +333,12 @@ notes 模式提供 \texttt{synkeyidea}、\texttt{synquestion}、\texttt{syntodo}
   \item \textbf{``mode=book requires a chapter-based class''} --- 请使用
     \texttt{scrbook}（或其他定义了 \texttt{chapter} 与 \texttt{frontmatter}
     的 KOMA 文档类）。
-  \item \textbf{``Incomplete ... font bundle''} --- 显式指定的 \texttt{fontset}
-    缺少配套字体。请安装完整组合，或改用 \texttt{fontset=auto} 自动回退。
+  \item \textbf{``Required font ... not found''} --- 请安装文档列出的系统字体；
+    Synaptic 不会换用另一套设计。
   \item \textbf{选项在加载后冻结} --- \texttt{mode}、\texttt{lang}、
-    \texttt{fontset} 等为结构性选项，请在 \verb|\usepackage| 中设定；
+    其他排版键为结构性选项，请在 \verb|\usepackage| 中设定；
     通过 \verb|\SynapticSetup| 修改会直接报错。
-  \item \textbf{未找到中文字体} --- 请安装 Noto CJK SC 或 TeX Live 自带的
-    Fandol 字体。
+  \item \textbf{未找到中文字体} --- 请安装思源宋体/黑体 CN 与霞鹜文楷。
   \item \textbf{``Document title is empty''} --- 请在
     \verb|\SynapticMakeTitle| 前设置 \verb|\SynapticTitle|。
   \item \textbf{纸张尺寸不符} --- 宏包不会覆盖文档类的纸张设定，请在文档类

@@ -1,6 +1,6 @@
 \input regression-test.tex
 \documentclass[11pt,twoside]{scrbook}
-\usepackage[mode=book,theme=midnight,fontset=lm,toc=false]{synaptic}
+\usepackage[mode=book,theme=midnight,toc=false]{synaptic}
 
 \SynapticTitle{A Complete Book Workflow}
 \SynapticHalfTitle{Complete Book Workflow}
