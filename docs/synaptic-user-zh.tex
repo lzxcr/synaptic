@@ -15,17 +15,17 @@
 \SynapticNewTheorem[remark]{synobservation}{观察}
 \SynapticHeader{synaptic 用户手册}
 \SynapticSubHeader{面向 LuaLaTeX 的稳定学术排版}
-\SynapticPreprint{v5.0.0}
+\SynapticPreprint{v5.2.0}
 \SynapticTitle{synaptic 宏包用户手册}
 \SynapticAuthor{synaptic 项目}
 \SynapticAffiliation{开源 LaTeX 社区}
 \SynapticEmail{synaptic@example.com}
-\SynapticSubject{synaptic 5.0.0 用户手册}
+\SynapticSubject{synaptic 5.2.0 用户手册}
 \SynapticKeywords{synaptic, LaTeX3, LuaLaTeX, 学术排版}
 
 \begin{synabstract}
   \textbf{synaptic} 是一套模块化 LaTeX3 学术文档设计系统，适用于期刊
-  论文、书籍、讲义与笔记。本手册介绍它的安装方式、环境要求、安全配置
+  论文、书籍、讲义、笔记与 Beamer 演示文稿。本手册介绍它的安装方式、环境要求、安全配置
   模型、排版系统、元数据 API、定理体系、主题与自定义工具以及各模式功能。
 \end{synabstract}
 
@@ -34,8 +34,8 @@
 
 \section{快速开始}
 
-宏包要求 LuaLaTeX 和 KOMA-Script 文档类。宏包已安装到 TeX 目录树时，
-文档只需：
+宏包要求 LuaLaTeX。纸面文档模式使用 KOMA-Script 文档类，演示模式使用
+Beamer 文档类。宏包已安装到 TeX 目录树时，期刊文档只需：
 
 \begin{verbatim}
 \documentclass{scrartcl}
@@ -51,6 +51,21 @@
 \end{verbatim}
 
 书籍模式应使用 \texttt{scrbook}。纸张尺寸由文档类决定，synaptic 不会强制 A4。
+
+宽屏演示文稿需同时选择 Beamer 文档类与对应的 Synaptic 模式：
+
+\begin{verbatim}
+\documentclass[aspectratio=169]{beamer}
+\usepackage[mode=beamer,theme=midnight,numbering=none]{synaptic}
+\SynapticTitle{简洁的演示文稿}
+\SynapticInstructor{主讲人}
+\begin{document}
+\SynapticMakeTitle
+\section{第一个观点}
+\SynapticSectionFrame
+\begin{frame}{一页聚焦内容}正文。\end{frame}
+\end{document}
+\end{verbatim}
 
 \subsection{不安装直接使用仓库副本}
 
@@ -80,8 +95,8 @@ l3build ctan        # 生成 TDS/CTAN 压缩包
 
 \begin{itemize}
   \item LuaLaTeX；pdfLaTeX 与 XeLaTeX 会被明确拒绝。
-  \item KOMA-Script 文档类（\texttt{scrartcl}、\texttt{scrreprt} 或
-    \texttt{scrbook}）。
+  \item 四种纸面模式使用 KOMA-Script 文档类（\texttt{scrartcl}、\texttt{scrreprt}
+    或 \texttt{scrbook}）；\texttt{mode=beamer} 使用 \texttt{beamer}。
   \item 较新的 TeX 发行版，包含 \texttt{expl3}、\texttt{fontspec}、
     \texttt{unicode-math}、\texttt{geometry}、\texttt{microtype}、
     \texttt{thmtools} 等标准依赖。
@@ -96,8 +111,9 @@ l3build ctan        # 生成 TDS/CTAN 压缩包
   \toprule
   \textbf{键} & \textbf{默认值} & \textbf{可选值与作用} \\
   \midrule
-  \texttt{mode} & journal & journal、book、lecture 或 notes \\
+  \texttt{mode} & journal & journal、book、lecture、notes 或 beamer \\
   \texttt{theme} & ocean & ocean、graphite、forest、midnight 或 paper \\
+  \texttt{background} & white & 任意 xcolor 颜色表达式，设置页面背景色 \\
   \texttt{lang} & en & en 或 zh，决定标签语言与中文支持 \\
   \texttt{toc} & false & 标题流程是否输出目录 \\
   \texttt{toc-layout} & top & top、inline 或 page \\
@@ -111,10 +127,11 @@ l3build ctan        # 生成 TDS/CTAN 压缩包
   \bottomrule
 \end{tabularx}}
 
-仅 \texttt{theme}、\texttt{toc} 和 \texttt{toc-layout} 可在加载后安全修改：
+仅 \texttt{theme}、\texttt{background}、\texttt{toc} 和 \texttt{toc-layout}
+可在加载后安全修改：
 
 \begin{verbatim}
-\SynapticSetup{theme=paper,toc=false,toc-layout=page}
+\SynapticSetup{theme=paper,background=gray!20,toc=false}
 \end{verbatim}
 
 模式、语言与其他加载期排版选项会被冻结。运行时通过
@@ -130,6 +147,7 @@ l3build ctan        # 生成 TDS/CTAN 压缩包
   book & scrbook & 书籍扉页、篇章、镜像导航与前后文 \\
   lecture & scrartcl/scrreprt & 课程信息条与语义教学系统 \\
   notes & scrartcl & 紧凑信息条与轻量知识卡 \\
+  beamer & beamer & 投影优先帧、目录/章节过渡页与进度导航 \\
   \bottomrule
 \end{tabularx}}
 
@@ -144,6 +162,15 @@ l3build ctan        # 生成 TDS/CTAN 压缩包
 
 \textbf{notes} 渲染紧凑信息条（可选标签行），支持文档类级双栏排版与末页
 栏平衡。
+
+\textbf{beamer} 渲染面向投影的标题帧、语义帧标题、单层语义卡片，以及带页数
+进度的克制页脚。它复用课程元数据与讲义教学卡片词汇。显式调用
+\DocCmd{SynapticSectionFrame} 才插入章节过渡帧，不会暗中改变演示节奏。
+标准 \DocCmd{titlegraphic} 在标题帧底行右侧排版图形（与标签行同行）；语义陈述
+环境由 tcolorbox 单独成卡，卡内只排标题行，不再嵌套 Beamer 原生 block，
+从而避免双重卡片带来的额外高度与溢出。原生
+\texttt{theorem}、\texttt{definition}、\texttt{example} 环境保持默认
+block 模板。
 
 \subsection{字体}
 
@@ -168,6 +195,21 @@ synaptic 的默认外观是确定的而非装饰性的。以下设计原则贯�
   \bottomrule
 \end{tabularx}}
 
+\subsection{页面背景}
+
+\textbf{background} 以任意 xcolor 颜色表达式选择页面背景色，并可在运行时修改：
+
+\begin{verbatim}
+\usepackage[background=blue!10]{synaptic}
+\SynapticSetup{background=midnight!85!black}
+\end{verbatim}
+
+所有派生令牌都感知当前背景。卡片、边框、发丝线与标题线会与真实页面颜色
+混合，因此浅色染色文档无需改动主题即可保持整体一致。当背景相对亮度低于
+中点时，正文与弱化文字自动切换为浅色墨，发丝线与边框由加深改为提亮，链接
+使用主色的浅色变体。Beamer 模式的帧背景画布遵循同一设置，深色演示无需
+额外配置。以 \texttt{background=white} 恢复默认。
+
 \subsection{密度与栏宽}
 
 \textbf{density} 分三档调节行距：\texttt{compact} 适合密集资料汇编，
@@ -179,17 +221,20 @@ synaptic 的默认外观是确定的而非装饰性的。以下设计原则贯�
 \subsection{标题构成}
 
 \textbf{title-layout} 决定各模式标题区的渲染方式。\texttt{auto} 解析为
-journal 的 \texttt{inline}、book 的 \texttt{sequence} 以及 lecture 与 notes 的
-\texttt{compact}。\texttt{page} 生成整页标题；\texttt{inline} 强制第一页
+journal 的 \texttt{inline}、book 的 \texttt{sequence}、lecture 与 notes 的
+\texttt{compact}，以及 beamer 的 \texttt{page}。\texttt{page} 生成整页标题；\texttt{inline} 强制第一页
 内联构成。所有标题渲染器共用一组非对称“连接轨道”：短主色线、强调节点与
 淡色延伸线。书籍将其用于标题页和版权页的建筑性边缘，讲义与笔记则将其与
 紧凑信息带组合，期刊模式保持内联且具有编辑感。
+Beamer 仅接受 \texttt{auto}、\texttt{page} 和 \texttt{compact}；最后一项会缩小元数据较多时的标题尺度。
 
 \subsection{导航}
 
-所有模式在运行页眉下方绘制一条发丝线。发丝线使用独立的装饰性浅色令牌，
+所有纸面模式在运行页眉下方绘制一条发丝线。发丝线使用独立的装饰性浅色令牌，
 使导航保持安静。运行页眉与外侧页码重复微型节点标记；书籍模式还为双面强制空白页
 提供克制的页脚锚点。
+Beamer 在帧标题下方复用同一发丝线，并在页脚底部绘制安全钳制的进度线；首轮编译尚未
+得知总帧数时也不会溢出。
 
 \subsection{标题、目录与图表标题}
 
@@ -207,7 +252,7 @@ journal 的 \texttt{inline}、book 的 \texttt{sequence} 以及 lecture 与 note
 
 \section{标题与 PDF 元数据}
 
-四种模式共享元数据，但采用不同标题渲染器：
+五种模式共享元数据，但采用不同标题渲染器：
 
 \noindent{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l Y@{}}
   \toprule
@@ -235,6 +280,8 @@ journal 支持出版信息、通讯信息与作者注；book 支持半扉页、�
 版权；lecture 支持课程、课程代码、讲次、教师与学期。论文的基金、数据、伦理或
 利益冲突声明可用 \verb|\SynapticStatement{标题}{正文}|，其星号形式不写入目录。
 PDF 字符串只进行一次 Unicode 安全转换。
+Beamer 复用同一组课程字段，并通过文档类原生接口同步标题、作者、主题与关键词的
+PDF 元数据。
 
 \section{陈述与数学}
 
@@ -305,10 +352,18 @@ PDF 字符串只进行一次 Unicode 安全转换。
   \bottomrule
 \end{tabularx}}
 
-讲义模式提供教学卡片环境：\texttt{synlearninggoals} 与
+讲义与 Beamer 模式提供教学卡片环境：\texttt{synlearninggoals} 与
 \texttt{synlecturesummary}，以及上文描述的课程元数据命令。笔记模式提供
 \texttt{synkeyidea}、\texttt{synquestion}、\texttt{syntodo} 与
 \texttt{synsummary}。
+
+\subsection{Beamer 目录与章节流程}
+
+启用 \texttt{toc=true} 时，\texttt{toc-layout=inline} 把紧凑目录置于标题帧，
+\texttt{top} 生成常规编号目录帧，\texttt{page} 生成无页脚、不计数的独立目录帧。
+可使用 \DocCmd{SynapticAgendaFrame}\texttt{[可选标题]} 在中途再次插入目录。正常调用
+\verb|\section{...}| 后，在需要视觉停顿处调用 \DocCmd{SynapticSectionFrame}。
+标题帧、独立目录帧与章节过渡帧均不抬高可见进度计数。
 
 \section{书籍流程与致谢}
 
@@ -328,8 +383,10 @@ PDF 字符串只进行一次 Unicode 安全转换。
 \begin{itemize}
   \item \textbf{``The synaptic package requires LuaLaTeX''} --- 您正在使用
     pdfLaTeX 或 XeLaTeX；其他引擎会被有意拒绝。
-  \item \textbf{``requires a KOMA-Script document class''} --- 请在
+  \item \textbf{``requires a KOMA-Script document class''} --- 纸面模式请在
     \texttt{scrartcl}、\texttt{scrreprt} 或 \texttt{scrbook} 下加载宏包。
+  \item \textbf{Beamer 文档类不匹配} --- 选择 \texttt{mode=beamer} 时，
+    请使用 \texttt{beamer} 文档类。
   \item \textbf{``mode=book requires a chapter-based class''} --- 请使用
     \texttt{scrbook}（或其他定义了 \texttt{chapter} 与 \texttt{frontmatter}
     的 KOMA 文档类）。
@@ -354,6 +411,6 @@ l3build ctan     # 创建经过测试的 TDS/CTAN 压缩包
 \end{verbatim}
 
 \SynapticAcknowledgments*
-项目感谢 LaTeX3、KOMA-Script、fontspec 与 TeX 社区。
+项目感谢 LaTeX3、KOMA-Script、Beamer、fontspec 与 TeX 社区。
 
 \end{document}

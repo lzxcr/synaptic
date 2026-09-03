@@ -1,0 +1,46 @@
+\input regression-test.tex
+\documentclass[aspectratio=169]{beamer}
+\usepackage[
+  mode=beamer,
+  theme=midnight,
+  title-layout=compact,
+  toc=true,
+  toc-layout=inline,
+  numbering=none,
+  measure=wide
+]{synaptic}
+
+\SynapticCourseCode{TEST 401}
+\SynapticCourse{Presentation Design}
+\SynapticTitle{Beamer Regression}
+\SynapticShortTitle{Beamer test}
+\SynapticInstructor{Test Presenter}
+\SynapticSubject{Beamer mode regression test}
+\SynapticTags{beamer, regression}
+\titlegraphic{GRAPHIC}
+\begin{synabstract}A short presentation overview.\end{synabstract}
+
+\begin{document}
+\START
+\ExplSyntaxOn
+\TYPE{mode=\__synaptic_mode:}
+\TYPE{measure=\__synaptic_measure:}
+\TYPE{numbering=\__synaptic_numbering:}
+\TYPE{title-layout=\__synaptic_title_layout:}
+\ExplSyntaxOff
+\SynapticMakeTitle
+\section{Design}
+\SynapticSectionFrame
+\begin{frame}{Beamer components}
+  \begin{synlearninggoals}Test the slide-safe teaching card.\end{synlearninggoals}
+  \begin{syntheorem}Namespaced statements work inside frames.\end{syntheorem}
+  \begin{block}{Native block}Semantic Beamer colours remain available.\end{block}
+\end{frame}
+\SynapticSetup{theme=forest}
+\begin{frame}{Runtime theme}
+  \begin{synlecturesummary}Runtime theme changes reach slide components.\end{synlecturesummary}
+\end{frame}
+\SynapticAgendaFrame[Agenda]
+\TYPE{beamer-title-agenda-navigation-and-cards=ok}
+\END
+\end{document}

@@ -1,0 +1,48 @@
+\input regression-test.tex
+\documentclass[11pt]{scrartcl}
+\usepackage[mode=journal,theme=ocean,background=blue!15]{synaptic}
+
+\SynapticTitle{Background Regression}
+\SynapticAuthor{Test Author}
+
+\begin{document}
+\START
+\ExplSyntaxOn
+\TYPE{background=\__synaptic_background:}
+\bool_if:NTF \g__synaptic_color_bg_dark_bool
+  { \TYPE{background-light=dark} } { \TYPE{background-light=light} }
+\extractcolorspecs{syn-text-dark} \l_tmpa_tl \l_tmpb_tl
+\TYPE{text-dark=\l_tmpa_tl/\l_tmpb_tl}
+\extractcolorspecs{syn-surface} \l_tmpa_tl \l_tmpb_tl
+\TYPE{surface=\l_tmpa_tl/\l_tmpb_tl}
+\ExplSyntaxOff
+\SynapticMakeTitle
+\SynapticSetup{background=blue!70!black}
+\section{Dark}
+\ExplSyntaxOn
+\TYPE{background-dark=\__synaptic_background:}
+\bool_if:NTF \g__synaptic_color_bg_dark_bool
+  { \TYPE{background-dark=dark} } { \TYPE{background-dark=light} }
+\extractcolorspecs{syn-text-dark} \l_tmpa_tl \l_tmpb_tl
+\TYPE{text-dark=\l_tmpa_tl/\l_tmpb_tl}
+\extractcolorspecs{syn-muted-text} \l_tmpa_tl \l_tmpb_tl
+\TYPE{muted-text=\l_tmpa_tl/\l_tmpb_tl}
+\extractcolorspecs{syn-surface} \l_tmpa_tl \l_tmpb_tl
+\TYPE{surface=\l_tmpa_tl/\l_tmpb_tl}
+\extractcolorspecs{syn-rule} \l_tmpa_tl \l_tmpb_tl
+\TYPE{rule=\l_tmpa_tl/\l_tmpb_tl}
+\extractcolorspecs{syn-link} \l_tmpa_tl \l_tmpb_tl
+\TYPE{link=\l_tmpa_tl/\l_tmpb_tl}
+\ExplSyntaxOff
+\begin{syntheorem}A dark-background theorem card.\end{syntheorem}
+\SynapticSetup{background=white}
+\section{Restored}
+\ExplSyntaxOn
+\bool_if:NTF \g__synaptic_color_bg_dark_bool
+  { \TYPE{background-restored=dark} } { \TYPE{background-restored=light} }
+\extractcolorspecs{syn-text-dark} \l_tmpa_tl \l_tmpb_tl
+\TYPE{text-dark=\l_tmpa_tl/\l_tmpb_tl}
+\ExplSyntaxOff
+\TYPE{background-cycling=ok}
+\END
+\end{document}

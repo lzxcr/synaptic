@@ -15,17 +15,17 @@
 \SynapticNewTheorem[remark]{synobservation}{Observation}
 \SynapticHeader{Synaptic User Manual}
 \SynapticSubHeader{Reliable academic typesetting with LuaLaTeX}
-\SynapticPreprint{v5.0.0}
+\SynapticPreprint{v5.2.0}
 \SynapticTitle{The synaptic Package: User Manual}
 \SynapticAuthor{synaptic project}
 \SynapticAffiliation{Open-source LaTeX community}
 \SynapticEmail{synaptic@example.com}
-\SynapticSubject{User manual for synaptic version 5.0.0}
+\SynapticSubject{User manual for synaptic version 5.2.0}
 \SynapticKeywords{synaptic, LaTeX3, LuaLaTeX, academic typesetting}
 
 \begin{synabstract}
   \textbf{synaptic} is a modular LaTeX3 design system for journal articles,
-  books, lecture material, and compact notes. This manual describes its
+  books, lecture material, compact notes, and Beamer presentations. This manual describes its
   installation, requirements, safe configuration model, typographic system,
   metadata API, theorem system, theme and customization tools, and
   mode-specific features.
@@ -36,8 +36,9 @@
 
 \section{Getting started}
 
-The package requires LuaLaTeX and a KOMA-Script class. If the package is
-installed in your TeX tree, a document needs nothing more than:
+The package requires LuaLaTeX. Print-oriented modes use a KOMA-Script class;
+presentation mode uses the Beamer class. If the package is installed in your
+TeX tree, a journal document needs nothing more than:
 
 \begin{verbatim}
 \documentclass{scrartcl}
@@ -54,6 +55,22 @@ Text.
 
 Use \texttt{scrbook} for book mode. The selected class controls the paper size;
 synaptic does not silently force A4.
+
+For a widescreen presentation, select both the Beamer class and Synaptic's
+matching mode:
+
+\begin{verbatim}
+\documentclass[aspectratio=169]{beamer}
+\usepackage[mode=beamer,theme=midnight,numbering=none]{synaptic}
+\SynapticTitle{A Short Presentation}
+\SynapticInstructor{Ada Lecturer}
+\begin{document}
+\SynapticMakeTitle
+\section{First idea}
+\SynapticSectionFrame
+\begin{frame}{A focused frame}Content.\end{frame}
+\end{document}
+\end{verbatim}
 
 \subsection{Using a checkout without installation}
 
@@ -85,7 +102,8 @@ directly into the same structure.
 \begin{itemize}
   \item LuaLaTeX; pdfLaTeX and XeLaTeX are rejected with an explicit error.
   \item A KOMA-Script class (\texttt{scrartcl}, \texttt{scrreprt}, or
-    \texttt{scrbook}).
+    \texttt{scrbook}) for the four print modes, or \texttt{beamer} for
+    \texttt{mode=beamer}.
   \item A recent TeX distribution with \texttt{expl3}, \texttt{fontspec},
     \texttt{unicode-math}, \texttt{geometry}, \texttt{microtype},
     \texttt{thmtools}, and the other standard dependencies.
@@ -101,8 +119,9 @@ directly into the same structure.
   \toprule
   \textbf{Key} & \textbf{Default} & \textbf{Values and purpose} \\
   \midrule
-  \texttt{mode} & journal & journal, book, lecture, or notes \\
+  \texttt{mode} & journal & journal, book, lecture, notes, or beamer \\
   \texttt{theme} & ocean & ocean, graphite, forest, midnight, or paper \\
+  \texttt{background} & white & any xcolor expression for the page colour \\
   \texttt{lang} & en & en or zh; selects labels and CJK support \\
   \texttt{toc} & false & whether the title workflow prints a TOC \\
   \texttt{toc-layout} & top & top, inline, or page \\
@@ -116,11 +135,11 @@ directly into the same structure.
   \bottomrule
 \end{tabularx}}
 
-Only \texttt{theme}, \texttt{toc}, and \texttt{toc-layout} are safe runtime
-settings:
+Only \texttt{theme}, \texttt{background}, \texttt{toc}, and \texttt{toc-layout}
+are safe runtime settings:
 
 \begin{verbatim}
-\SynapticSetup{theme=paper,toc=false,toc-layout=page}
+\SynapticSetup{theme=paper,background=gray!20,toc=false}
 \end{verbatim}
 
 Mode, language, and load-time typography options are frozen after package
@@ -137,6 +156,7 @@ error instead of producing a half-reconfigured document.
   book & scrbook & Book title sequence, parts, chapters, duplex navigation \\
   lecture & scrartcl/scrreprt & Course masthead and semantic teaching system \\
   notes & scrartcl & Compact masthead and lightweight knowledge cards \\
+  beamer & beamer & Projection-first frames, agenda/section slides, progress navigation \\
   \bottomrule
 \end{tabularx}}
 
@@ -155,6 +175,19 @@ system. Learning goals and lecture summaries frame each teaching unit.
 
 \textbf{notes} renders a compact masthead with an optional tag line and
 supports class-level two-column composition with balanced final columns.
+
+\textbf{beamer} renders a projection-first title frame, semantic frame titles,
+single-layer semantic cards, and a restrained footer with frame progress. It
+reuses course metadata and the lecture teaching-card vocabulary. Explicit
+\DocCmd{SynapticSectionFrame} dividers keep section pacing under the author's
+control instead of inserting slides implicitly. The standard
+\DocCmd{titlegraphic} typesets a graphic right-aligned in the bottom row of the
+title frame, on the tag line when tags are present. Namespaced statement
+environments render as one tcolorbox card each, with the amsthm-style head
+line typeset inside the box, so a Beamer block is never nested in the card
+(which previously reproduced the card chrome and added height). Native
+\texttt{theorem}, \texttt{definition}, and \texttt{example} environments keep
+Beamer's default block template.
 
 \subsection{Fonts}
 
@@ -183,6 +216,25 @@ handful of design decisions repeat throughout every mode.
   \bottomrule
 \end{tabularx}}
 
+\subsection{Page background}
+
+\textbf{background} selects the page colour with any xcolor expression and is
+runtime-adjustable:
+
+\begin{verbatim}
+\usepackage[background=blue!10]{synaptic}
+\SynapticSetup{background=midnight!85!black}
+\end{verbatim}
+
+Every derived role knows the active background. Cards, borders, hairlines, and
+title rules blend against the literal page colour, so a light tinted document
+stays coherent without touching the theme. When the relative luminance of the
+background falls below the mid-point, body and muted text flip to light inks,
+rules and borders are lightened instead of darkened, and links use a lighter
+tint of the primary colour. In Beamer mode the frame background canvas follows
+the same setting, so dark presentations are supported without extra setup.
+Restore the default with \texttt{background=white}.
+
 \subsection{Density and measure}
 
 \textbf{density} tunes line spacing in three steps: \texttt{compact} for dense
@@ -197,8 +249,10 @@ symmetry.
 
 \textbf{title-layout} selects how each mode renders its title area. The
 \texttt{auto} value resolves to \texttt{inline} (journal), \texttt{sequence}
-(book), and \texttt{compact} (lecture, notes). \texttt{page} dedicates a
+(book), \texttt{compact} (lecture, notes), and \texttt{page} (beamer). \texttt{page} dedicates a
 full title page and \texttt{inline} forces the first-page composition.
+Beamer accepts \texttt{auto}, \texttt{page}, and \texttt{compact}; the last
+reduces the title scale for metadata-heavy decks.
 All title renderers reuse an asymmetric “synaptic rail”: a short primary rule,
 an accent node, and a quiet continuation line. Book title and verso pages use
 the motif at architectural edges; lecture and notes place it beside compact
@@ -206,10 +260,13 @@ metadata panels, while journal mode keeps the treatment editorial and inline.
 
 \subsection{Navigation}
 
-Every mode draws a hairline beneath its running heads. The hairline uses a
+Every paged mode draws a hairline beneath its running heads. The hairline uses a
 separate, deliberately lighter decorative token so navigation stays quiet.
 Running-head labels and outer folios repeat the small node marker; book mode
 additionally gives forced duplex blank pages a quiet footer anchor.
+Beamer echoes the same hairline beneath each frame title and uses a clamped
+progress rule below its footer, so the first compilation is safe before the
+final frame count is known.
 
 \subsection{Headings, contents, and captions}
 
@@ -233,7 +290,7 @@ decoration never competes with text.
 
 \section{Title and PDF metadata}
 
-All four modes share the metadata model and render it differently:
+All five modes share the metadata model and render it differently:
 
 \noindent{\setlength{\parindent}{0pt}\noindent\begin{tabularx}{\textwidth}{@{}l Y@{}}
   \toprule
@@ -260,6 +317,8 @@ All four modes share the metadata model and render it differently:
 Journal mode accepts publication information, correspondence, and author notes;
 book mode accepts half-title, publisher, edition, ISBN, and copyright fields;
 lecture mode accepts course, code, lecture number, instructor, and semester.
+Beamer consumes the same course fields and synchronizes title, author,
+subject, and keywords with Beamer's native PDF metadata path.
 Use \verb|\SynapticStatement{heading}{body}| for journal funding, data, ethics,
 or conflict statements; the starred form omits its table-of-contents entry.
 PDF metadata receives one Unicode-safe conversion.
@@ -339,13 +398,14 @@ derive from the active theme:
   \texttt{syn-surface} & card background & boxes and surfaces \\
   \texttt{syn-border} & card border & box frames \\
   \texttt{syn-rule} & decorative hairline & separators \\
+  \texttt{syn-bg} & page background & follows the \texttt{background} key \\
   \texttt{syn-danger} & semantic danger & warnings on the red side \\
   \texttt{syn-warning} & semantic warning & warnings on the amber side \\
   \texttt{syn-success} & semantic success & exercises, todo lists \\
   \bottomrule
 \end{tabularx}}
 
-Lecture mode includes two teaching cards:
+Lecture and Beamer modes include two teaching cards:
 \begin{itemize}
   \item \texttt{synlearninggoals} for the goals of a session;
   \item \texttt{synlecturesummary} for its closing summary.
@@ -353,6 +413,16 @@ Lecture mode includes two teaching cards:
 The course metadata commands described above complete the lecture workflow.
 Notes mode provides \texttt{synkeyidea}, \texttt{synquestion},
 \texttt{syntodo}, and \texttt{synsummary}.
+
+\subsection{Beamer agenda and section workflow}
+
+With \texttt{toc=true}, \texttt{toc-layout=inline} places a compact agenda on
+the title frame, \texttt{top} creates a regular numbered agenda frame, and
+\texttt{page} creates a plain unnumbered agenda frame. Use
+\DocCmd{SynapticAgendaFrame}\texttt{[Optional title]} to insert another agenda
+later. After a normal \verb|\section{...}|, call
+\DocCmd{SynapticSectionFrame} when a visual divider is useful. Plain title,
+agenda, and divider frames do not inflate the visible progress count.
 
 \section{Book workflow and acknowledgments}
 
@@ -370,8 +440,10 @@ a section in other modes. Its starred form suppresses the TOC entry.
 \begin{itemize}
   \item \textbf{``The synaptic package requires LuaLaTeX''} --- you are running
     pdfLaTeX or XeLaTeX. Engines other than LuaLaTeX are rejected on purpose.
-  \item \textbf{``requires a KOMA-Script document class''} --- load the package
+  \item \textbf{``requires a KOMA-Script document class''} --- use a KOMA class
     with \texttt{scrartcl}, \texttt{scrreprt}, or \texttt{scrbook}.
+  \item \textbf{Beamer class mismatch} --- use the \texttt{beamer} document
+    class whenever \texttt{mode=beamer} is selected.
   \item \textbf{``mode=book requires a chapter-based class''} --- use
     \texttt{scrbook} (or another KOMA class defining \texttt{chapter} and
     \texttt{frontmatter}).
@@ -398,7 +470,7 @@ l3build ctan     # create tested TDS and CTAN archives
 \end{verbatim}
 
 \SynapticAcknowledgments*
-The project acknowledges the LaTeX3, KOMA-Script, fontspec, and broader TeX
+The project acknowledges the LaTeX3, KOMA-Script, Beamer, fontspec, and broader TeX
 communities.
 
 \end{document}

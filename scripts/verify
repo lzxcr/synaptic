@@ -5,6 +5,7 @@ project_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 cd "$project_dir"
 
 generated_pdfs=(
+  beamer.pdf
   book.pdf
   journal.pdf
   lecture.pdf

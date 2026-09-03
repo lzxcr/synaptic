@@ -14,11 +14,11 @@
 
 \SynapticHeader{Synaptic Technical Reference}
 \SynapticSubHeader{Architecture, invariants, and release workflow}
-\SynapticPreprint{v5.0.0}
+\SynapticPreprint{v5.2.0}
 \SynapticTitle{synaptic Technical Reference}
 \SynapticAuthor{synaptic project}
 \SynapticAffiliation{Open-source LaTeX community}
-\SynapticSubject{Technical reference for synaptic version 5.0.0}
+\SynapticSubject{Technical reference for synaptic version 5.2.0}
 \SynapticKeywords{LaTeX3, architecture, l3build, regression testing}
 
 \begin{synabstract}
@@ -45,7 +45,8 @@ synaptic.sty
           |-- synaptic-journal.sty     journal
           |-- synaptic-book.sty        book
           |-- synaptic-lecture.sty     lecture
-          `-- synaptic-notes.sty       notes
+          |-- synaptic-notes.sty       notes
+          `-- synaptic-beamer.sty      beamer
 \end{verbatim}
 
 The thin shell forwards user options to \texttt{synaptic-base} and provides the
@@ -67,11 +68,12 @@ the modules that consume them.
   \texttt{synaptic-fonts.sty} & core & fixed Latin and CJK font stack \\
   \texttt{synaptic-layout.sty} & core & geometry, typography, headings, numbering \\
   \texttt{synaptic-theorem.sty} & core & theorem styles, environments, proofs \\
-  \texttt{synaptic-title.sty} & core & metadata model and four title renderers \\
+  \texttt{synaptic-title.sty} & core & metadata model and five title renderers \\
   \texttt{synaptic-journal.sty} & mode & journal navigation and statements \\
   \texttt{synaptic-book.sty} & mode & chapter/part style, matter helpers \\
   \texttt{synaptic-lecture.sty} & mode & masthead, teaching cards, navigation \\
   \texttt{synaptic-notes.sty} & mode & notes masthead and knowledge cards \\
+  \texttt{synaptic-beamer.sty} & mode & slide templates, progress, agenda/dividers \\
   \bottomrule
 \end{tabularx}}
 
@@ -83,6 +85,7 @@ the modules that consume them.
   book & chapter-based KOMA class with front matter & book \\
   lecture & KOMA article/report & lecture \\
   notes & KOMA article/report & notes \\
+  beamer & Beamer class & beamer \\
   \bottomrule
 \end{tabularx}}
 
@@ -93,11 +96,14 @@ loading. Mode, language, title layout, measure, density, numbering,
 delivery colour mode, theorem style, and binding offset therefore become
 structural invariants. The runtime key family
 exposes only the state that can be applied without reloading packages:
-\texttt{theme}, \texttt{toc}, and \texttt{toc-layout}. Structural or unknown
-keys in a runtime request are errors; unknown package options are errors too.
+\texttt{theme}, \texttt{background}, \texttt{toc}, and \texttt{toc-layout}.
+Structural or unknown keys in a runtime request are errors; unknown package
+options are errors too.
 
 Book mode is rejected unless both chapter and front-matter interfaces exist.
-LuaLaTeX and KOMA-Script requirements are fatal diagnostics rather than delayed
+The class contract is checked after option parsing: Beamer mode requires the
+Beamer class, while the four print modes require KOMA-Script. LuaLaTeX and
+class requirements are fatal diagnostics rather than delayed
 undefined-control-sequence failures.
 
 \section{Design invariants}
@@ -127,8 +133,11 @@ protected by the regression suite.
 Built-in themes are stored in a global property list. Activating a theme maps
 its primary, secondary, and accent colours to semantic public names and derives
 surface, border, rule, link, readable-muted, decorative-muted, and text tokens.
-Print and mono delivery modes alter derived roles without changing component
-code. Danger, warning, and success
+The \texttt{background} key (any xcolor expression) becomes the \texttt{syn-bg}
+base token; every derived role blends against it, and a relative-luminance
+switch flips text to light inks and lightens decorative rules when the
+background is dark. Print and mono delivery modes alter derived roles without
+changing component code. Danger, warning, and success
 colours remain semantic constants so their meaning does not change with brand
 colour.
 
@@ -159,6 +168,14 @@ correction, outer running heads, and empty duplex blanks. Widow and club penalti
 vertical rhythm, list spacing, line spacing, and paragraph indentation are
 explicit rather than hidden behind global bad-box suppression.
 
+Beamer takes a separate branch: the class retains ownership of the slide
+canvas, while \texttt{measure} maps to symmetric frame margins and
+\texttt{density} maps to presentation leading. KOMA-only geometry, caption,
+list, heading, and TOC declarations are never executed in this branch. The
+mode module installs semantic Beamer colours, a variable-height frame-title
+template, native blocks, list markers, a clamped progress footer, and explicit
+agenda and section-divider frame commands.
+
 KOMA heading fonts and skips are installed in the
 \texttt{begindocument/before} hook, with all numbered levels sharing the sans
 heading family: the primary colour for \texttt{section}, dark for
@@ -180,8 +197,9 @@ theme token.
 Title values are held in global expl3 token lists and sequences because they
 are document-wide state. Authors and their
 affiliation marks use parallel sequences; affiliations and emails are
-repeatable. A common metadata model feeds four renderers: inline journal,
-book title sequence, course masthead, and compact notes masthead. The title
+repeatable. A common metadata model feeds five renderers: inline journal,
+book title sequence, course masthead, compact notes masthead, and a Beamer
+title frame. The title
 command validates a non-empty title and controls optional TOC placement without
 silently resetting the user's page numbering. The namespaced
 \texttt{synabstract} environment captures abstract text; standard
@@ -190,6 +208,10 @@ silently resetting the user's page numbering. The namespaced
 PDF information is passed as source tokens to hyperref. Hyperref performs the
 Unicode PDF-string conversion once; pre-converting and then calling
 \verb|\hypersetup| would double-encode metadata.
+In Beamer mode, the namespaced setters synchronize with the class-native title,
+author, subject, and keyword interfaces before \verb|\begin{document}|; the
+shared late metadata writer is skipped because Beamer freezes those fields at
+document start.
 
 \subsection{Statements}
 
@@ -244,8 +266,9 @@ unnamespaced names are errors.
     language key and definition-file dispatch.
   \item Treat a font-stack change as an intentional design and dependency
     migration; update validation, both manuals, and representative documents.
-  \item Add modes in the base key family, layout dispatch, and mode-module
-    loader. State the required KOMA class capability and test it.
+  \item Add modes in the base key family, class validation, layout dispatch,
+    title/TOC dispatch, and mode-module loader. State and test the required
+    class capability.
   \item Build visual extensions from semantic colour tokens rather than fixed
     RGB values.
   \item Add tests along with every extension; the suite is the guard for the
@@ -266,9 +289,10 @@ The regression suite is organised as follows:
   \toprule
   \textbf{Group} & \textbf{Coverage} \\
   \midrule
-  \texttt{journal}, \texttt{lecture}, \texttt{notes}, \texttt{book} & core
+  \texttt{journal}, \texttt{lecture}, \texttt{notes}, \texttt{book},
+  \texttt{beamer} & core
   mode behaviour, navigation, and defaults \\
-  \texttt{book-zh}, \texttt{lecture-zh}, \texttt{journal-zh},
+  \texttt{book-zh}, \texttt{lecture-zh}, \texttt{journal-zh}, \texttt{beamer-zh},
   \texttt{language-zh} & Chinese labels, CJK fonts, and bilingual layering \\
   \texttt{themes} & cycling all five themes and a custom theme \\
   \texttt{color-mode-print}, \texttt{options} & print and monochrome delivery \\

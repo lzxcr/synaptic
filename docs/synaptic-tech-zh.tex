@@ -14,11 +14,11 @@
 
 \SynapticHeader{synaptic 技术参考}
 \SynapticSubHeader{架构、不变量与发布流程}
-\SynapticPreprint{v5.0.0}
+\SynapticPreprint{v5.2.0}
 \SynapticTitle{synaptic 技术参考}
 \SynapticAuthor{synaptic 项目}
 \SynapticAffiliation{开源 LaTeX 社区}
-\SynapticSubject{synaptic 5.0.0 技术参考}
+\SynapticSubject{synaptic 5.2.0 技术参考}
 \SynapticKeywords{LaTeX3, 架构, l3build, 回归测试}
 
 \begin{synabstract}
@@ -44,7 +44,8 @@ synaptic.sty
           |-- synaptic-journal.sty     journal
           |-- synaptic-book.sty        book
           |-- synaptic-lecture.sty     lecture
-          `-- synaptic-notes.sty       notes
+          |-- synaptic-notes.sty       notes
+          `-- synaptic-beamer.sty      beamer
 \end{verbatim}
 
 薄封装层把用户选项转发给 \texttt{synaptic-base}，并提供带命名空间的致谢命令。
@@ -64,11 +65,12 @@ synaptic.sty
   \texttt{synaptic-fonts.sty} & 核心 & 固定的西文与中文字体栈 \\
   \texttt{synaptic-layout.sty} & 核心 & 页面几何、排版、标题、编号 \\
   \texttt{synaptic-theorem.sty} & 核心 & 定理样式、环境、证明 \\
-  \texttt{synaptic-title.sty} & 核心 & 元数据模型与四种标题渲染器 \\
+  \texttt{synaptic-title.sty} & 核心 & 元数据模型与五种标题渲染器 \\
   \texttt{synaptic-journal.sty} & 模式 & 期刊导航与声明 \\
   \texttt{synaptic-book.sty} & 模式 & 章/部分样式、前后文命令 \\
   \texttt{synaptic-lecture.sty} & 模式 & 信息条、教学卡片、导航 \\
   \texttt{synaptic-notes.sty} & 模式 & 笔记信息条与知识卡 \\
+  \texttt{synaptic-beamer.sty} & 模式 & 幻灯片模板、进度、目录/过渡帧 \\
   \bottomrule
 \end{tabularx}}
 
@@ -80,6 +82,7 @@ synaptic.sty
   book & 含章和前文接口的 KOMA 类 & book \\
   lecture & KOMA 文章/报告类 & lecture \\
   notes & KOMA 文章/报告类 & notes \\
+  beamer & Beamer 文档类 & beamer \\
   \bottomrule
 \end{tabularx}}
 
@@ -88,10 +91,11 @@ synaptic.sty
 宏包级 \texttt{synaptic} 键系统在模块加载前执行。模式、语言、标题布局、
 版心尺度、密度、编号、输出颜色模式、定理样式和装订偏移因此成为结构不变量。
 运行时键系统只暴露无需重载宏包就能应用的
-\texttt{theme}、\texttt{toc} 和 \texttt{toc-layout}。运行时请求中的结构键与未知键
+\texttt{theme}、\texttt{background}、\texttt{toc} 和 \texttt{toc-layout}。运行时请求中的结构键与未知键
 直接报错；宏包选项中的未知键同样报错。
 
-书籍模式要求章和前文接口同时存在。LuaLaTeX 与 KOMA-Script 要求在不满足时立即给出
+书籍模式要求章和前文接口同时存在。文档类契约在选项解析后检查：Beamer 模式要求
+Beamer 文档类，四种纸面模式要求 KOMA-Script。LuaLaTeX 与文档类要求在不满足时立即给出
 致命诊断，而不是延迟到后续的未定义命令。
 
 \section{设计不变量}
@@ -118,9 +122,11 @@ synaptic.sty
 \subsection{颜色令牌}
 
 内置主题登记在全局属性表中。启用主题时，主色、辅色与强调色会映射到公开语义名，
-并派生表面、边框、分隔线、链接、可读弱化文字、装饰浅色与正文颜色。print 与 mono
-输出模式只改变派生角色，不改变组件代码。危险、警告和成功色是稳定的语义常量，不随
-品牌主色改变含义。
+并派生表面、边框、分隔线、链接、可读弱化文字、装饰浅色与正文颜色。页面背景键
+\texttt{background}（任意 xcolor 表达式）成为 \texttt{syn-bg} 基础令牌；所有
+派生角色与它混合，并按相对亮度切换：背景偏暗时正文与弱化文字翻转成浅色墨，
+装饰线由加深改为提亮。print 与 mono 输出模式只改变派生角色，不改变组件代码。
+危险、警告和成功色是稳定的语义常量，不随品牌主色改变含义。
 
 \begin{verbatim}
 \SynapticDefineTheme{名称}{主色}{辅色}[强调色]
@@ -144,6 +150,11 @@ synaptic.sty
 垂直节奏、列表间距、行距与段首缩进都是明确配置，
 不再用全局方式隐藏坏盒子。
 
+Beamer 走独立分支：由文档类保持对幻灯片画布的所有权，\texttt{measure} 映射为对称帧边距，
+\texttt{density} 映射为演示行距。KOMA 专用的几何、图表标题、列表、结构标题与目录声明不会在
+此分支执行。模式模块安装语义 Beamer 颜色、可变高帧标题、原生卡片、列表标记、安全钳制的
+进度页脚，以及显式的目录与章节过渡帧命令。
+
 KOMA 标题字体与间距在 \texttt{begindocument/before} 钩子中安装，所有编号层级共用
 无衬线标题家族：\texttt{section} 用主色，\texttt{subsection} 用深色，
 \texttt{subsubsection} 更小且略微淡化，使层级一目了然。hyperref、bookmark、
@@ -159,12 +170,15 @@ microtype、图表标题标点、列表与模式化公式编号由布局模块�
 
 标题值是贯穿文档的状态，因此保存在 expl3 全局词元表和序列中。作者与机构标记使用
 平行序列，机构与邮箱可重复。
-公共元数据分别驱动期刊内联标题、书籍扉页序列、课程信息条和紧凑笔记信息条。标题命令
+公共元数据分别驱动期刊内联标题、书籍扉页序列、课程信息条、紧凑笔记信息条与 Beamer 标题帧。标题命令
 验证非空标题并控制可选目录位置，不再隐式重置用户页码。带命名空间的
 \texttt{synabstract} 捕获摘要；标准 \texttt{abstract} 与 \verb|\maketitle| 均不修改。
 
 PDF 信息以源词元传给 hyperref，由 hyperref 只执行一次 Unicode PDF 字符串转换。预先
 \verb|\pdfstringdef| 再传给 \verb|\hypersetup| 会导致双重编码，因此已禁止这种路径。
+Beamer 模式中，带命名空间的设置命令会在 \verb|\begin{document}| 前同步到文档类原生的
+标题、作者、主题和关键词接口。由于 Beamer 在文档开始时冻结这些字段，共享的后期元数据写入器会
+在此模式中跳过。
 
 \subsection{陈述}
 
@@ -209,7 +223,8 @@ expl3 的 \texttt{g} 与 \texttt{l} 前缀只描述生命周期，不描述所�
 \begin{itemize}
   \item 在新的 \texttt{synaptic-lang-*.def} 中增加标签，再扩展语言键与定义文件分发。
   \item 新字体组需同时增加完整性谓词、设置函数、显式分支，并明确其在自动链中的位置。
-  \item 新模式需扩展基础键系统、布局分发和模块加载器，并声明、测试必需的 KOMA 能力。
+  \item 新模式需扩展基础键系统、文档类验证、布局分发、标题/目录分发和模块加载器，
+    并声明、测试必需的文档类能力。
   \item 视觉扩展应基于语义颜色令牌，而不是固定 RGB 值。
   \item 每项扩展都应同步增加回归测试；测试套件是上述不变量的守护者。
 \end{itemize}
@@ -226,9 +241,9 @@ expl3 的 \texttt{g} 与 \texttt{l} 前缀只描述生命周期，不描述所�
   \toprule
   \textbf{测试组} & \textbf{覆盖内容} \\
   \midrule
-  \texttt{journal}、\texttt{lecture}、\texttt{notes}、\texttt{book} & 核心模式
+  \texttt{journal}、\texttt{lecture}、\texttt{notes}、\texttt{book}、\texttt{beamer} & 核心模式
   行为、导航与默认值 \\
-  \texttt{book-zh}、\texttt{lecture-zh}、\texttt{journal-zh}、
+  \texttt{book-zh}、\texttt{lecture-zh}、\texttt{journal-zh}、\texttt{beamer-zh}、
   \texttt{language-zh} & 中文标签、CJK 字体与双语层次 \\
   \texttt{themes} & 五种内置主题与自定义主题循环 \\
   \texttt{color-mode-print}、\texttt{options} & 打印与单色交付模式 \\

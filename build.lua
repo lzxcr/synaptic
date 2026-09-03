@@ -11,7 +11,7 @@ typesetfiles  = {
   "synaptic-user-en.tex",
   "synaptic-user-zh.tex",
 }
-typesetdemofiles = {"book.tex", "journal.tex", "lecture.tex", "notes.tex"}
+typesetdemofiles = {"beamer.tex", "book.tex", "journal.tex", "lecture.tex", "notes.tex"}
 demofiles     = {"examples/*.tex"}
 textfiles     = {"README.md", "CHANGELOG.md", "LICENSE"}
 ctanpostdir   = "synaptic"

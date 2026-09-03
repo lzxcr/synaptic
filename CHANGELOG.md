@@ -1,5 +1,78 @@
 # Changelog
 
+## [5.2.0] — 2026-09-02
+
+### Added
+
+- Added the `background` key (any xcolor expression, default `white`) for the
+  page background. It is accepted both in `\usepackage` options and at runtime
+  through `\SynapticSetup`.
+
+### Changed
+
+- Derived colour roles now blend against the literal page background instead
+  of a hard-coded white, so light-tinted documents stay coherent without
+  touching the theme.
+- Added a relative-luminance switch in the colour system: dark backgrounds
+  automatically flip body and muted text to light inks and lighten decorative
+  rules and borders. Beamer frames follow the same background through the
+  frame background canvas.
+- Bumped the documented bundle and extracted modules to version 5.2.0.
+
+### Fixed
+
+- Beamer title kicker now separates the mode word or course code from the
+  course name with a bullet even when `\SynapticCourseCode` is not set;
+  previously `\SynapticCourse{...}` alone printed e.g. “演示文稿课程名”
+  with no separator.
+- Beamer section dividers now typeset the section number in the section-title
+  voice: the muted index and the dark title read as one two-line heading pair
+  instead of a stray small numeral floating above the oversized title.
+- Beamer statement environments no longer produce a double card. Semantic
+  statements are wrapped in a tcolorbox by `synaptic-theorem`, but Beamer's
+  default theorem template opened a second native block inside that box,
+  reproducing the card chrome, adding a full title strip, extra height, and
+  frame overflow. The `synaptic` theorem template detects the surrounding
+  semantic card through the styles and typesets only the amsthm-style head
+  line inside it, so every semantic statement renders as one card. Native
+  `theorem`, `definition`, and `example` environments keep the default block
+  template unchanged.
+
+### Added
+
+- The Beamer title frame now supports the standard `\titlegraphic` command:
+  the graphic is typeset right-aligned in the bottom row of the title frame,
+  next to (or instead of) the tag line. Previously the only way to place a
+  graphic there was to smuggle it into `\SynapticTags` with `\hfill`.
+
+## [5.1.0] — 2026-09-02
+
+### Added
+
+- Added `mode=beamer` for native `beamer` documents, including a responsive
+  title frame, three agenda compositions, explicit section-divider frames,
+  semantic frame and block styling, and quiet frame-count progress navigation.
+- Added `\SynapticAgendaFrame` and `\SynapticSectionFrame`, plus slide-safe
+  `synlearninggoals` and `synlecturesummary` cards shared with the lecture
+  vocabulary.
+- Added a complete 16:9 presentation example and English/Chinese Beamer
+  regression coverage.
+
+### Changed
+
+- Class validation is now mode-aware: print modes require KOMA-Script while
+  Beamer mode explicitly requires the `beamer` class.
+- Shared layout, metadata, contents, density, and measure systems now dispatch
+  cleanly between paged documents and presentation frames. Beamer PDF metadata
+  is synchronized through the class-native interfaces to avoid late hyperref
+  mutations.
+- Bumped the documented bundle and extracted modules to version 5.1.0.
+
+### Fixed
+
+- Clamped presentation progress widths during the first compilation pass, when
+  Beamer may not yet know the final frame total.
+
 ## [5.0.0] — 2026-08-31
 
 ### Removed

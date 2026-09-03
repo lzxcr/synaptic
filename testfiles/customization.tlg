@@ -8,7 +8,7 @@ See the synaptic-base package documentation for explanation.
 Type  H <return>  for immediate help.
  ...                                              
 l. ...\SynapticSetup{mode=book}
-Set it in the \usepackageoptions, or use theme, toc, and toc-layout here.
+Set it in the \usepackageoptions, or use theme, background, toc, and toc-layout here.
 ! Package synaptic-color Error: Invalid theme name `Invalid'.
 See the synaptic-color package documentation for explanation.
 Type  H <return>  for immediate help.

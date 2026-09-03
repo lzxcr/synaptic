@@ -1,0 +1,42 @@
+\input regression-test.tex
+\documentclass[aspectratio=169]{beamer}
+\usepackage[mode=beamer,theme=midnight,background=blue!10]{synaptic}
+
+\SynapticTitle{Beamer Background Regression}
+\SynapticInstructor{Test Instructor}
+
+\begin{document}
+\START
+\ExplSyntaxOn
+\TYPE{background=\__synaptic_background:}
+\bool_if:NTF \g__synaptic_color_bg_dark_bool
+  { \TYPE{background-light=dark} } { \TYPE{background-light=light} }
+\ExplSyntaxOff
+\SynapticMakeTitle
+\section{One}
+\SynapticSectionFrame
+\begin{frame}{Light background}
+\ExplSyntaxOn
+\TYPE{beamer-light-frame=ok}
+\ExplSyntaxOff
+\end{frame}
+\SynapticSetup{background=blue!70!black}
+\begin{frame}{Dark background}
+\ExplSyntaxOn
+\bool_if:NTF \g__synaptic_color_bg_dark_bool
+  { \TYPE{background-dark=dark} } { \TYPE{background-dark=light} }
+\extractcolorspecs{syn-text-dark} \l_tmpa_tl \l_tmpb_tl
+\TYPE{text-dark=\l_tmpa_tl/\l_tmpb_tl}
+\ExplSyntaxOff
+\begin{syntheorem}A dark-background theorem card.\end{syntheorem}
+\end{frame}
+\SynapticSetup{background=white}
+\begin{frame}{Restored}
+\ExplSyntaxOn
+\bool_if:NTF \g__synaptic_color_bg_dark_bool
+  { \TYPE{background-restored=dark} } { \TYPE{background-restored=light} }
+\ExplSyntaxOff
+\end{frame}
+\TYPE{beamer-background-cycling=ok}
+\END
+\end{document}

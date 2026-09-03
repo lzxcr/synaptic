@@ -6,11 +6,12 @@
 
 <h1 align="center">synaptic</h1>
 
-<p align="center">A modular LaTeX3 design system for academic articles, books, lectures, and notes.</p>
+<p align="center">A modular LaTeX3 design system for academic articles, books, lectures, notes, and presentations.</p>
 
 `synaptic` provides mode-aware layouts, Unicode mathematics, bilingual labels,
 semantic colour tokens, and a fully namespaced public API. It requires
-LuaLaTeX, a recent LaTeX format, and a KOMA-Script document class.
+LuaLaTeX and a recent LaTeX format. Print-oriented modes use KOMA-Script;
+presentation mode uses the `beamer` class.
 
 ## Quick start
 
@@ -46,8 +47,10 @@ Ready-to-compile documents for every mode live in [`examples/`](examples/).
 ## Requirements
 
 - LuaLaTeX; pdfLaTeX and XeLaTeX are rejected.
-- A KOMA-Script class. Use `scrbook` for `mode=book`; the other modes
-  normally use `scrartcl` or `scrreprt`.
+- A KOMA-Script class for `journal`, `book`, `lecture`, and `notes`. Use
+  `scrbook` for `mode=book`; the shorter print modes normally use `scrartcl`
+  or `scrreprt`.
+- The `beamer` class for `mode=beamer`; `aspectratio=169` is recommended.
 - The Libertinus Serif, Sans, Mono, and Math system fonts.
 - A recent TeX distribution containing `expl3`, `fontspec`, `unicode-math`,
   `geometry`, `microtype`, `thmtools`, `tcolorbox`, and PGF.
@@ -59,8 +62,9 @@ The package respects the paper size selected by the class and never forces A4.
 
 | Key | Default | Values | Runtime? |
 |---|---:|---|:---:|
-| `mode` | `journal` | `journal`, `book`, `lecture`, `notes` | No |
+| `mode` | `journal` | `journal`, `book`, `lecture`, `notes`, `beamer` | No |
 | `theme` | `ocean` | `ocean`, `graphite`, `forest`, `midnight`, `paper` | Yes |
+| `background` | `white` | Any xcolor expression | Yes |
 | `lang` | `en` | `en`, `zh` | No |
 | `toc` | `false` | Boolean | Yes |
 | `toc-layout` | `top` | `top`, `inline`, `page` | Yes |
@@ -72,11 +76,17 @@ The package respects the paper size selected by the class and never forces A4.
 | `theorem-style` | `boxed` | `boxed`, `plain` | No |
 | `binding-offset` | `0pt` | Any dimension | No |
 
-Only `theme`, `toc`, and `toc-layout` change after loading:
+Only `theme`, `background`, `toc`, and `toc-layout` change after loading:
 
 ```latex
-\SynapticSetup{theme=paper,toc=false,toc-layout=page}
+\SynapticSetup{theme=paper,background=blue!10,toc=false,toc-layout=page}
 ```
+
+`background` accepts any xcolor expression and re-derives every semantic
+colour role against the selected page colour. Surfaces, borders, and hairlines
+blend with the background; when the background is dark, body and muted text
+flip to light inks automatically. In Beamer mode the per-frame background
+canvas follows the same setting.
 
 Unknown package options and attempts to mutate load-time settings are errors;
 configuration mistakes are never silently ignored.
@@ -89,6 +99,36 @@ configuration mistakes are never silently ignored.
 | `book` | `scrbook` | Book title sequence, mirrored navigation, matter helpers |
 | `lecture` | `scrartcl` / `scrreprt` | Course masthead and teaching cards |
 | `notes` | `scrartcl` | Compact masthead and knowledge cards |
+| `beamer` | `beamer` | Projection-first frames, agenda and section slides, progress navigation |
+
+Beamer mode uses the same metadata, themes, mathematics, and namespaced
+statements as the print modes:
+
+```latex
+\documentclass[aspectratio=169]{beamer}
+\usepackage[mode=beamer,theme=midnight,numbering=none]{synaptic}
+\SynapticTitle{A Clear Presentation}
+\SynapticInstructor{Ada Lecturer}
+\begin{document}
+\SynapticMakeTitle
+\section{First idea}
+\SynapticSectionFrame
+\begin{frame}{One claim}
+  \begin{syntheorem}A focused result.\end{syntheorem}
+\end{frame}
+\end{document}
+```
+
+`\SynapticAgendaFrame` and `\SynapticSectionFrame` provide explicit slide
+navigation. With `toc=true`, `toc-layout=inline`, `top`, and `page` select an
+agenda on the title frame, a regular agenda frame, or a plain agenda frame.
+The standard `\titlegraphic{...}` command is typeset right-aligned in the
+bottom row of the title frame (next to or instead of the `\SynapticTags`
+line). Namespaced statement environments render as semantic cards: the
+theorem template typesets only the amsthm-style head line inside the
+surrounding tcolorbox card, so a statement is never double-carded. Native
+`theorem`, `definition`, and `example` environments keep Beamer's default
+block template.
 
 ### Typography
 
@@ -122,7 +162,7 @@ the document class or another package.
 
 Journal mode also provides `\SynapticCorrespondence`,
 `\SynapticPublicationInfo`, repeatable `\SynapticAuthorNote`, and
-`\SynapticStatement`. Book, lecture, and notes metadata are demonstrated in
+`\SynapticStatement`. Book, lecture, notes, and Beamer metadata are demonstrated in
 the bundled examples and manuals.
 
 ### Statements and proofs

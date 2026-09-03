@@ -1,0 +1,103 @@
+% !TEX program = lualatex
+\documentclass[11pt,aspectratio=169]{beamer}
+\usepackage[
+  mode=beamer,
+  theme=midnight,
+  toc=true,
+  toc-layout=page,
+  numbering=none,
+  density=compact
+]{synaptic}
+
+\SynapticCourseCode{MATH 201}
+\SynapticCourse{Analysis}
+\SynapticLectureNumber{1}
+\SynapticTitle{Continuity, Compactness, and Finite Control}
+\SynapticSubtitle{A visual route from local estimates to a global scale}
+\SynapticShortTitle{Continuity and compactness}
+\SynapticInstructor{Ada Lecturer}
+\SynapticAffiliation{Department of Clear Mathematical Communication}
+\SynapticSemester{Autumn 2026}
+\SynapticDate{2 September 2026}
+\SynapticTags{analysis \textbullet\ topology \textbullet\ proof design}
+\SynapticSubject{A synaptic Beamer-mode design example}
+\begin{synabstract}
+  A restrained 16:9 presentation combining a clear title hierarchy, semantic
+  cards, focused navigation, and mathematics designed for projection.
+\end{synabstract}
+
+\begin{document}
+\SynapticMakeTitle
+
+\section{From local to global}
+\SynapticSectionFrame
+
+\begin{frame}{One visual grammar}{Structure should survive projection and print}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Local information}
+        For every point $x$, continuity supplies a neighbourhood and a scale
+        $\delta_x$ adapted to that point.
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{exampleblock}{Finite control}
+        Compactness replaces the full family of neighbourhoods by finitely
+        many representatives.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.8ex}
+  \begin{synlearninggoals}
+    Distinguish local choices from a uniform estimate, then identify the exact
+    step where compactness turns an open cover into finite data.
+  \end{synlearninggoals}
+\end{frame}
+
+\begin{frame}{The compactness step}{A theorem card remains part of the argument}
+  \begin{syntheorem}[Heine--Cantor]
+    A continuous map $f\colon K\to Y$ from a compact metric space to a metric
+    space is uniformly continuous.
+  \end{syntheorem}
+
+  \begin{synproof}
+    Continuity gives neighbourhoods on which the oscillation of $f$ is small.
+    Choose a finite subcover and take the minimum of its finitely many radii.
+  \end{synproof}
+
+  \[
+    d_X(x,y)<\delta \quad\Longrightarrow\quad
+    d_Y\bigl(f(x),f(y)\bigr)<\varepsilon .
+  \]
+\end{frame}
+
+\section{A reusable proof pattern}
+\SynapticSectionFrame
+
+\begin{frame}{The proof as a four-step pipeline}
+  \begin{enumerate}
+    \item Start with the target tolerance $\varepsilon$.
+    \item Build one local neighbourhood around every point.
+    \item Extract a finite subcover using compactness.
+    \item Convert the finite family into one global $\delta$.
+  \end{enumerate}
+
+  \begin{alertblock}{Common failure}
+    Point-dependent choices $\delta_x$ do not by themselves establish uniform
+    continuity; a finite reduction is the missing bridge.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}{Takeaway}
+  \begin{synlecturesummary}
+    Continuity supplies local control. Compactness makes that control finite.
+    A minimum over finitely many positive scales produces the uniform bound.
+  \end{synlecturesummary}
+
+  \vfill
+  {\Large\bfseries\color{syn-primary}
+    Local data $\longrightarrow$ finite data $\longrightarrow$ global scale.}
+\end{frame}
+
+\end{document}

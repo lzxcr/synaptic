@@ -1,0 +1,37 @@
+\input regression-test.tex
+\documentclass[aspectratio=169]{beamer}
+\usepackage[
+  lang=zh,
+  mode=beamer,
+  theme=forest,
+  numbering=none,
+  title-layout=compact
+]{synaptic}
+
+\SynapticCourseCode{MATH 401}
+\SynapticCourse{数学分析}
+\SynapticLectureNumber{3}
+\SynapticTitle{紧致性与一致控制}
+\SynapticShortTitle{紧致性}
+\SynapticInstructor{测试教师}
+\SynapticSubject{Beamer 中文模式回归测试}
+\SynapticTags{分析，拓扑}
+\titlegraphic{LOGO}
+
+\begin{document}
+\START
+\ExplSyntaxOn
+\TYPE{mode=\__synaptic_mode:}
+\TYPE{contents-label=\c__synaptic_label_contents_tl}
+\TYPE{overview-label=\c__synaptic_label_overview_tl}
+\ExplSyntaxOff
+\SynapticMakeTitle
+\section{从局部到整体}
+\SynapticSectionFrame
+\begin{frame}{中文幻灯片}
+  \begin{synlearninggoals}检查中文教学卡片与字体。\end{synlearninggoals}
+  \begin{syntheorem}连续函数将紧致集映为紧致集。\end{syntheorem}
+\end{frame}
+\TYPE{beamer-zh-title-section-and-cards=ok}
+\END
+\end{document}

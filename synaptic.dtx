@@ -9,8 +9,8 @@
 %% from them, and the accompanying documentation and examples.
 %%
 %% synaptic -- Modern Academic Typesetting Framework
-%% A modular LaTeX3 design system for articles, books, and lecture notes.
-%% Requires LuaLaTeX + KOMA-Script.
+%% A modular LaTeX3 design system for articles, books, notes, and presentations.
+%% Requires LuaLaTeX + KOMA-Script, or the beamer class in beamer mode.
 %%
 %<*driver>
 \documentclass{ltxdoc}
@@ -27,7 +27,7 @@
 \hfuzz=6pt
 \AtBeginDocument{\hypersetup{pdftitle={synaptic bundle},
   linkcolor=blue!60!black,urlcolor=teal}}
-\ProvidesFile{synaptic.dtx}[2026-08-31 v5.0.0 synaptic documented source]
+\ProvidesFile{synaptic.dtx}[2026-09-02 v5.2.0 synaptic documented source]
 \EnableCrossrefs\CodelineIndex\RecordChanges
 \begin{document}
 \DocInput{synaptic.dtx}
@@ -85,6 +85,23 @@
 % font bundles with one deterministic system-font stack: Libertinus for Latin
 % text and mathematics, Source Han CN for Chinese text, and LXGW WenKai for
 % Chinese emphasis.}
+% \changes{v5.1.0}{2026-09-02}{Added a native Beamer presentation mode with
+% class-aware loading, slide typography, title and agenda frames, section
+% dividers, progress navigation, teaching cards, documentation, and tests.}
+% \changes{v5.2.0}{2026-09-02}{Added the page \texttt{background} option.
+% Derived colour roles blend against the selected page colour, and roles flip
+% to light inks automatically when the background is dark.}
+% \changes{v5.2.0}{2026-09-02}{Fixed the Beamer title kicker to separate the
+% mode word or course code from the course name with a bullet even when no
+% course code is set, and rebalanced the section divider by typesetting the
+% section number in the section-title voice.}
+% \changes{v5.2.0}{2026-09-02}{Rendered Beamer statement environments as
+% single-layer semantic cards: the statement environments are already wrapped
+% in a semantic tcolorbox, so the default Beamer theorem template no longer
+% opens a second native block inside that card.  Native \texttt{theorem},
+% \texttt{definition}, and \texttt{example} environments keep the default
+% block template.  The Beamer title frame now honours the standard
+% \texttt{\string\titlegraphic} command in the bottom-right of the tag row.}
 % \textbf{synaptic} is a modular \LaTeX3 design system for academic documents.
 % It provides a clean, non-invasive API with mode-aware module loading
 % and a deterministic, package-managed font stack through \textsf{fontspec}.
@@ -99,8 +116,9 @@
 % \end{verbatim}
 %
 % \section{Key Options}
-% \texttt{mode}=journal, book, lecture, or notes;
+% \texttt{mode}=journal, book, lecture, notes, or beamer;
 % \texttt{theme}=ocean, graphite, forest, midnight, or paper;
+% \texttt{background}=any xcolor expression (default \texttt{white});
 % \texttt{lang}=en or zh;
 % \texttt{toc-layout}=top, inline, or page;
 % \texttt{title-layout}=auto, inline, compact, page, or sequence;
@@ -110,29 +128,30 @@
 % \texttt{measure}=auto, narrow, standard, or wide;
 % \texttt{theorem-style}=boxed or plain.
 % Structural keys are fixed after loading; only \texttt{theme},
-% \texttt{toc}, and \texttt{toc-layout} may change at runtime through
-% \texttt{\string\SynapticSetup}.
+% \texttt{background}, \texttt{toc}, and \texttt{toc-layout} may change at
+% runtime through \texttt{\string\SynapticSetup}.
 %
 % \section{Module map}
-% The bundle extracts to one shell, one core module, one data pair, and four
+% The bundle extracts to one shell, one core module, one data pair, and five
 % mode modules:
 % \begin{itemize}\raggedright
 % \item \texttt{synaptic-base.sty}: engine and class checks, key parsing,
 %   \texttt{\string\SynapticSetup}, mode dispatch.
 % \item \texttt{synaptic-lang-en.def} and \texttt{synaptic-lang-zh.def}:
 %   bilingual label constants loaded before any module.
-% \item \texttt{synaptic-color.sty}: theme registry and semantic colour
-%   tokens, print and monochrome delivery.
+% \item \texttt{synaptic-color.sty}: theme registry, background-adaptive
+%   semantic colour tokens, print and monochrome delivery.
 % \item \texttt{synaptic-fonts.sty}: the unified Libertinus and Source Han CN
 %   font stack.
 % \item \texttt{synaptic-layout.sty}: geometry, paragraph typography,
 %   headings, running-head hairline, equation numbering.
 % \item \texttt{synaptic-theorem.sty}: namespaced statement and proof
 %   environments.
-% \item \texttt{synaptic-title.sty}: shared metadata model and the four
+% \item \texttt{synaptic-title.sty}: shared metadata model and the five
 %   mode-aware title renderers.
 % \item \texttt{synaptic-journal.sty}, \texttt{synaptic-book.sty},
-%   \texttt{synaptic-lecture.sty}, and \texttt{synaptic-notes.sty}:
+%   \texttt{synaptic-lecture.sty}, \texttt{synaptic-notes.sty}, and
+%   \texttt{synaptic-beamer.sty}:
 %   mode-specific design and navigation layers.
 % \end{itemize}
 %
@@ -152,7 +171,8 @@
 % \item[\texttt{\string\SynapticMakeTitle}] Validates metadata and renders the
 %   mode-specific title sequence and optional table of contents.
 % \item[\texttt{\string\SynapticSetup}] Applies the runtime-safe
-%   \texttt{theme}, \texttt{toc}, and \texttt{toc-layout} keys. Frozen keys error.
+%   \texttt{theme}, \texttt{background}, \texttt{toc}, and \texttt{toc-layout}
+%   keys. Frozen keys error.
 % \item[\texttt{\string\SynapticNewTheorem}] Declares a custom statement whose
 %   lowercase alphanumeric environment name begins with \texttt{syn}, using
 %   style \texttt{plain}, \texttt{definition}, or \texttt{remark}.
@@ -162,6 +182,10 @@
 %   the starred form omits the table-of-contents entry.
 % \item[\texttt{\string\SynapticAcknowledgments}] Creates chapter-scale (book)
 %   or section-scale acknowledgments; the starred form omits the TOC entry.
+% \item[\texttt{\string\SynapticAgendaFrame}] Creates a Beamer agenda frame;
+%   its optional argument replaces the localized frame title.
+% \item[\texttt{\string\SynapticSectionFrame}] Creates an unnumbered Beamer
+%   section-divider frame for the current section.
 % \item[\texttt{\string\SynapticFrontMatter},
 %   \texttt{\string\SynapticMainMatter},
 %   \texttt{\string\SynapticBackMatter}] Switch book matter, restore the
@@ -183,13 +207,17 @@
 %    \begin{macrocode}
 %<*base>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-base}{2026-08-31}{5.0.0}
+\ProvidesExplPackage{synaptic-base}{2026-09-02}{5.2.0}
   {Synaptic~Core~Infrastructure}
 
 \msg_new:nnn { synaptic } { luatex-required }
   { The~synaptic~package~requires~LuaLaTeX. }
 \msg_new:nnn { synaptic } { koma-required }
-  { The~synaptic~package~requires~a~KOMA-Script~document~class. }
+  { This~synaptic~mode~requires~a~KOMA-Script~document~class. }
+\msg_new:nnn { synaptic } { beamer-class-required }
+  { mode=beamer~requires~the~beamer~document~class. }
+\msg_new:nnn { synaptic } { beamer-title-layout }
+  { title-layout=#1~is~not~available~in~beamer~mode;~use~auto,~page,~or~compact. }
 \msg_new:nnn { synaptic } { book-class-required }
   { mode=book~requires~a~chapter-based~KOMA-Script~class,~normally~scrbook. }
 \msg_new:nnn { synaptic } { chapter-numbering-required }
@@ -200,12 +228,6 @@
 % ---------------------------------------------------------------------------
 \sys_if_engine_luatex:F
   { \msg_fatal:nn { synaptic } { luatex-required } }
-
-% ---------------------------------------------------------------------------
-% KOMA-Script check
-% ---------------------------------------------------------------------------
-\cs_if_exist:cF { KOMAoptions }
-  { \msg_fatal:nn { synaptic } { koma-required } }
 
 % ---------------------------------------------------------------------------
 % Option variables
@@ -222,6 +244,9 @@
 \tl_new:N  \g__synaptic_theorem_style_tl
 \bool_new:N \g__synaptic_toc_bool
 \dim_new:N  \g__synaptic_binding_offset_dim
+% Page background expression (any xcolor mixture), defaulting to white.
+\tl_new:N  \g__synaptic_background_tl
+\tl_gset:Nn \g__synaptic_background_tl { white }
 
 % ---------------------------------------------------------------------------
 % \SynapticSetup — unified configuration interface
@@ -240,6 +265,7 @@
     mode / book    .code:n = \tl_gset:Nn \g__synaptic_mode_tl { book },
     mode / lecture .code:n = \tl_gset:Nn \g__synaptic_mode_tl { lecture },
     mode / notes   .code:n = \tl_gset:Nn \g__synaptic_mode_tl { notes },
+    mode / beamer  .code:n = \tl_gset:Nn \g__synaptic_mode_tl { beamer },
     mode .initial:n = journal,
 
     % --- theme system ---
@@ -315,13 +341,18 @@
     binding-offset .dim_gset:N = \g__synaptic_binding_offset_dim,
     binding-offset .initial:n = 0pt,
 
+    % --- page background ---
+    background .code:n =
+      \tl_gset:Nn \g__synaptic_background_tl {#1},
+
     % --- unknown ---
     unknown .code:n = \__synaptic_base_unknown_error:n { \l_keys_key_tl },
   }
 
 % Runtime settings deliberately exclude options which require module reloads.
 % Attempting to change a structural key after loading is a clear error rather
-% than a silent no-op; only theme, contents, and contents layout may change.
+% than a silent no-op; only theme, background, contents, and contents layout
+% may change.
 \NewDocumentCommand{\SynapticSetup}{m}
   {
     \keys_set:nn { synaptic / runtime } {#1}
@@ -335,17 +366,47 @@
     toc-layout / inline .code:n = \tl_gset:Nn \g__synaptic_toc_layout_tl { inline },
     toc-layout / page   .code:n = \tl_gset:Nn \g__synaptic_toc_layout_tl { page },
     theme .code:n = \__synaptic_color_use_theme:n {#1},
+    background .code:n =
+      \tl_gset:Nn \g__synaptic_background_tl {#1}
+      \__synaptic_color_apply_background:,
     unknown .code:n =
       {
         \PackageError{synaptic-base}
           {Option~`\l_keys_key_tl'~is~structural~and~fixed~after~loading}
-          {Set~it~in~the~\string\usepackage~options,~or~use~theme,~toc,~
-            and~toc-layout~here.}
+          {Set~it~in~the~\string\usepackage~options,~or~use~theme,~
+            background,~toc,~and~toc-layout~here.}
       },
   }
 
 % Also accept options via \usepackage[...]
 \ProcessKeyOptions[synaptic]
+
+% The selected mode determines the class contract.  This check deliberately
+% follows option processing: Beamer is not a KOMA-Script class, while the four
+% print-oriented modes rely on KOMA's sectioning and page-style interfaces.
+\str_if_eq:VnTF \g__synaptic_mode_tl { beamer }
+  {
+    \@ifclassloaded{beamer}
+      { }
+      { \msg_fatal:nn { synaptic } { beamer-class-required } }
+  }
+  {
+    \cs_if_exist:cF { KOMAoptions }
+      { \msg_fatal:nn { synaptic } { koma-required } }
+  }
+\str_if_eq:VnT \g__synaptic_mode_tl { beamer }
+  {
+    \str_case:VnF \g__synaptic_title_layout_tl
+      {
+        { auto }    { }
+        { page }    { }
+        { compact } { }
+      }
+      {
+        \msg_fatal:nnn { synaptic } { beamer-title-layout }
+          { \g__synaptic_title_layout_tl }
+      }
+  }
 
 % Automatic contents are opt-in: only a document that asks for `toc=${true}`
 % gets one.  Book users normally call \tableofcontents from the front matter.
@@ -363,10 +424,16 @@
 \cs_new:Npn \__synaptic_density: { \g__synaptic_density_tl }
 \cs_new:Npn \__synaptic_measure: { \g__synaptic_measure_tl }
 \cs_new:Npn \__synaptic_theorem_style: { \g__synaptic_theorem_style_tl }
+\cs_new:Npn \__synaptic_background: { \g__synaptic_background_tl }
 
 \cs_new_protected:Npn \__synaptic_if_lang_zh:TF #1#2
   {
     \str_if_eq:eeTF { \g__synaptic_lang_tl } { zh } {#1} {#2}
+  }
+
+\cs_new:Npn \__synaptic_if_beamer:TF #1#2
+  {
+    \str_if_eq:VnTF \g__synaptic_mode_tl { beamer } {#1} {#2}
   }
 
 \cs_new:Npn \__synaptic_if_toc:TF #1#2
@@ -430,6 +497,10 @@
           {
             \RequirePackage{synaptic-notes}
           }
+        { beamer }
+          {
+            \RequirePackage{synaptic-beamer}
+          }
       }
   }
 
@@ -442,12 +513,18 @@
 
 % \subsection{synaptic-color.sty}
 %
-% \paragraph{Theme colour system with 5 built-in themes.}
+% \paragraph{Theme colour system, background-adaptive tokens.}
+%
+% The active page background (the \texttt{background} key, any xcolor
+% expression) becomes the \texttt{syn-bg} base token. Semantic roles derive
+% against it with a relative-luminance switch: light backgrounds keep the
+% classic dark inks, dark backgrounds flip text to light inks and lighten
+% hairlines. Themes supply primary, secondary, and accent colours only.
 %
 %    \begin{macrocode}
 %<*color>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-color}{2026-08-31}{5.0.0}
+\ProvidesExplPackage{synaptic-color}{2026-09-02}{5.2.0}
   {Synaptic~Theme~Colour~System}
 
 \RequirePackage{xcolor}
@@ -479,6 +556,92 @@
 \definecolor{syn-semantic-warning}{RGB}{145,90,0}
 \definecolor{syn-semantic-success}{RGB}{20,120,75}
 
+% ---------------------------------------------------------------------------
+% Page background: relative-luminance measurement and the derived colour roles
+% ---------------------------------------------------------------------------
+% The active background is stored in the `syn-bg' token.  All derived roles
+% blend against it, so cards, hairlines, and borders remain coherent on any
+% page colour selected through the `background' key.  When the background is
+% dark, body and muted text flip to light inks while decorative rules are
+% lightened instead of darkened.
+\fp_new:N  \l__synaptic_color_bg_lum_fp
+\fp_new:N  \l__synaptic_color_bg_c_fp
+\fp_new:N  \l__synaptic_color_bg_m_fp
+\fp_new:N  \l__synaptic_color_bg_y_fp
+\fp_new:N  \l__synaptic_color_bg_k_fp
+\bool_new:N \g__synaptic_color_bg_dark_bool
+\tl_new:N  \l__synaptic_color_bg_spec_tl
+\tl_new:N  \l__synaptic_color_bg_part_tl
+\seq_new:N \l__synaptic_color_bg_parts_seq
+
+\cs_new:Npn \__synaptic_color_bg_dark:TF #1#2
+  { \bool_if:NTF \g__synaptic_color_bg_dark_bool {#1} {#2} }
+
+\cs_new_protected:Npn \__synaptic_color_bg_measure_rgb:
+  {
+    \seq_set_split:NnV \l__synaptic_color_bg_parts_seq {,}
+      \l__synaptic_color_bg_spec_tl
+    \seq_pop_left:NN \l__synaptic_color_bg_parts_seq \l__synaptic_color_bg_part_tl
+    \fp_set:Nn \l_tmpa_fp { \l__synaptic_color_bg_part_tl }
+    \seq_pop_left:NN \l__synaptic_color_bg_parts_seq \l__synaptic_color_bg_part_tl
+    \fp_set:Nn \l_tmpb_fp { \l__synaptic_color_bg_part_tl }
+    \seq_pop_left:NN \l__synaptic_color_bg_parts_seq \l__synaptic_color_bg_part_tl
+    \fp_set:Nn \l_tmpc_fp { \l__synaptic_color_bg_part_tl }
+    \fp_set:Nn \l__synaptic_color_bg_lum_fp
+      { 0.2126 * \l_tmpa_fp + 0.7152 * \l_tmpb_fp + 0.0722 * \l_tmpc_fp }
+  }
+
+\cs_new_protected:Npn \__synaptic_color_bg_measure_cmyk:
+  {
+    \seq_set_split:NnV \l__synaptic_color_bg_parts_seq {,}
+      \l__synaptic_color_bg_spec_tl
+    \seq_pop_left:NN \l__synaptic_color_bg_parts_seq \l__synaptic_color_bg_part_tl
+    \fp_set:Nn \l__synaptic_color_bg_c_fp { \l__synaptic_color_bg_part_tl }
+    \seq_pop_left:NN \l__synaptic_color_bg_parts_seq \l__synaptic_color_bg_part_tl
+    \fp_set:Nn \l__synaptic_color_bg_m_fp { \l__synaptic_color_bg_part_tl }
+    \seq_pop_left:NN \l__synaptic_color_bg_parts_seq \l__synaptic_color_bg_part_tl
+    \fp_set:Nn \l__synaptic_color_bg_y_fp { \l__synaptic_color_bg_part_tl }
+    \seq_pop_left:NN \l__synaptic_color_bg_parts_seq \l__synaptic_color_bg_part_tl
+    \fp_set:Nn \l__synaptic_color_bg_k_fp { \l__synaptic_color_bg_part_tl }
+    \fp_set:Nn \l__synaptic_color_bg_lum_fp
+      {
+        0.2126 * ( 1 - \l__synaptic_color_bg_c_fp ) * ( 1 - \l__synaptic_color_bg_k_fp )
+        + 0.7152 * ( 1 - \l__synaptic_color_bg_m_fp ) * ( 1 - \l__synaptic_color_bg_k_fp )
+        + 0.0722 * ( 1 - \l__synaptic_color_bg_y_fp ) * ( 1 - \l__synaptic_color_bg_k_fp )
+      }
+  }
+
+\cs_new_protected:Npn \__synaptic_color_measure_bg:
+  {
+    % NB: no spaces inside the braces — xcolor's \XC@split does not trim them
+    % and would treat `syn-bg' as an undefined colour.
+    \extractcolorspecs{syn-bg}\l_tmpa_tl\l__synaptic_color_bg_spec_tl
+    \str_if_eq:VnTF \l_tmpa_tl { rgb }
+      { \__synaptic_color_bg_measure_rgb: }
+      {
+        \str_if_eq:VnTF \l_tmpa_tl { gray }
+          { \fp_set:Nn \l__synaptic_color_bg_lum_fp { \l__synaptic_color_bg_spec_tl } }
+          {
+            \str_if_eq:VnTF \l_tmpa_tl { cmyk }
+              { \__synaptic_color_bg_measure_cmyk: }
+              { \fp_set:Nn \l__synaptic_color_bg_lum_fp { 1 } }
+          }
+      }
+    \fp_compare:nTF { \l__synaptic_color_bg_lum_fp < 0.5 }
+      { \bool_gset_true:N  \g__synaptic_color_bg_dark_bool }
+      { \bool_gset_false:N \g__synaptic_color_bg_dark_bool }
+  }
+
+% Print modes carry the colour through \pagecolor; Beamer uses its background
+% canvas, whose stored expression re-resolves `syn-bg' per frame, so runtime
+% changes reach every subsequent slide without redefining the template.
+\cs_new_protected:Npn \__synaptic_color_apply_page_bg:
+  {
+    \__synaptic_if_beamer:TF
+      { \setbeamercolor{background~canvas}{bg=syn-bg} }
+      { \pagecolor{syn-bg} }
+  }
+
 \cs_new_protected:Npn \__synaptic_color_derive:
   {
     \str_if_eq:VnT \g__synaptic_color_mode_tl { mono }
@@ -498,22 +661,52 @@
         \colorlet{syn-warning}{syn-semantic-warning}
         \colorlet{syn-success}{syn-semantic-success}
       }
-    \colorlet{syn-text-dark}{syn-secondary!92!black}
-    % `muted-text' remains dark enough for small labels.  Decorative rules
-    % deliberately use a separate, lighter token.
-    \colorlet{syn-muted-text}{syn-secondary!82!white}
-    \colorlet{syn-decoration-muted}{syn-secondary!42!white}
+    \__synaptic_color_bg_dark:TF
+      {
+        % Dark page background: readable light inks, lightened hairlines.
+        \colorlet{syn-text-dark}{syn-secondary!8!white}
+        \colorlet{syn-muted-text}{syn-secondary!18!white}
+        \colorlet{syn-decoration-muted}{syn-secondary!58!white}
+        \colorlet{syn-rule}{syn-primary!35!white}
+        \colorlet{syn-border}{syn-primary!45!white}
+        \colorlet{syn-faded}{syn-primary!50!white}
+        \colorlet{syn-light}{syn-primary!45!white}
+        \str_if_eq:VnTF \g__synaptic_color_mode_tl { screen }
+          { \colorlet{syn-link}{syn-primary!80!white} }
+          { \colorlet{syn-link}{syn-text-dark} }
+      }
+      {
+        % Light page background: the classic derivation.  Tint roles blend
+        % against the literal background so light-tinted pages stay coherent.
+        \colorlet{syn-text-dark}{syn-secondary!92!black}
+        \colorlet{syn-muted-text}{syn-secondary!82!white}
+        \colorlet{syn-decoration-muted}{syn-secondary!42!white}
+        \colorlet{syn-rule}{syn-primary!28!syn-bg}
+        \colorlet{syn-border}{syn-primary!38!syn-bg}
+        \colorlet{syn-faded}{syn-primary!18!syn-bg}
+        \colorlet{syn-light}{syn-primary!38!syn-bg}
+        \str_if_eq:VnTF \g__synaptic_color_mode_tl { screen }
+          { \colorlet{syn-link}{syn-primary} }
+          { \colorlet{syn-link}{syn-text-dark} }
+      }
+    % Fills always blend against the page background.
+    \colorlet{syn-surface}{syn-primary!4!syn-bg}
+    \colorlet{syn-surface-strong}{syn-primary!10!syn-bg}
     \colorlet{syn-muted}{syn-muted-text}
-    \colorlet{syn-rule}{syn-primary!28!white}
-    \str_if_eq:VnTF \g__synaptic_color_mode_tl { screen }
-      { \colorlet{syn-link}{syn-primary} }
-      { \colorlet{syn-link}{syn-text-dark} }
-    \colorlet{syn-surface}{syn-primary!4!white}
-    \colorlet{syn-surface-strong}{syn-primary!10!white}
-    \colorlet{syn-border}{syn-primary!38!white}
-    \colorlet{syn-faded}{syn-primary!18!white}
-    \colorlet{syn-light}{syn-primary!38!white}
     \colorlet{syn-on-primary}{white}
+    \__synaptic_color_apply_page_bg:
+  }
+
+\cs_new_protected:Npn \__synaptic_color_setup_bg:
+  {
+    \colorlet{syn-bg}{\__synaptic_background:}
+    \__synaptic_color_measure_bg:
+  }
+
+\cs_new_protected:Npn \__synaptic_color_apply_background:
+  {
+    \__synaptic_color_setup_bg:
+    \__synaptic_color_derive:
   }
 
 \cs_new_protected:Npn \__synaptic_color_use_theme_aux:n #1
@@ -562,6 +755,9 @@
       }
   }
 
+% The background token must exist before the first derivation; the theme
+% selection that follows maps primary/secondary/accent and derives roles.
+\__synaptic_color_setup_bg:
 \__synaptic_color_use_theme:n { \__synaptic_theme: }
 
 %</color>
@@ -574,7 +770,7 @@
 %    \begin{macrocode}
 %<*fonts>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-fonts}{2026-08-31}{5.0.0}
+\ProvidesExplPackage{synaptic-fonts}{2026-09-02}{5.2.0}
   {Synaptic~Font~System}
 
 \RequirePackage{fontspec}
@@ -652,22 +848,26 @@
 
 % \subsection{synaptic-layout.sty}
 %
-% \paragraph{Page geometry, microtype, KOMA heading configuration.}
+% \paragraph{Page geometry, slide sizing, microtype, and heading configuration.}
 %
 %    \begin{macrocode}
 %<*layout>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-layout}{2026-08-31}{5.0.0}
+\ProvidesExplPackage{synaptic-layout}{2026-09-02}{5.2.0}
   {Synaptic~Page~Layout}
 
-\RequirePackage{geometry}
-\RequirePackage{setspace}
-\RequirePackage{caption}
-\RequirePackage{enumitem}
 \RequirePackage{hyperref}
 \RequirePackage{bookmark}
 
-\KOMAoptions{numbers=noendperiod}
+\__synaptic_if_beamer:TF
+  { }
+  {
+    \RequirePackage{geometry}
+    \RequirePackage{setspace}
+    \RequirePackage{caption}
+    \RequirePackage{enumitem}
+    \KOMAoptions{numbers=noendperiod}
+  }
 
 % ctex is loaded by the font module immediately before this layout module.
 % Apply the Synaptic language names here (and once more at begin-document end)
@@ -745,25 +945,29 @@
 
 % Explicit measure choices override the mode default while preserving duplex
 % book margins.  `auto' is the carefully chosen default above.
-\str_case:Vn \g__synaptic_measure_tl
+\__synaptic_if_beamer:TF
+  { }
   {
-    { narrow }
+    \str_case:Vn \g__synaptic_measure_tl
       {
-        \str_if_eq:VnTF \g__synaptic_mode_tl { book }
-          { \geometry{inner=0.165\paperwidth,outer=0.175\paperwidth} }
-          { \geometry{textwidth=0.64\paperwidth,hcentering} }
-      }
-    { standard }
-      {
-        \str_if_eq:VnTF \g__synaptic_mode_tl { book }
-          { \geometry{inner=0.135\paperwidth,outer=0.145\paperwidth} }
-          { \geometry{textwidth=0.72\paperwidth,hcentering} }
-      }
-    { wide }
-      {
-        \str_if_eq:VnTF \g__synaptic_mode_tl { book }
-          { \geometry{inner=0.105\paperwidth,outer=0.115\paperwidth} }
-          { \geometry{textwidth=0.84\paperwidth,hcentering} }
+        { narrow }
+          {
+            \str_if_eq:VnTF \g__synaptic_mode_tl { book }
+              { \geometry{inner=0.165\paperwidth,outer=0.175\paperwidth} }
+              { \geometry{textwidth=0.64\paperwidth,hcentering} }
+          }
+        { standard }
+          {
+            \str_if_eq:VnTF \g__synaptic_mode_tl { book }
+              { \geometry{inner=0.135\paperwidth,outer=0.145\paperwidth} }
+              { \geometry{textwidth=0.72\paperwidth,hcentering} }
+          }
+        { wide }
+          {
+            \str_if_eq:VnTF \g__synaptic_mode_tl { book }
+              { \geometry{inner=0.105\paperwidth,outer=0.115\paperwidth} }
+              { \geometry{textwidth=0.84\paperwidth,hcentering} }
+          }
       }
   }
 
@@ -782,12 +986,16 @@
 % ---------------------------------------------------------------------------
 % Microtype
 % ---------------------------------------------------------------------------
+% The optional footnote patch is incompatible with the current LaTeX/KOMA
+% footnote implementation and would only emit a false-positive warning.
 \__synaptic_if_lang_zh:TF
   {
-    \PassOptionsToPackage{verbose=false, protrusion=false, expansion=false}{microtype}
+    \PassOptionsToPackage
+      {verbose=false,protrusion=false,expansion=false,nopatch=footnote}
+      {microtype}
   }
   {
-    \PassOptionsToPackage{verbose=false}{microtype}
+    \PassOptionsToPackage{verbose=false,nopatch=footnote}{microtype}
   }
 \RequirePackage{microtype}
 \__synaptic_if_lang_zh:TF
@@ -797,87 +1005,106 @@
 % ---------------------------------------------------------------------------
 % Paragraph typography
 % ---------------------------------------------------------------------------
-\__synaptic_if_lang_zh:TF
-  { \setlength{\parindent}{2em} }
-  { \setlength{\parindent}{1.25em} }
-\setlength{\parskip}{0pt plus 1pt}
+\__synaptic_if_beamer:TF
+  {
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{0.28em plus 0.08em minus 0.04em}
+  }
+  {
+    \__synaptic_if_lang_zh:TF
+      { \setlength{\parindent}{2em} }
+      { \setlength{\parindent}{1.25em} }
+    \setlength{\parskip}{0pt plus 1pt}
+  }
 \widowpenalty=8000
 \clubpenalty=8000
 
 \emergencystretch=2em
 \tolerance=2000
 
-\str_case:Vn \g__synaptic_density_tl
+\__synaptic_if_beamer:TF
   {
-    { compact }
+    \str_case:Vn \g__synaptic_density_tl
       {
-        \__synaptic_if_lang_zh:TF
-          {
-            \str_case:Vn \g__synaptic_mode_tl
-              {
-                { journal } { \setstretch{1.18} }
-                { book }    { \setstretch{1.20} }
-                { lecture } { \setstretch{1.22} }
-                { notes }   { \setstretch{1.13} }
-              }
-          }
-          {
-            \str_case:Vn \g__synaptic_mode_tl
-              {
-                { journal } { \setstretch{1.10} }
-                { book }    { \setstretch{1.12} }
-                { lecture } { \setstretch{1.16} }
-                { notes }   { \setstretch{1.05} }
-              }
-          }
+        { compact }  { \linespread{0.98}\selectfont }
+        { balanced } { \linespread{1.02}\selectfont }
+        { airy }     { \linespread{1.08}\selectfont }
       }
-    { balanced }
-      {
-        \__synaptic_if_lang_zh:TF
-          {
-            \str_case:Vn \g__synaptic_mode_tl
-              {
-                { journal } { \setstretch{1.28} }
-                { book }    { \setstretch{1.30} }
-                { lecture } { \setstretch{1.32} }
-                { notes }   { \setstretch{1.22} }
-              }
-          }
-          {
-            \str_case:Vn \g__synaptic_mode_tl
-              {
-                { journal } { \setstretch{1.18} }
-                { book }    { \setstretch{1.20} }
-                { lecture } { \setstretch{1.25} }
-                { notes }   { \setstretch{1.12} }
-              }
-          }
-      }
-    { airy }
-      {
-        \__synaptic_if_lang_zh:TF
-          {
-            \str_case:Vn \g__synaptic_mode_tl
-              {
-                { journal } { \setstretch{1.36} }
-                { book }    { \setstretch{1.38} }
-                { lecture } { \setstretch{1.42} }
-                { notes }   { \setstretch{1.30} }
-              }
-          }
-          {
-            \str_case:Vn \g__synaptic_mode_tl
-              {
-                { journal } { \setstretch{1.25} }
-                { book }    { \setstretch{1.27} }
-                { lecture } { \setstretch{1.34} }
-                { notes }   { \setstretch{1.20} }
-              }
-          }
-      }
+    \raggedbottom
   }
-\str_if_eq:VnT \g__synaptic_mode_tl { lecture } { \raggedbottom }
-\str_if_eq:VnT \g__synaptic_mode_tl { notes }   { \raggedbottom }
+  {
+    \str_case:Vn \g__synaptic_density_tl
+      {
+        { compact }
+          {
+            \__synaptic_if_lang_zh:TF
+              {
+                \str_case:Vn \g__synaptic_mode_tl
+                  {
+                    { journal } { \setstretch{1.18} }
+                    { book }    { \setstretch{1.20} }
+                    { lecture } { \setstretch{1.22} }
+                    { notes }   { \setstretch{1.13} }
+                  }
+              }
+              {
+                \str_case:Vn \g__synaptic_mode_tl
+                  {
+                    { journal } { \setstretch{1.10} }
+                    { book }    { \setstretch{1.12} }
+                    { lecture } { \setstretch{1.16} }
+                    { notes }   { \setstretch{1.05} }
+                  }
+              }
+          }
+        { balanced }
+          {
+            \__synaptic_if_lang_zh:TF
+              {
+                \str_case:Vn \g__synaptic_mode_tl
+                  {
+                    { journal } { \setstretch{1.28} }
+                    { book }    { \setstretch{1.30} }
+                    { lecture } { \setstretch{1.32} }
+                    { notes }   { \setstretch{1.22} }
+                  }
+              }
+              {
+                \str_case:Vn \g__synaptic_mode_tl
+                  {
+                    { journal } { \setstretch{1.18} }
+                    { book }    { \setstretch{1.20} }
+                    { lecture } { \setstretch{1.25} }
+                    { notes }   { \setstretch{1.12} }
+                  }
+              }
+          }
+        { airy }
+          {
+            \__synaptic_if_lang_zh:TF
+              {
+                \str_case:Vn \g__synaptic_mode_tl
+                  {
+                    { journal } { \setstretch{1.36} }
+                    { book }    { \setstretch{1.38} }
+                    { lecture } { \setstretch{1.42} }
+                    { notes }   { \setstretch{1.30} }
+                  }
+              }
+              {
+                \str_case:Vn \g__synaptic_mode_tl
+                  {
+                    { journal } { \setstretch{1.25} }
+                    { book }    { \setstretch{1.27} }
+                    { lecture } { \setstretch{1.34} }
+                    { notes }   { \setstretch{1.20} }
+                  }
+              }
+          }
+      }
+    \str_if_eq:VnT \g__synaptic_mode_tl { lecture } { \raggedbottom }
+    \str_if_eq:VnT \g__synaptic_mode_tl { notes }   { \raggedbottom }
+  }
 
 % Shared decorative vocabulary.  The asymmetric rail reads as a miniature
 % connection diagram: signal, node, continuation.  It is built entirely from
@@ -914,7 +1141,9 @@
     \setkomafont{headsepline}{\color{syn-rule}}
   }
 
-\str_if_eq:VnF \g__synaptic_mode_tl { book }
+\bool_lazy_and:nnT
+  { ! \str_if_eq_p:Vn \g__synaptic_mode_tl { book } }
+  { ! \str_if_eq_p:Vn \g__synaptic_mode_tl { beamer } }
   {
     \AfterTOCHead[toc]
       { \__synaptic_layout_motif:\par\addvspace{0.8em} }
@@ -923,56 +1152,64 @@
 % ---------------------------------------------------------------------------
 % Caption
 % ---------------------------------------------------------------------------
-\captionsetup{
-  font      = small,
-  labelfont = {bf, sf, color=syn-secondary},
-  labelsep  = quad,
-  skip      = 10pt
-}
+\__synaptic_if_beamer:TF
+  { }
+  {
+    \captionsetup{
+      font      = small,
+      labelfont = {bf, sf, color=syn-secondary},
+      labelsep  = quad,
+      skip      = 10pt
+    }
 
-\setlist{
-  itemsep = 0.25em,
-  parsep  = 0pt,
-  topsep  = 0.5em
-}
+    \setlist{
+      itemsep = 0.25em,
+      parsep  = 0pt,
+      topsep  = 0.5em
+    }
+  }
 
 % ---------------------------------------------------------------------------
 % Section headings (KOMA)
 % ---------------------------------------------------------------------------
-\AddToHook{begindocument/before}
+\__synaptic_if_beamer:TF
+  { }
   {
-    \setkomafont{section}{\normalfont\large\bfseries\sffamily\color{syn-primary}}
-    \setkomafont{subsection}{\normalfont\normalsize\bfseries\sffamily\color{syn-text-dark}}
-    \setkomafont{subsubsection}{\normalfont\small\bfseries\sffamily\color{syn-text-dark!85}}
-    \setkomafont{paragraph}{\normalfont\small\bfseries\sffamily\color{syn-text-dark!80}}
-    \setkomafont{subparagraph}{\normalfont\small\bfseries\sffamily\color{syn-text-dark!60}}
+    \AddToHook{begindocument/before}
+      {
+        \setkomafont{section}{\normalfont\large\bfseries\sffamily\color{syn-primary}}
+        \setkomafont{subsection}{\normalfont\normalsize\bfseries\sffamily\color{syn-text-dark}}
+        \setkomafont{subsubsection}{\normalfont\small\bfseries\sffamily\color{syn-text-dark!85}}
+        \setkomafont{paragraph}{\normalfont\small\bfseries\sffamily\color{syn-text-dark!80}}
+        \setkomafont{subparagraph}{\normalfont\small\bfseries\sffamily\color{syn-text-dark!60}}
 
-    % A muted number and one accent node make section starts easier to scan
-    % without turning the number into a badge or a second headline.
-    \renewcommand*{\sectionformat}{%
-      {\normalfont\sffamily\color{syn-decoration-muted}\thesection\autodot}%
-      \enskip\__synaptic_layout_node:\enskip}
+        % A muted number and one accent node make section starts easier to scan
+        % without turning the number into a badge or a second headline.
+        \renewcommand*{\sectionformat}{%
+          {\normalfont\sffamily\color{syn-decoration-muted}\thesection\autodot}%
+          \enskip\__synaptic_layout_node:\enskip}
 
-    \RedeclareSectionCommand[
-      beforeskip = -3.5ex plus -1ex minus -.2ex,
-      afterskip  = 2.0ex plus .2ex
-    ]{section}
-    \RedeclareSectionCommand[
-      beforeskip = -2.5ex plus -0.5ex minus -.1ex,
-      afterskip  = 1.2ex plus .1ex
-    ]{subsection}
-    \RedeclareSectionCommand[
-      beforeskip = -2.0ex plus -0.5ex minus -.1ex,
-      afterskip  = 1.0ex plus .1ex
-    ]{subsubsection}
-    \RedeclareSectionCommand[
-      beforeskip = -1.6ex plus -0.4ex minus -.1ex,
-      afterskip  = 0.6ex plus .1ex
-    ]{paragraph}
-    \RedeclareSectionCommand[
-      beforeskip = -1.3ex plus -0.3ex minus -.1ex,
-      afterskip  = 0.5ex plus .1ex
-    ]{subparagraph}
+        \RedeclareSectionCommand[
+          beforeskip = -3.5ex plus -1ex minus -.2ex,
+          afterskip  = 2.0ex plus .2ex
+        ]{section}
+        \RedeclareSectionCommand[
+          beforeskip = -2.5ex plus -0.5ex minus -.1ex,
+          afterskip  = 1.2ex plus .1ex
+        ]{subsection}
+        \RedeclareSectionCommand[
+          beforeskip = -2.0ex plus -0.5ex minus -.1ex,
+          afterskip  = 1.0ex plus .1ex
+        ]{subsubsection}
+        \RedeclareSectionCommand[
+          beforeskip = -1.6ex plus -0.4ex minus -.1ex,
+          afterskip  = 0.6ex plus .1ex
+        ]{paragraph}
+        \RedeclareSectionCommand[
+          beforeskip = -1.3ex plus -0.3ex minus -.1ex,
+          afterskip  = 0.5ex plus .1ex
+        ]{subparagraph}
+      }
   }
 
 % ---------------------------------------------------------------------------
@@ -1087,7 +1324,7 @@
 %    \begin{macrocode}
 %<*theorem>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-theorem}{2026-08-31}{5.0.0}
+\ProvidesExplPackage{synaptic-theorem}{2026-09-02}{5.2.0}
   {Synaptic~Theorem~Environments}
 
 \RequirePackage{amsthm}
@@ -1127,12 +1364,12 @@
   },
   synaptic/theorem-box-definition/.style={
     synaptic/theorem-box,
-    colback = syn-accent!4!white,
+    colback = syn-accent!4!syn-bg,
     borderline~west = {2.4pt}{0pt}{syn-accent}
   },
   synaptic/theorem-box-remark/.style={
     synaptic/theorem-box,
-    colback = syn-secondary!3!white,
+    colback = syn-secondary!3!syn-bg,
     borderline~west = {2.2pt}{0pt}{syn-secondary}
   }
 }
@@ -1422,7 +1659,7 @@
 %    \begin{macrocode}
 %<*title>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-title}{2026-08-31}{5.0.0}
+\ProvidesExplPackage{synaptic-title}{2026-09-02}{5.2.0}
   {Synaptic~Title~Page}
 
 % ---------------------------------------------------------------------------
@@ -1463,16 +1700,30 @@
 % User API: metadata setters
 % ---------------------------------------------------------------------------
 \NewDocumentCommand{\SynapticTitle}{m}
-  { \tl_gset:Nn \g__synaptic_title_tl {#1} }
+  {
+    \tl_gset:Nn \g__synaptic_title_tl {#1}
+    \__synaptic_if_beamer:TF
+      { \title[\g__synaptic_short_title_tl]{#1} }
+      { }
+  }
 
 \NewDocumentCommand{\SynapticSubtitle}{m}
-  { \tl_gset:Nn \g__synaptic_subtitle_tl {#1} }
+  {
+    \tl_gset:Nn \g__synaptic_subtitle_tl {#1}
+    \__synaptic_if_beamer:TF { \subtitle{#1} } { }
+  }
 
 \NewDocumentCommand{\SynapticShortTitle}{m}
-  { \tl_gset:Nn \g__synaptic_short_title_tl {#1} }
+  {
+    \tl_gset:Nn \g__synaptic_short_title_tl {#1}
+    \__synaptic_if_beamer:TF { \title[#1]{\g__synaptic_title_tl} } { }
+  }
 
 \NewDocumentCommand{\SynapticDate}{m}
-  { \tl_gset:Nn \g__synaptic_date_tl {#1} }
+  {
+    \tl_gset:Nn \g__synaptic_date_tl {#1}
+    \__synaptic_if_beamer:TF { \date{#1} } { }
+  }
 
 \NewDocumentCommand{\SynapticAuthor}{o m}
   {
@@ -1480,6 +1731,9 @@
     \IfValueTF{#1}
       { \seq_gput_right:Nn \g__synaptic_author_marks_seq {#1} }
       { \seq_gput_right:Nn \g__synaptic_author_marks_seq { } }
+    \__synaptic_if_beamer:TF
+      { \author{\seq_use:Nn \g__synaptic_authors_seq {,~}} }
+      { }
   }
 
 \NewDocumentCommand{\SynapticAffiliation}{o m}
@@ -1492,10 +1746,16 @@
   { \seq_gput_right:Nn \g__synaptic_emails_seq {#1} }
 
 \NewDocumentCommand{\SynapticKeywords}{m}
-  { \tl_gset:Nn \g__synaptic_keywords_tl {#1} }
+  {
+    \tl_gset:Nn \g__synaptic_keywords_tl {#1}
+    \__synaptic_if_beamer:TF { \keywords{#1} } { }
+  }
 
 \NewDocumentCommand{\SynapticSubject}{m}
-  { \tl_gset:Nn \g__synaptic_subject_tl {#1} }
+  {
+    \tl_gset:Nn \g__synaptic_subject_tl {#1}
+    \__synaptic_if_beamer:TF { \subject{#1} } { }
+  }
 
 \NewDocumentCommand{\SynapticArxiv}{m}
   { \tl_gset:Nn \g__synaptic_arxiv_tl {#1} }
@@ -1537,13 +1797,23 @@
   { \tl_gset:Nn \g__synaptic_lecture_number_tl {#1} }
 
 \NewDocumentCommand{\SynapticInstructor}{m}
-  { \tl_gset:Nn \g__synaptic_instructor_tl {#1} }
+  {
+    \tl_gset:Nn \g__synaptic_instructor_tl {#1}
+    \__synaptic_if_beamer:TF
+      { \seq_if_empty:NT \g__synaptic_authors_seq { \author{#1} } }
+      { }
+  }
 
 \NewDocumentCommand{\SynapticSemester}{m}
   { \tl_gset:Nn \g__synaptic_semester_tl {#1} }
 
 \NewDocumentCommand{\SynapticTags}{m}
-  { \tl_gset:Nn \g__synaptic_tags_tl {#1} }
+  {
+    \tl_gset:Nn \g__synaptic_tags_tl {#1}
+    \__synaptic_if_beamer:TF
+      { \tl_if_empty:NT \g__synaptic_keywords_tl { \keywords{#1} } }
+      { }
+  }
 
 \NewDocumentCommand{\SynapticPublicationInfo}{m}
   { \tl_gset:Nn \g__synaptic_publication_info_tl {#1} }
@@ -1607,19 +1877,25 @@
     }
   }
 
-\AddToHook{begindocument}{\__synaptic_title_apply_pdf_metadata:}
+\__synaptic_if_beamer:TF
+  { }
+  { \AddToHook{begindocument}{\__synaptic_title_apply_pdf_metadata:} }
 
 % ---------------------------------------------------------------------------
 % Affillist environment
 % ---------------------------------------------------------------------------
-\newlist{synaffillist}{description}{1}
-\setlist[synaffillist]{
-  leftmargin = 0.3cm,
-  labelsep   = 4pt,
-  itemsep    = 2pt,
-  topsep     = 2pt,
-  parsep     = 0pt
-}
+\__synaptic_if_beamer:TF
+  { }
+  {
+    \newlist{synaffillist}{description}{1}
+    \setlist[synaffillist]{
+      leftmargin = 0.3cm,
+      labelsep   = 4pt,
+      itemsep    = 2pt,
+      topsep     = 2pt,
+      parsep     = 0pt
+    }
+  }
 
 % ---------------------------------------------------------------------------
 % Mode-aware title renderers
@@ -1636,6 +1912,7 @@
             { book }    { 专著 }
             { lecture } { 课程讲义 }
             { notes }   { 数学笔记 }
+            { beamer }  { 演示文稿 }
           }
       }
       {
@@ -1645,6 +1922,7 @@
             { book }    { Monograph }
             { lecture } { Course~notes }
             { notes }   { Working~notes }
+            { beamer }  { Presentation }
           }
       }
   }
@@ -1688,6 +1966,7 @@
             { book }    { \tl_set:Nn \l__synaptic_title_layout_tl { sequence } }
             { lecture } { \tl_set:Nn \l__synaptic_title_layout_tl { compact } }
             { notes }   { \tl_set:Nn \l__synaptic_title_layout_tl { compact } }
+            { beamer }  { \tl_set:Nn \l__synaptic_title_layout_tl { page } }
           }
       }
   }
@@ -2120,15 +2399,19 @@
   {
     \bool_if:NT \g__synaptic_toc_bool
       {
-        \__synaptic_layout_toc_style:
-        \str_case:Vn \g__synaptic_toc_layout_tl
+        \__synaptic_if_beamer:TF
+          { \__synaptic_beamer_render_toc: }
           {
-            { inline }
-              { \addvspace{16pt}\tableofcontents\addvspace{16pt} }
-            { top }
-              { \addvspace{10pt}\tableofcontents\addvspace{18pt} }
-            { page }
-              { \clearpage\tableofcontents\clearpage }
+            \__synaptic_layout_toc_style:
+            \str_case:Vn \g__synaptic_toc_layout_tl
+              {
+                { inline }
+                  { \addvspace{16pt}\tableofcontents\addvspace{16pt} }
+                { top }
+                  { \addvspace{10pt}\tableofcontents\addvspace{18pt} }
+                { page }
+                  { \clearpage\tableofcontents\clearpage }
+              }
           }
       }
   }
@@ -2143,7 +2426,9 @@
         \PackageError{synaptic-title}{Document~title~is~empty}
           {Set~it~with~\string\SynapticTitle\{...\}.}
       }
-    \__synaptic_title_apply_pdf_metadata:
+    \__synaptic_if_beamer:TF
+      { }
+      { \__synaptic_title_apply_pdf_metadata: }
     \__synaptic_title_resolve_layout:
     \str_case:Vn \g__synaptic_mode_tl
       {
@@ -2151,6 +2436,7 @@
         { book }    { \__synaptic_title_render_book: }
         { lecture } { \__synaptic_title_render_lecture: }
         { notes }   { \__synaptic_title_render_notes: }
+        { beamer }  { \__synaptic_title_render_beamer: }
       }
     \__synaptic_title_render_toc:
     \setcounter{footnote}{0}
@@ -2166,7 +2452,7 @@
 %    \begin{macrocode}
 %<*journal>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-journal}{2026-08-31}{5.0.0}
+\ProvidesExplPackage{synaptic-journal}{2026-09-02}{5.2.0}
   {Synaptic~Journal~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -2213,7 +2499,7 @@
 %    \begin{macrocode}
 %<*book>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-book}{2026-08-31}{5.0.0}
+\ProvidesExplPackage{synaptic-book}{2026-09-02}{5.2.0}
   {Synaptic~Book~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -2374,7 +2660,7 @@
 %    \begin{macrocode}
 %<*lecture>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-lecture}{2026-08-31}{5.0.0}
+\ProvidesExplPackage{synaptic-lecture}{2026-09-02}{5.2.0}
   {Synaptic~Lecture~Mode}
 
 % ---------------------------------------------------------------------------
@@ -2447,7 +2733,7 @@
     arc=1.5pt,outer~arc=1.5pt
   },
   synaptic/lecture-summary/.style={
-    enhanced,breakable,colback=syn-primary!7!white,colframe=syn-primary,
+    enhanced,breakable,colback=syn-primary!7!syn-bg,colframe=syn-primary,
     boxrule=0.5pt,fonttitle=\bfseries\sffamily,
     colbacktitle=syn-primary,coltitle=syn-on-primary,
     borderline~west={2.0pt}{0pt}{syn-accent},
@@ -2476,7 +2762,7 @@
 %    \begin{macrocode}
 %<*notes>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-notes}{2026-08-31}{5.0.0}
+\ProvidesExplPackage{synaptic-notes}{2026-09-02}{5.2.0}
   {Synaptic~Notes~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -2532,15 +2818,15 @@
     borderline~west={2pt}{0pt}{syn-primary}
   },
   synaptic/question/.style={
-    synaptic/note-base,colback=syn-secondary!3!white,coltitle=syn-secondary,
+    synaptic/note-base,colback=syn-secondary!3!syn-bg,coltitle=syn-secondary,
     borderline~west={2pt}{0pt}{syn-secondary}
   },
   synaptic/todo/.style={
-    synaptic/note-base,colback=syn-warning!4!white,coltitle=syn-warning,
+    synaptic/note-base,colback=syn-warning!4!syn-bg,coltitle=syn-warning,
     borderline~west={2pt}{0pt}{syn-warning}
   },
   synaptic/note-summary/.style={
-    synaptic/note-base,colback=syn-primary!7!white,coltitle=syn-primary,
+    synaptic/note-base,colback=syn-primary!7!syn-bg,coltitle=syn-primary,
     borderline~west={3pt}{0pt}{syn-primary},
     borderline~south={0.6pt}{0pt}{syn-primary!45!white}
   }
@@ -2576,6 +2862,472 @@
 \NewDocumentCommand{\SynapticBalanceColumns}{}{\balance}
 
 %</notes>
+%    \end{macrocode}
+
+% \subsection{synaptic-beamer.sty}
+%
+% \paragraph{Beamer mode: presentation typography, navigation, and slide cards.}
+%
+%    \begin{macrocode}
+%<*beamer>
+\NeedsTeXFormat{LaTeX2e}[2023/11/01]
+\ProvidesExplPackage{synaptic-beamer}{2026-09-02}{5.2.0}
+  {Synaptic~Beamer~Mode}
+
+% ---------------------------------------------------------------------------
+% Slide measure and typography
+% ---------------------------------------------------------------------------
+\dim_new:N \g__synaptic_beamer_margin_dim
+
+\cs_new_protected:Npn \__synaptic_beamer_apply_measure:
+  {
+    \str_case:VnF \g__synaptic_measure_tl
+      {
+        { narrow }   { \dim_gset:Nn \g__synaptic_beamer_margin_dim { 0.075\paperwidth } }
+        { standard } { \dim_gset:Nn \g__synaptic_beamer_margin_dim { 0.055\paperwidth } }
+        { wide }     { \dim_gset:Nn \g__synaptic_beamer_margin_dim { 0.035\paperwidth } }
+      }
+      { \dim_gset:Nn \g__synaptic_beamer_margin_dim { 0.055\paperwidth } }
+    \setbeamersize{
+      text~margin~left  = \dim_use:N \g__synaptic_beamer_margin_dim,
+      text~margin~right = \dim_use:N \g__synaptic_beamer_margin_dim
+    }
+  }
+\__synaptic_beamer_apply_measure:
+
+\usefonttheme{professionalfonts}
+\setbeamerfont{normal~text}{family=\sffamily,size=\normalsize}
+\setbeamerfont{title}{family=\sffamily,series=\bfseries,size=\huge}
+\setbeamerfont{subtitle}{family=\sffamily,series=\mdseries,size=\large}
+\setbeamerfont{frametitle}{family=\sffamily,series=\bfseries,size=\Large}
+\setbeamerfont{framesubtitle}{family=\sffamily,series=\mdseries,size=\small}
+\setbeamerfont{section~title}{family=\sffamily,series=\bfseries,size=\huge}
+\setbeamerfont{block~title}{family=\sffamily,series=\bfseries,size=\normalsize}
+\setbeamerfont{block~body}{family=\sffamily,size=\normalsize}
+\setbeamerfont{caption}{family=\sffamily,size=\small}
+\setbeamerfont{caption~name}{family=\sffamily,series=\bfseries}
+\setbeamerfont{page~number~in~head/foot}{family=\sffamily,size=\scriptsize}
+
+% ---------------------------------------------------------------------------
+% Semantic Beamer colours.  Values remain references to Synaptic colour names,
+% so runtime theme and background changes continue to update subsequent frames.
+% ---------------------------------------------------------------------------
+\setbeamercolor{normal~text}{fg=syn-text-dark,bg=syn-bg}
+\setbeamercolor{background~canvas}{bg=syn-bg}
+\setbeamercolor{structure}{fg=syn-link}
+\setbeamercolor{title}{fg=syn-text-dark}
+\setbeamercolor{subtitle}{fg=syn-muted-text}
+\setbeamercolor{frametitle}{fg=syn-text-dark,bg=syn-bg}
+\setbeamercolor{framesubtitle}{fg=syn-muted-text,bg=syn-bg}
+\setbeamercolor{section~title}{fg=syn-text-dark}
+\setbeamercolor{section~in~toc}{fg=syn-text-dark}
+\setbeamercolor{subsection~in~toc}{fg=syn-muted-text}
+\setbeamercolor{block~title}{fg=syn-on-primary,bg=syn-primary}
+\setbeamercolor{block~body}{fg=syn-text-dark,bg=syn-surface}
+\setbeamercolor{block~title~alerted}{fg=white,bg=syn-danger}
+\setbeamercolor{block~body~alerted}{fg=syn-text-dark,bg=syn-danger!5!syn-bg}
+\setbeamercolor{block~title~example}{fg=white,bg=syn-accent}
+\setbeamercolor{block~body~example}{fg=syn-text-dark,bg=syn-accent!5!syn-bg}
+\setbeamercolor{caption~name}{fg=syn-secondary}
+\setbeamercolor{synaptic~footer}{fg=syn-muted-text,bg=syn-bg}
+\setbeamercolor{synaptic~title~meta}{fg=syn-text-dark,bg=syn-surface-strong}
+
+% ---------------------------------------------------------------------------
+% Lists, captions, and native blocks
+% ---------------------------------------------------------------------------
+\setbeamertemplate{navigation~symbols}{}
+\setbeamertemplate{itemize~item}
+  { \raisebox{0.18ex}{\textcolor{syn-primary}{\rule{3.2pt}{3.2pt}}} }
+\setbeamertemplate{itemize~subitem}
+  { \raisebox{0.35ex}{\textcolor{syn-accent}{\rule{4.5pt}{0.8pt}}} }
+\setbeamertemplate{itemize~subsubitem}
+  { \textcolor{syn-decoration-muted}{\raisebox{0.25ex}{\scriptsize\ensuremath{\bullet}}} }
+\setbeamertemplate{enumerate~item}
+  { \textcolor{syn-primary}{\bfseries\insertenumlabel.} }
+\setbeamertemplate{caption}[numbered]
+\setbeamertemplate{blocks}[default]
+\setbeamercovered{transparent=16}
+
+% ---------------------------------------------------------------------------
+% Single-layer semantic cards.
+%
+% Statement environments declared by synaptic-theorem are wrapped in a
+% semantic tcolorbox card, so beamer's `theorem begin' template must not
+% open a second, native block inside that card: the nested block
+% reproduces the card chrome and adds a full title strip, extra height,
+% and overflow.  The synaptic styles set \g__synaptic_beamer_card_bool
+% before the template runs, so the card branch typesets only the
+% amsthm-style head line inside the surrounding box; native beamer
+% statement environments (whose styles do not set the flag) keep the
+% default block template untouched.
+% ---------------------------------------------------------------------------
+\bool_new:N \g__synaptic_beamer_card_bool
+\bool_new:N \g__synaptic_beamer_card_open_bool
+
+% Wrap the three synaptic theorem styles so the begin template can detect
+% the surrounding semantic card.
+\clist_map_inline:nn { plain, definition, remark }
+  {
+    \cs_set_eq:cc { __synaptic_beamer_style_#1: } { th@syn-theorem-#1 }
+    \cs_set:cpn { th@syn-theorem-#1 }
+      {
+        \bool_gset_true:N \g__synaptic_beamer_card_bool
+        \use:c { __synaptic_beamer_style_#1: }
+      }
+  }
+% Native amsthm styles must clear the flag so a native statement never
+% picks up a stale card state from a preceding semantic statement.
+\clist_map_inline:nn { plain, definition, example }
+  {
+    \cs_set_eq:cc { __synaptic_beamer_native_#1: } { th@#1 }
+    \cs_set:cpn { th@#1 }
+      {
+        \bool_gset_false:N \g__synaptic_beamer_card_bool
+        \use:c { __synaptic_beamer_native_#1: }
+      }
+  }
+
+\defbeamertemplate{theorem~begin}{synaptic}
+  {%
+    \bool_if:NTF \g__synaptic_beamer_card_bool
+      {%
+        \bool_gset_true:N \g__synaptic_beamer_card_open_bool
+        \par\nobreak
+        {\inserttheoremheadfont
+          \inserttheoremname
+          \inserttheoremnumber
+          \ifx\inserttheoremaddition\@empty\else\ (\inserttheoremaddition)\fi
+          \inserttheorempunctuation}\par\nobreak
+        \vskip0.5ex\nobreak
+      }
+      {%
+        \bool_gset_false:N \g__synaptic_beamer_card_open_bool
+        \begin{\inserttheoremblockenv}
+          {%
+            \inserttheoremname
+            \ifx\inserttheoremaddition\@empty\else\ (\inserttheoremaddition)\fi%
+          }%
+      }
+  }
+\defbeamertemplate{theorem~end}{synaptic}
+  {%
+    \bool_if:NTF \g__synaptic_beamer_card_open_bool
+      { \par }
+      { \end{\inserttheoremblockenv} }
+  }
+\setbeamertemplate{theorem~begin}[synaptic]
+\setbeamertemplate{theorem~end}[synaptic]
+
+% ---------------------------------------------------------------------------
+% Frame title and quiet progress navigation
+% ---------------------------------------------------------------------------
+\defbeamertemplate*{frametitle}{synaptic}
+  {
+    \nointerlineskip
+    \begin{beamercolorbox}[
+      wd=\paperwidth,
+      leftskip=\dim_use:N \g__synaptic_beamer_margin_dim,
+      rightskip=\dim_use:N \g__synaptic_beamer_margin_dim
+    ]{frametitle}
+      \vskip1.05ex
+      \usebeamerfont{frametitle}\insertframetitle\par
+      \ifx\insertframesubtitle\@empty
+      \else
+        \vskip0.25ex
+        {\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}%
+          \insertframesubtitle\par}
+      \fi
+      \vskip0.85ex
+    \end{beamercolorbox}
+    \nointerlineskip
+    \hbox{\textcolor{syn-rule}{\rule{\paperwidth}{0.45pt}}}
+  }
+\setbeamertemplate{frametitle}[synaptic]
+
+\cs_new:Npn \__synaptic_beamer_footer_label:
+  {
+    \tl_if_empty:NTF \g__synaptic_course_code_tl
+      {
+        \tl_if_empty:NTF \g__synaptic_short_title_tl
+          { \g__synaptic_title_tl }
+          { \g__synaptic_short_title_tl }
+      }
+      {
+        \g__synaptic_course_code_tl
+        \tl_if_empty:NF \g__synaptic_short_title_tl
+          { \enspace\textbullet\enspace\g__synaptic_short_title_tl }
+      }
+  }
+
+\cs_new_protected:Npn \__synaptic_beamer_progress:
+  {
+    \int_set:Nn \l_tmpa_int { \int_max:nn { 1 } { \inserttotalframenumber } }
+    \int_set:Nn \l_tmpb_int
+      { \int_min:nn { \insertframenumber } { \l_tmpa_int } }
+    \dim_set:Nn \l_tmpa_dim
+      { \paperwidth * \l_tmpb_int / \l_tmpa_int }
+    \hbox to \paperwidth
+      {
+        \textcolor{syn-primary}{\rule{\dim_use:N \l_tmpa_dim}{0.7pt}}
+        \hfil
+      }
+  }
+
+\defbeamertemplate*{footline}{synaptic}
+  {
+    \leavevmode
+    \vbox{
+      \offinterlineskip
+      \hbox{
+        \begin{beamercolorbox}[
+          wd=0.82\paperwidth,ht=2.8ex,dp=1.15ex,
+          leftskip=\dim_use:N \g__synaptic_beamer_margin_dim
+        ]{synaptic~footer}
+          \usebeamerfont{page~number~in~head/foot}
+          \__synaptic_layout_header_mark:\__synaptic_beamer_footer_label:
+        \end{beamercolorbox}
+        \begin{beamercolorbox}[
+          wd=0.18\paperwidth,ht=2.8ex,dp=1.15ex,
+          rightskip=\dim_use:N \g__synaptic_beamer_margin_dim
+        ]{synaptic~footer}
+          \hfill\usebeamerfont{page~number~in~head/foot}
+          \insertframenumber\,/\,\inserttotalframenumber
+        \end{beamercolorbox}}
+      \__synaptic_beamer_progress:
+    }
+  }
+\setbeamertemplate{footline}[synaptic]
+\setbeamertemplate{headline}{}
+
+% ---------------------------------------------------------------------------
+% Title frame
+% ---------------------------------------------------------------------------
+\cs_new:Npn \__synaptic_beamer_presenter:
+  {
+    \tl_if_empty:NTF \g__synaptic_instructor_tl
+      { \seq_use:Nn \g__synaptic_authors_seq {,~} }
+      { \g__synaptic_instructor_tl }
+  }
+
+\cs_new:Npn \__synaptic_beamer_affiliation:nn #1#2 {#2}
+
+\cs_new_protected:Npn \__synaptic_beamer_title_kicker:
+  {
+    \noindent
+    {\usebeamerfont{page~number~in~head/foot}\bfseries\color{syn-primary}
+      \tl_if_empty:NTF \g__synaptic_course_code_tl
+        { \__synaptic_title_mode_word: }
+        { \g__synaptic_course_code_tl }
+      \tl_if_empty:NF \g__synaptic_course_tl
+        {
+          % Always separate the mode word or course code from the course:
+          % \SynapticCourse alone previously glued "Presentation" to its text.
+          \enspace\textbullet\enspace
+          \g__synaptic_course_tl
+        }}
+    \hfill
+    {\usebeamerfont{page~number~in~head/foot}\color{syn-muted-text}
+      \tl_if_empty:NF \g__synaptic_lecture_number_tl
+        {
+          \c__synaptic_label_lecture_tl\nobreakspace
+          \g__synaptic_lecture_number_tl
+          \__synaptic_if_lang_zh:TF {~\u8bb2} { }
+        }
+      \tl_if_empty:NF \g__synaptic_semester_tl
+        {
+          \tl_if_empty:NF \g__synaptic_lecture_number_tl
+            { \enspace\textbullet\enspace }
+          \g__synaptic_semester_tl
+        }}
+    \par
+  }
+
+\cs_new_protected:Npn \__synaptic_beamer_title_meta:
+  {
+    \begin{beamercolorbox}[
+      wd=\linewidth,sep=1.0ex,leftskip=0.4ex,rightskip=0.4ex
+    ]{synaptic~title~meta}
+      {\small\sffamily\bfseries\__synaptic_layout_header_mark:
+        \__synaptic_beamer_presenter:}
+      \tl_if_empty:NF \g__synaptic_date_tl
+        { \hfill{\small\sffamily\color{syn-muted-text}\g__synaptic_date_tl} }
+      \seq_if_empty:NF \g__synaptic_affils_seq
+        {
+          \par\vskip0.35ex
+          {\scriptsize\color{syn-muted-text}
+            \seq_map_inline:Nn \g__synaptic_affils_seq
+              { \__synaptic_beamer_affiliation:nn ##1\par }}
+        }
+    \end{beamercolorbox}
+  }
+
+\cs_new_protected:Npn \__synaptic_beamer_title_abstract:
+  {
+    \tl_if_empty:NF \g__synaptic_abstract_tl
+      {
+        \vskip1.1ex
+        {\small\color{syn-muted-text}
+          \textcolor{syn-primary}{\bfseries
+            \c__synaptic_label_overview_tl\c__synaptic_colon_tl}\enspace
+          \g__synaptic_abstract_tl\par}
+      }
+  }
+
+\cs_new_protected:Npn \__synaptic_beamer_title_lower:
+  {
+    \bool_if:NTF \g__synaptic_toc_bool
+      {
+        \str_if_eq:VnTF \g__synaptic_toc_layout_tl { inline }
+          {
+            \vskip0.8ex
+            {\small\bfseries\color{syn-primary}
+              \c__synaptic_label_contents_tl\par}
+            \vskip0.25ex
+            {\footnotesize\tableofcontents}
+          }
+          { \__synaptic_beamer_title_abstract: }
+      }
+      { \__synaptic_beamer_title_abstract: }
+  }
+
+\cs_new_protected:Npn \__synaptic_beamer_title_content:
+  {
+    \vspace*{0.8ex}
+    \__synaptic_beamer_title_kicker:
+    \vspace{1.9ex}
+    \__synaptic_layout_motif:\par
+    \vspace{2.0ex}
+    \str_if_eq:VnTF \l__synaptic_title_layout_tl { compact }
+      {
+        {\fontsize{24}{28}\selectfont\sffamily\bfseries\raggedright
+          \color{syn-text-dark}\g__synaptic_title_tl\par}
+      }
+      {
+        {\fontsize{29}{34}\selectfont\sffamily\bfseries\raggedright
+          \color{syn-text-dark}\g__synaptic_title_tl\par}
+      }
+    \tl_if_empty:NF \g__synaptic_subtitle_tl
+      {
+        \vskip0.75ex
+        {\usebeamerfont{subtitle}\color{syn-muted-text}
+          \g__synaptic_subtitle_tl\par}
+      }
+    \vfill
+    \__synaptic_beamer_title_meta:
+    \__synaptic_beamer_title_lower:
+    % Bottom row: tag line on the left, standard Beamer \titlegraphic on the
+    % right.  The graphic is typeset on its own (still right-aligned) when no
+    % tags are present, so \titlegraphic always lands in the bottom-right.
+    \ifx\inserttitlegraphic\@empty
+      \tl_if_empty:NF \g__synaptic_tags_tl
+        {
+          \vskip0.7ex
+          {\scriptsize\sffamily\color{syn-decoration-muted}
+            \g__synaptic_tags_tl\par}
+        }
+    \else
+      \vskip0.7ex
+      {\scriptsize\sffamily\color{syn-decoration-muted}
+        \g__synaptic_tags_tl\hfill\inserttitlegraphic\par}
+    \fi
+  }
+
+\cs_new_protected:Npn \__synaptic_title_render_beamer:
+  {
+    \frame[plain,noframenumbering]
+      { \__synaptic_beamer_title_content: }
+  }
+
+% ---------------------------------------------------------------------------
+% Agenda and section dividers
+% ---------------------------------------------------------------------------
+\NewDocumentCommand{\SynapticAgendaFrame}{ O{\c__synaptic_label_contents_tl} }
+  {
+    \frame
+      {
+        \frametitle{#1}
+        \tableofcontents
+      }
+  }
+
+\cs_new_protected:Npn \__synaptic_beamer_agenda_page:
+  {
+    \frame[plain,noframenumbering]
+      {
+        \vfill
+        \__synaptic_title_kicker:n { \c__synaptic_label_contents_tl }
+        \vspace{1.4ex}
+        {\small\tableofcontents}
+        \vfill
+      }
+  }
+
+\cs_new_protected:Npn \__synaptic_beamer_render_toc:
+  {
+    \str_case:Vn \g__synaptic_toc_layout_tl
+      {
+        { inline } { }
+        { top }    { \SynapticAgendaFrame }
+        { page }   { \__synaptic_beamer_agenda_page: }
+      }
+  }
+
+\defbeamertemplate*{section~page}{synaptic}
+  {
+    \vfill
+    \__synaptic_title_kicker:n { \__synaptic_title_mode_word: }
+    \vspace{3.4ex}
+    % The section number is typeset in the section-title voice so that the
+    % divider reads as one two-line heading pair (muted index, dark title)
+    % instead of a stray small numeral floating above a huge title.
+    {\usebeamerfont{section~title}\color{syn-decoration-muted}
+      \insertsectionnumber\par}
+    \vspace{0.15ex}
+    {\usebeamerfont{section~title}\usebeamercolor[fg]{section~title}
+      \insertsection\par}
+    \vspace{2.0ex}
+    \__synaptic_layout_motif:
+    \vfill
+  }
+\setbeamertemplate{section~page}[synaptic]
+
+\NewDocumentCommand{\SynapticSectionFrame}{}
+  { \frame[plain,noframenumbering]{\sectionpage} }
+
+% ---------------------------------------------------------------------------
+% Slide-safe teaching cards shared with the lecture vocabulary
+% ---------------------------------------------------------------------------
+\tcbset{
+  synaptic/beamer-card/.style={
+    enhanced,frame~hidden,
+    colback=syn-surface-strong,coltext=syn-text-dark,
+    borderline~west={2.6pt}{0pt}{syn-primary},
+    borderline~north={0.35pt}{0pt}{syn-border!60!white},
+    fonttitle=\bfseries\sffamily,coltitle=syn-primary,
+    attach~title~to~upper={\quad},
+    left=8pt,right=8pt,top=6pt,bottom=6pt,
+    before~skip=6pt,after~skip=6pt,
+    arc=1.5pt,outer~arc=1.5pt
+  },
+  synaptic/beamer-summary/.style={
+    synaptic/beamer-card,
+    colback=syn-primary!7!syn-bg,
+    borderline~west={2.6pt}{0pt}{syn-accent},
+    coltitle=syn-primary
+  }
+}
+
+\NewDocumentEnvironment{synlearninggoals}{}
+  {\begin{tcolorbox}[synaptic/beamer-card,
+      title={\c__synaptic_label_learning_goals_tl}]}
+  {\end{tcolorbox}}
+
+\NewDocumentEnvironment{synlecturesummary}{}
+  {\begin{tcolorbox}[synaptic/beamer-summary,
+      title={\c__synaptic_label_summary_tl}]}
+  {\end{tcolorbox}}
+
+%</beamer>
 %    \end{macrocode}
 
 % \subsection{synaptic-lang-en.def}
@@ -2683,7 +3435,7 @@
 %    \begin{macrocode}
 %<*package>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic}{2026-08-31}{5.0.0}
+\ProvidesExplPackage{synaptic}{2026-09-02}{5.2.0}
   {Modern~Academic~Typesetting~Framework}
 
 % Forward all user options to synaptic-base
