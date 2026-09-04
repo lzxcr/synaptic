@@ -84,9 +84,10 @@ Only `theme`, `background`, `toc`, and `toc-layout` change after loading:
 
 `background` accepts any xcolor expression and re-derives every semantic
 colour role against the selected page colour. Surfaces, borders, and hairlines
-blend with the background; when the background is dark, body and muted text
-flip to light inks automatically. In Beamer mode the per-frame background
-canvas follows the same setting.
+blend with the background; on dark canvases, neutral ink and the theme's brand,
+accent, and status colours all lift automatically. Switching back to a light
+background restores the registered palette exactly. In Beamer mode the
+per-frame background canvas follows the same setting.
 
 Unknown package options and attempts to mutate load-time settings are errors;
 configuration mistakes are never silently ignored.
@@ -124,11 +125,13 @@ navigation. With `toc=true`, `toc-layout=inline`, `top`, and `page` select an
 agenda on the title frame, a regular agenda frame, or a plain agenda frame.
 The standard `\titlegraphic{...}` command is typeset right-aligned in the
 bottom row of the title frame (next to or instead of the `\SynapticTags`
-line). Namespaced statement environments render as semantic cards: the
-theorem template typesets only the amsthm-style head line inside the
-surrounding tcolorbox card, so a statement is never double-carded. Native
-`theorem`, `definition`, and `example` environments keep Beamer's default
-block template.
+line). Numbered agenda entries, signal-rail frame headings, and a tracked
+progress footer preserve a consistent reading edge. Namespaced statement
+environments render as semantic cards: the theorem template typesets only the
+amsthm-style head line inside the surrounding tcolorbox card, so a statement
+is never double-carded. Native blocks and native `theorem`, `definition`, and
+`example` environments use the same light surface and semantic side-rail
+language.
 
 ### Typography
 
@@ -199,7 +202,9 @@ configuration interface:
 
 Theme identifiers are lowercase slugs and cannot replace existing themes.
 Extensions can consume `syn-primary`, `syn-secondary`, `syn-accent`,
-`syn-danger`, `syn-warning`, `syn-success`, `syn-surface`, and `syn-border`.
+`syn-danger`, `syn-warning`, `syn-success`, the `syn-surface-soft` /
+`syn-surface` / `syn-surface-strong` ladder, `syn-border`, and the inverse-ink
+roles `syn-on-primary` and `syn-on-danger`.
 
 ## Development and release
 

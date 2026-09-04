@@ -13,6 +13,8 @@
   { \TYPE{background-light=dark} } { \TYPE{background-light=light} }
 \extractcolorspecs{syn-text-dark} \l_tmpa_tl \l_tmpb_tl
 \TYPE{text-dark=\l_tmpa_tl/\l_tmpb_tl}
+\extractcolorspecs{syn-primary} \l_tmpa_tl \l_tmpb_tl
+\TYPE{primary-light=\l_tmpa_tl/\l_tmpb_tl}
 \extractcolorspecs{syn-surface} \l_tmpa_tl \l_tmpb_tl
 \TYPE{surface=\l_tmpa_tl/\l_tmpb_tl}
 \ExplSyntaxOff
@@ -33,6 +35,10 @@
 \TYPE{rule=\l_tmpa_tl/\l_tmpb_tl}
 \extractcolorspecs{syn-link} \l_tmpa_tl \l_tmpb_tl
 \TYPE{link=\l_tmpa_tl/\l_tmpb_tl}
+\extractcolorspecs{syn-primary} \l_tmpa_tl \l_tmpb_tl
+\TYPE{primary-dark=\l_tmpa_tl/\l_tmpb_tl}
+\extractcolorspecs{syn-on-primary} \l_tmpa_tl \l_tmpb_tl
+\TYPE{on-primary-dark=\l_tmpa_tl/\l_tmpb_tl}
 \ExplSyntaxOff
 \begin{syntheorem}A dark-background theorem card.\end{syntheorem}
 \SynapticSetup{background=white}
@@ -42,6 +48,8 @@
   { \TYPE{background-restored=dark} } { \TYPE{background-restored=light} }
 \extractcolorspecs{syn-text-dark} \l_tmpa_tl \l_tmpb_tl
 \TYPE{text-dark=\l_tmpa_tl/\l_tmpb_tl}
+\extractcolorspecs{syn-primary} \l_tmpa_tl \l_tmpb_tl
+\TYPE{primary-restored=\l_tmpa_tl/\l_tmpb_tl}
 \ExplSyntaxOff
 \TYPE{background-cycling=ok}
 \END

@@ -1,5 +1,39 @@
 # Changelog
 
+## [5.3.0] — 2026-09-04
+
+### Changed
+
+- Refined all five built-in palettes around calmer, contrast-safe primary,
+  secondary, and accent colours. Theme values are now retained as stable base
+  colours and re-derived reversibly whenever the page background changes.
+- Dark backgrounds now adapt the public brand and status roles as well as body
+  ink: primary, secondary, accent, danger, warning, and success colours lift
+  for legibility, while neutral text, rules, and a three-step surface ladder
+  derive directly from the canvas.
+- Consolidated theorem, title-metadata, lecture, notes, and Beamer cards on one
+  shared skin, aligning corner radius, hairline weight, background behaviour,
+  and semantic side rails across document modes.
+- Reworked Beamer's visual hierarchy: frame headings use a full-measure signal
+  rail, numbered contents entries have stable alignment, section dividers are
+  quieter, and the footer progress indicator now combines a faint track with a
+  clamped active segment inside the text margins.
+- Replaced saturated native-block title strips with single-layer, lightly
+  tinted cards whose title and west rail carry the semantic colour. Regular,
+  example, alert, and native theorem blocks now match namespaced statement and
+  teaching cards.
+- Rebalanced the Beamer title frame with a shared metadata card, safer empty
+  metadata handling, a larger dedicated agenda composition, and cleaner tag /
+  title-graphic alignment.
+
+### Fixed
+
+- Removed print-oriented `\Needspace` reservations from statements inside
+  Beamer frames.
+- Repaired the dark-background Beamer regression fixture, which placed expl3
+  control sequences directly inside a collected frame body and therefore
+  tokenized underscores before `\ExplSyntaxOn` could take effect.
+
 ## [5.2.0] — 2026-09-02
 
 ### Added
@@ -28,6 +62,13 @@
 - Beamer section dividers now typeset the section number in the section-title
   voice: the muted index and the dark title read as one two-line heading pair
   instead of a stray small numeral floating above the oversized title.
+- Beamer native blocks (`block`, `alertblock`, `exampleblock`) no longer
+  overflow the text margins.  Beamer's default block template pads its
+  contents with `colsep` skips inside a box whose natural width then exceeds
+  \textwidth, and the fallback box lets that overhang protrude into the outer
+  margins (measured ~3pt on each side). The `synaptic` block template wraps
+  the block in a single tcolorbox card exactly `\linewidth` wide and shares
+  the card geometry with semantic statement cards.
 - Beamer statement environments no longer produce a double card. Semantic
   statements are wrapped in a tcolorbox by `synaptic-theorem`, but Beamer's
   default theorem template opened a second native block inside that box,
@@ -35,8 +76,8 @@
   frame overflow. The `synaptic` theorem template detects the surrounding
   semantic card through the styles and typesets only the amsthm-style head
   line inside it, so every semantic statement renders as one card. Native
-  `theorem`, `definition`, and `example` environments keep the default block
-  template unchanged.
+  `theorem`, `definition`, and `example` environments retain standard block
+  semantics through Synaptic's native-block template.
 
 ### Added
 

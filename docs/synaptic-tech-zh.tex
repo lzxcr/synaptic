@@ -14,11 +14,11 @@
 
 \SynapticHeader{synaptic 技术参考}
 \SynapticSubHeader{架构、不变量与发布流程}
-\SynapticPreprint{v5.2.0}
+\SynapticPreprint{v5.3.0}
 \SynapticTitle{synaptic 技术参考}
 \SynapticAuthor{synaptic 项目}
 \SynapticAffiliation{开源 LaTeX 社区}
-\SynapticSubject{synaptic 5.2.0 技术参考}
+\SynapticSubject{synaptic 5.3.0 技术参考}
 \SynapticKeywords{LaTeX3, 架构, l3build, 回归测试}
 
 \begin{synabstract}
@@ -121,12 +121,12 @@ Beamer 文档类，四种纸面模式要求 KOMA-Script。LuaLaTeX 与文档类�
 
 \subsection{颜色令牌}
 
-内置主题登记在全局属性表中。启用主题时，主色、辅色与强调色会映射到公开语义名，
-并派生表面、边框、分隔线、链接、可读弱化文字、装饰浅色与正文颜色。页面背景键
+内置主题登记在全局属性表中。启用主题时，主色、辅色与强调色先复制到稳定基色角色，
+再派生公开显示色、三档表面、边框、分隔线、链接、可读弱化文字、装饰浅色与正文色。页面背景键
 \texttt{background}（任意 xcolor 表达式）成为 \texttt{syn-bg} 基础令牌；所有
-派生角色与它混合，并按相对亮度切换：背景偏暗时正文与弱化文字翻转成浅色墨，
-装饰线由加深改为提亮。print 与 mono 输出模式只改变派生角色，不改变组件代码。
-危险、警告和成功色是稳定的语义常量，不随品牌主色改变含义。
+派生角色与它混合，并按相对亮度切换：背景偏暗时中性文字翻转成浅色墨，品牌色、强调色与状态色同步提亮。
+稳定基色不被覆写，因而后续背景切换可逆。print 与 mono 输出模式只改变同一派生过程，不改变组件代码。
+危险、警告和成功色保留独立于品牌配色的稳定语义基色。
 
 \begin{verbatim}
 \SynapticDefineTheme{名称}{主色}{辅色}[强调色]
@@ -152,8 +152,8 @@ Beamer 文档类，四种纸面模式要求 KOMA-Script。LuaLaTeX 与文档类�
 
 Beamer 走独立分支：由文档类保持对幻灯片画布的所有权，\texttt{measure} 映射为对称帧边距，
 \texttt{density} 映射为演示行距。KOMA 专用的几何、图表标题、列表、结构标题与目录声明不会在
-此分支执行。模式模块安装语义 Beamer 颜色、可变高帧标题、原生卡片、列表标记、安全钳制的
-进度页脚，以及显式的目录与章节过渡帧命令。
+此分支执行。模式模块安装语义 Beamer 颜色、可变高信号导轨帧标题、对齐的带编号目录项、单层原生卡片、列表标记、
+带轨道且安全钳制的进度页脚，以及显式的目录与章节过渡帧命令。定理模块提供一个共享卡片原语，由标题元数据与各模式卡片继承。
 
 KOMA 标题字体与间距在 \texttt{begindocument/before} 钩子中安装，所有编号层级共用
 无衬线标题家族：\texttt{section} 用主色，\texttt{subsection} 用深色，

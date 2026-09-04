@@ -14,11 +14,11 @@
 
 \SynapticHeader{Synaptic Technical Reference}
 \SynapticSubHeader{Architecture, invariants, and release workflow}
-\SynapticPreprint{v5.2.0}
+\SynapticPreprint{v5.3.0}
 \SynapticTitle{synaptic Technical Reference}
 \SynapticAuthor{synaptic project}
 \SynapticAffiliation{Open-source LaTeX community}
-\SynapticSubject{Technical reference for synaptic version 5.2.0}
+\SynapticSubject{Technical reference for synaptic version 5.3.0}
 \SynapticKeywords{LaTeX3, architecture, l3build, regression testing}
 
 \begin{synabstract}
@@ -130,16 +130,17 @@ protected by the regression suite.
 
 \subsection{Colour tokens}
 
-Built-in themes are stored in a global property list. Activating a theme maps
-its primary, secondary, and accent colours to semantic public names and derives
-surface, border, rule, link, readable-muted, decorative-muted, and text tokens.
-The \texttt{background} key (any xcolor expression) becomes the \texttt{syn-bg}
-base token; every derived role blends against it, and a relative-luminance
-switch flips text to light inks and lightens decorative rules when the
-background is dark. Print and mono delivery modes alter derived roles without
-changing component code. Danger, warning, and success
-colours remain semantic constants so their meaning does not change with brand
-colour.
+Built-in themes are stored in a global property list. Activation copies their
+primary, secondary, and accent colours into stable base roles, then derives the
+public display colours, a three-step surface ladder, borders, rules, links,
+readable-muted, decorative-muted, and text tokens. The \texttt{background} key
+(any xcolor expression) becomes the \texttt{syn-bg} base token. Every derived
+role blends against it; a relative-luminance switch flips neutral text and
+lifts brand, accent, and status roles when the canvas is dark. Because the base
+roles are not overwritten, a later background change is reversible. Print and
+mono delivery modes alter the same derivation without changing component code.
+Danger, warning, and success retain stable semantic bases independent of the
+brand palette.
 
 \begin{verbatim}
 \SynapticDefineTheme{name}{primary}{secondary}[accent]
@@ -172,9 +173,11 @@ Beamer takes a separate branch: the class retains ownership of the slide
 canvas, while \texttt{measure} maps to symmetric frame margins and
 \texttt{density} maps to presentation leading. KOMA-only geometry, caption,
 list, heading, and TOC declarations are never executed in this branch. The
-mode module installs semantic Beamer colours, a variable-height frame-title
-template, native blocks, list markers, a clamped progress footer, and explicit
-agenda and section-divider frame commands.
+mode module installs semantic Beamer colours, a variable-height signal-rail
+frame title, aligned numbered agenda entries, single-layer native blocks, list
+markers, a tracked and clamped progress footer, and explicit agenda and
+section-divider frame commands. The theorem module supplies one shared card
+primitive that title metadata and every mode-specific card extend.
 
 KOMA heading fonts and skips are installed in the
 \texttt{begindocument/before} hook, with all numbered levels sharing the sans

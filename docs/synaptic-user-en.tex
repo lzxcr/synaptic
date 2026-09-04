@@ -15,12 +15,12 @@
 \SynapticNewTheorem[remark]{synobservation}{Observation}
 \SynapticHeader{Synaptic User Manual}
 \SynapticSubHeader{Reliable academic typesetting with LuaLaTeX}
-\SynapticPreprint{v5.2.0}
+\SynapticPreprint{v5.3.0}
 \SynapticTitle{The synaptic Package: User Manual}
 \SynapticAuthor{synaptic project}
 \SynapticAffiliation{Open-source LaTeX community}
 \SynapticEmail{synaptic@example.com}
-\SynapticSubject{User manual for synaptic version 5.2.0}
+\SynapticSubject{User manual for synaptic version 5.3.0}
 \SynapticKeywords{synaptic, LaTeX3, LuaLaTeX, academic typesetting}
 
 \begin{synabstract}
@@ -170,14 +170,15 @@ optional dedication, then provides front/main/back matter helpers, part pages,
 chapter subtitles, epigraphs, and mirrored duplex running heads.
 
 \textbf{lecture} renders a course masthead (course code, title, lecturer,
-semester, lecture number) and wraps theorems and examples in a sharp card
+semester, lecture number) and wraps theorems and examples in a restrained card
 system. Learning goals and lecture summaries frame each teaching unit.
 
 \textbf{notes} renders a compact masthead with an optional tag line and
 supports class-level two-column composition with balanced final columns.
 
-\textbf{beamer} renders a projection-first title frame, semantic frame titles,
-single-layer semantic cards, and a restrained footer with frame progress. It
+\textbf{beamer} renders a projection-first title frame, signal-rail frame
+titles, numbered agenda entries, single-layer semantic cards, and a restrained
+footer with tracked frame progress. It
 reuses course metadata and the lecture teaching-card vocabulary. Explicit
 \DocCmd{SynapticSectionFrame} dividers keep section pacing under the author's
 control instead of inserting slides implicitly. The standard
@@ -187,7 +188,8 @@ environments render as one tcolorbox card each, with the amsthm-style head
 line typeset inside the box, so a Beamer block is never nested in the card
 (which previously reproduced the card chrome and added height). Native
 \texttt{theorem}, \texttt{definition}, and \texttt{example} environments keep
-Beamer's default block template.
+standard block semantics, rendered by Synaptic's light native-block card with
+an inline title and semantic west rail.
 
 \subsection{Fonts}
 
@@ -223,17 +225,18 @@ runtime-adjustable:
 
 \begin{verbatim}
 \usepackage[background=blue!10]{synaptic}
-\SynapticSetup{background=midnight!85!black}
+\SynapticSetup{background=blue!70!black}
 \end{verbatim}
 
 Every derived role knows the active background. Cards, borders, hairlines, and
 title rules blend against the literal page colour, so a light tinted document
-stays coherent without touching the theme. When the relative luminance of the
-background falls below the mid-point, body and muted text flip to light inks,
-rules and borders are lightened instead of darkened, and links use a lighter
-tint of the primary colour. In Beamer mode the frame background canvas follows
-the same setting, so dark presentations are supported without extra setup.
-Restore the default with \texttt{background=white}.
+stays coherent without touching the theme. When relative luminance falls below
+the mid-point, neutral text flips to light ink and the primary, secondary,
+accent, danger, warning, and success roles lift to remain legible. Registered
+theme colours stay stable, so returning to a light background is exactly
+reversible. In Beamer mode the frame canvas follows the same setting; dark
+presentations need no separate theme machinery. Restore the default with
+\texttt{background=white}.
 
 \subsection{Density and measure}
 
@@ -264,9 +267,11 @@ Every paged mode draws a hairline beneath its running heads. The hairline uses a
 separate, deliberately lighter decorative token so navigation stays quiet.
 Running-head labels and outer folios repeat the small node marker; book mode
 additionally gives forced duplex blank pages a quiet footer anchor.
-Beamer echoes the same hairline beneath each frame title and uses a clamped
-progress rule below its footer, so the first compilation is safe before the
-final frame count is known.
+Beamer extends the motif beneath each frame title: a short primary signal and
+accent node lead into a quiet hairline across the usable measure. Its footer
+places a clamped active progress segment over a faint track inside the text
+margins, so the first compilation is safe before the final frame count is
+known.
 
 \subsection{Headings, contents, and captions}
 
@@ -281,10 +286,10 @@ theme token to keep them consistent with the rest of the design.
 
 \subsection{Cards and rules}
 
-Teaching and notes cards share one visual language: a very small corner radius,
-a west accent bar tinted with the semantic colour of the card (primary,
-secondary, warning, or success), a faint hairline, and a light surface with a
-readable title colouring.
+Theorem, title-metadata, teaching, notes, and Beamer cards share one base visual
+primitive: a very small corner radius, a semantic west rail where needed, a
+faint background and north hairline, modest internal padding, and readable
+title colouring.
 Rules and hairlines derive from the theme's primary colour at low tint, so
 decoration never competes with text.
 
@@ -395,7 +400,7 @@ derive from the active theme:
   \texttt{syn-accent} & accent colour & optional emphasis \\
   \texttt{syn-text-dark} & body ink & readable text \\
   \texttt{syn-muted-text} & readable muted & auxiliary labels \\
-  \texttt{syn-surface} & card background & boxes and surfaces \\
+  \texttt{syn-surface} & middle surface & default cards and panels \\
   \texttt{syn-border} & card border & box frames \\
   \texttt{syn-rule} & decorative hairline & separators \\
   \texttt{syn-bg} & page background & follows the \texttt{background} key \\
@@ -404,6 +409,10 @@ derive from the active theme:
   \texttt{syn-success} & semantic success & exercises, todo lists \\
   \bottomrule
 \end{tabularx}}
+
+Adjacent \texttt{syn-surface-soft} and \texttt{syn-surface-strong} tokens
+complete the surface ladder. \texttt{syn-on-primary} and
+\texttt{syn-on-danger} provide inverse ink for solid semantic fills.
 
 Lecture and Beamer modes include two teaching cards:
 \begin{itemize}

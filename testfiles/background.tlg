@@ -2,8 +2,9 @@ This is a generated file for the l3build validation system.
 Don't change this file in any respect.
 background=blue!15
 background-light=light
-text-dark=rgb/0.16595,0.2309,0.29944
-surface=rgb/0.81601,0.83264,0.98761
+text-dark=rgb/0.16235,0.2237,0.28864
+primary-light=rgb/0,0.40392,0.65881
+surface=rgb/0.81601,0.83217,0.98636
 Package hyperref Info: Option `unicode' set `true' on input line ....
 LaTeX Font Info:    Font shape `TU/LibertinusSans(0)/m/n' will be
 (Font)              scaled to size 9.49997pt on input line ....
@@ -29,12 +30,15 @@ LaTeX Font Info:    Font shape `TU/LibertinusSans(0)/b/n' will be
 (Font)              scaled to size 10.40245pt on input line ....
 background-dark=blue!70!black
 background-dark=dark
-text-dark=rgb/0.93443,0.94008,0.94604
-muted-text=rgb/0.85246,0.86517,0.87859
-surface=rgb/0,0.01663,0.6996
-rule=rgb/0.65,0.79549,0.89157
-link=rgb/0.2,0.53256,0.75217
+text-dark=rgb/0.94,0.94,0.982
+muted-text=rgb/0.72,0.72,0.916
+surface=rgb/0.0232,0.02998,0.70627
+rule=rgb/0.18,0.18,0.754
+link=rgb/0.58,0.74965,0.8567
+primary-dark=rgb/0.58,0.74965,0.8567
+on-primary-dark=rgb/0,0,0.07
 Package hyperref Info: bookmark level for unknown syntheorem defaults to 0 on input line ....
 background-restored=light
-text-dark=rgb/0.16595,0.2309,0.29944
+text-dark=rgb/0.16235,0.2237,0.28864
+primary-restored=rgb/0,0.40392,0.65881
 background-cycling=ok

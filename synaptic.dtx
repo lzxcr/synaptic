@@ -27,7 +27,7 @@
 \hfuzz=6pt
 \AtBeginDocument{\hypersetup{pdftitle={synaptic bundle},
   linkcolor=blue!60!black,urlcolor=teal}}
-\ProvidesFile{synaptic.dtx}[2026-09-02 v5.2.0 synaptic documented source]
+\ProvidesFile{synaptic.dtx}[2026-09-04 v5.3.0 synaptic documented source]
 \EnableCrossrefs\CodelineIndex\RecordChanges
 \begin{document}
 \DocInput{synaptic.dtx}
@@ -102,6 +102,14 @@
 % \texttt{definition}, and \texttt{example} environments keep the default
 % block template.  The Beamer title frame now honours the standard
 % \texttt{\string\titlegraphic} command in the bottom-right of the tag row.}
+% \changes{v5.3.0}{2026-09-04}{Refined the built-in palettes and rebuilt the
+% background-derived colour ladder so brand, accent, and status roles remain
+% legible on dark canvases as well as light paper.  Consolidated the repeated
+% card skins into one shared visual primitive.}
+% \changes{v5.3.0}{2026-09-04}{Recomposed Beamer frame headings, contents,
+% section dividers, native blocks, title metadata, and progress navigation
+% around the shared signal-rail language, with lighter surfaces and more
+% useful projection-scale hierarchy.}
 % \textbf{synaptic} is a modular \LaTeX3 design system for academic documents.
 % It provides a clean, non-invasive API with mode-aware module loading
 % and a deterministic, package-managed font stack through \textsf{fontspec}.
@@ -207,7 +215,7 @@
 %    \begin{macrocode}
 %<*base>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-base}{2026-09-02}{5.2.0}
+\ProvidesExplPackage{synaptic-base}{2026-09-04}{5.3.0}
   {Synaptic~Core~Infrastructure}
 
 \msg_new:nnn { synaptic } { luatex-required }
@@ -524,7 +532,7 @@
 %    \begin{macrocode}
 %<*color>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-color}{2026-09-02}{5.2.0}
+\ProvidesExplPackage{synaptic-color}{2026-09-04}{5.3.0}
   {Synaptic~Theme~Colour~System}
 
 \RequirePackage{xcolor}
@@ -532,29 +540,29 @@
 % ---------------------------------------------------------------------------
 % Theme registry and semantic colour tokens
 % ---------------------------------------------------------------------------
-\definecolor{syn-theme-ocean-primary}{RGB}{0,106,176}
-\definecolor{syn-theme-ocean-secondary}{RGB}{46,64,83}
-\definecolor{syn-theme-ocean-accent}{RGB}{14,98,81}
-\definecolor{syn-theme-graphite-primary}{RGB}{75,86,99}
-\definecolor{syn-theme-graphite-secondary}{RGB}{45,52,62}
-\definecolor{syn-theme-graphite-accent}{RGB}{41,128,185}
-\definecolor{syn-theme-forest-primary}{RGB}{30,115,80}
-\definecolor{syn-theme-forest-secondary}{RGB}{56,68,60}
-\definecolor{syn-theme-forest-accent}{RGB}{183,86,10}
-\definecolor{syn-theme-midnight-primary}{RGB}{25,55,109}
-\definecolor{syn-theme-midnight-secondary}{RGB}{30,35,50}
-\definecolor{syn-theme-midnight-accent}{RGB}{145,105,20}
-\definecolor{syn-theme-paper-primary}{RGB}{55,58,62}
-\definecolor{syn-theme-paper-secondary}{RGB}{45,48,52}
-\definecolor{syn-theme-paper-accent}{RGB}{120,67,35}
+\definecolor{syn-theme-ocean-primary}{RGB}{0,103,168}
+\definecolor{syn-theme-ocean-secondary}{RGB}{45,62,80}
+\definecolor{syn-theme-ocean-accent}{RGB}{0,117,104}
+\definecolor{syn-theme-graphite-primary}{RGB}{82,96,109}
+\definecolor{syn-theme-graphite-secondary}{RGB}{47,54,63}
+\definecolor{syn-theme-graphite-accent}{RGB}{15,112,132}
+\definecolor{syn-theme-forest-primary}{RGB}{31,118,84}
+\definecolor{syn-theme-forest-secondary}{RGB}{55,74,64}
+\definecolor{syn-theme-forest-accent}{RGB}{164,84,12}
+\definecolor{syn-theme-midnight-primary}{RGB}{36,75,143}
+\definecolor{syn-theme-midnight-secondary}{RGB}{36,41,56}
+\definecolor{syn-theme-midnight-accent}{RGB}{158,111,18}
+\definecolor{syn-theme-paper-primary}{RGB}{85,81,75}
+\definecolor{syn-theme-paper-secondary}{RGB}{52,50,48}
+\definecolor{syn-theme-paper-accent}{RGB}{133,76,42}
 
 \prop_new:N \g__synaptic_themes_prop
 \clist_map_inline:nn { ocean, graphite, forest, midnight, paper }
   { \prop_gput:Nnn \g__synaptic_themes_prop {#1} { built-in } }
 
-\definecolor{syn-semantic-danger}{RGB}{180,35,24}
-\definecolor{syn-semantic-warning}{RGB}{145,90,0}
-\definecolor{syn-semantic-success}{RGB}{20,120,75}
+\definecolor{syn-semantic-danger}{RGB}{178,47,37}
+\definecolor{syn-semantic-warning}{RGB}{151,96,0}
+\definecolor{syn-semantic-success}{RGB}{25,122,85}
 
 % ---------------------------------------------------------------------------
 % Page background: relative-luminance measurement and the derived colour roles
@@ -644,56 +652,82 @@
 
 \cs_new_protected:Npn \__synaptic_color_derive:
   {
-    \str_if_eq:VnT \g__synaptic_color_mode_tl { mono }
-      {
-        \colorlet{syn-primary}{black!78}
-        \colorlet{syn-secondary}{black!86}
-        \colorlet{syn-accent}{black!68}
-      }
+    % Rebuild the public theme roles from stable base colours on every pass.
+    % This is what makes a background change reversible: a dark canvas may
+    % lift the display colours without losing the registered theme values.
     \str_if_eq:VnTF \g__synaptic_color_mode_tl { mono }
       {
-        \colorlet{syn-danger}{black!82}
-        \colorlet{syn-warning}{black!68}
-        \colorlet{syn-success}{black!76}
+        \__synaptic_color_bg_dark:TF
+          {
+            \colorlet{syn-primary}{white!72!syn-bg}
+            \colorlet{syn-secondary}{white!88!syn-bg}
+            \colorlet{syn-accent}{white!58!syn-bg}
+            \colorlet{syn-danger}{white!76!syn-bg}
+            \colorlet{syn-warning}{white!62!syn-bg}
+            \colorlet{syn-success}{white!70!syn-bg}
+          }
+          {
+            \colorlet{syn-primary}{black!78!syn-bg}
+            \colorlet{syn-secondary}{black!86!syn-bg}
+            \colorlet{syn-accent}{black!68!syn-bg}
+            \colorlet{syn-danger}{black!82!syn-bg}
+            \colorlet{syn-warning}{black!68!syn-bg}
+            \colorlet{syn-success}{black!76!syn-bg}
+          }
       }
       {
-        \colorlet{syn-danger}{syn-semantic-danger}
-        \colorlet{syn-warning}{syn-semantic-warning}
-        \colorlet{syn-success}{syn-semantic-success}
+        \__synaptic_color_bg_dark:TF
+          {
+            \colorlet{syn-primary}{syn-theme-active-primary!42!white}
+            \colorlet{syn-secondary}{syn-theme-active-secondary!16!white}
+            \colorlet{syn-accent}{syn-theme-active-accent!54!white}
+            \colorlet{syn-danger}{syn-semantic-danger!46!white}
+            \colorlet{syn-warning}{syn-semantic-warning!52!white}
+            \colorlet{syn-success}{syn-semantic-success!48!white}
+          }
+          {
+            \colorlet{syn-primary}{syn-theme-active-primary}
+            \colorlet{syn-secondary}{syn-theme-active-secondary}
+            \colorlet{syn-accent}{syn-theme-active-accent}
+            \colorlet{syn-danger}{syn-semantic-danger}
+            \colorlet{syn-warning}{syn-semantic-warning}
+            \colorlet{syn-success}{syn-semantic-success}
+          }
       }
     \__synaptic_color_bg_dark:TF
       {
-        % Dark page background: readable light inks, lightened hairlines.
-        \colorlet{syn-text-dark}{syn-secondary!8!white}
-        \colorlet{syn-muted-text}{syn-secondary!18!white}
-        \colorlet{syn-decoration-muted}{syn-secondary!58!white}
-        \colorlet{syn-rule}{syn-primary!35!white}
-        \colorlet{syn-border}{syn-primary!45!white}
-        \colorlet{syn-faded}{syn-primary!50!white}
-        \colorlet{syn-light}{syn-primary!45!white}
-        \str_if_eq:VnTF \g__synaptic_color_mode_tl { screen }
-          { \colorlet{syn-link}{syn-primary!80!white} }
-          { \colorlet{syn-link}{syn-text-dark} }
+        % Neutral inks are tied to the canvas rather than to a hue.  This
+        % keeps long text calm while the lifted theme roles carry hierarchy.
+        \colorlet{syn-text-dark}{white!94!syn-bg}
+        \colorlet{syn-muted-text}{white!72!syn-bg}
+        \colorlet{syn-decoration-muted}{white!43!syn-bg}
+        \colorlet{syn-rule}{white!18!syn-bg}
+        \colorlet{syn-border}{white!25!syn-bg}
+        \colorlet{syn-faded}{white!12!syn-bg}
+        \colorlet{syn-light}{white!34!syn-bg}
+        \colorlet{syn-on-primary}{black!90!syn-bg}
+        \colorlet{syn-on-danger}{black!90!syn-bg}
       }
       {
-        % Light page background: the classic derivation.  Tint roles blend
-        % against the literal background so light-tinted pages stay coherent.
         \colorlet{syn-text-dark}{syn-secondary!92!black}
-        \colorlet{syn-muted-text}{syn-secondary!82!white}
-        \colorlet{syn-decoration-muted}{syn-secondary!42!white}
-        \colorlet{syn-rule}{syn-primary!28!syn-bg}
-        \colorlet{syn-border}{syn-primary!38!syn-bg}
-        \colorlet{syn-faded}{syn-primary!18!syn-bg}
-        \colorlet{syn-light}{syn-primary!38!syn-bg}
-        \str_if_eq:VnTF \g__synaptic_color_mode_tl { screen }
-          { \colorlet{syn-link}{syn-primary} }
-          { \colorlet{syn-link}{syn-text-dark} }
+        \colorlet{syn-muted-text}{syn-secondary!80!syn-bg}
+        \colorlet{syn-decoration-muted}{syn-secondary!42!syn-bg}
+        \colorlet{syn-rule}{syn-primary!24!syn-bg}
+        \colorlet{syn-border}{syn-primary!34!syn-bg}
+        \colorlet{syn-faded}{syn-primary!15!syn-bg}
+        \colorlet{syn-light}{syn-primary!34!syn-bg}
+        \colorlet{syn-on-primary}{white}
+        \colorlet{syn-on-danger}{white}
       }
-    % Fills always blend against the page background.
+    \str_if_eq:VnTF \g__synaptic_color_mode_tl { screen }
+      { \colorlet{syn-link}{syn-primary} }
+      { \colorlet{syn-link}{syn-text-dark} }
+    % A quiet three-step surface ladder keeps nested components distinct
+    % without introducing outlines or drop shadows.
+    \colorlet{syn-surface-soft}{syn-primary!2!syn-bg}
     \colorlet{syn-surface}{syn-primary!4!syn-bg}
-    \colorlet{syn-surface-strong}{syn-primary!10!syn-bg}
+    \colorlet{syn-surface-strong}{syn-primary!8!syn-bg}
     \colorlet{syn-muted}{syn-muted-text}
-    \colorlet{syn-on-primary}{white}
     \__synaptic_color_apply_page_bg:
   }
 
@@ -713,9 +747,9 @@
   {
     \prop_if_in:NnTF \g__synaptic_themes_prop {#1}
       {
-        \colorlet{syn-primary}{syn-theme-#1-primary}
-        \colorlet{syn-secondary}{syn-theme-#1-secondary}
-        \colorlet{syn-accent}{syn-theme-#1-accent}
+        \colorlet{syn-theme-active-primary}{syn-theme-#1-primary}
+        \colorlet{syn-theme-active-secondary}{syn-theme-#1-secondary}
+        \colorlet{syn-theme-active-accent}{syn-theme-#1-accent}
         \tl_gset:Nn \g__synaptic_theme_tl {#1}
         \__synaptic_color_derive:
       }
@@ -770,7 +804,7 @@
 %    \begin{macrocode}
 %<*fonts>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-fonts}{2026-09-02}{5.2.0}
+\ProvidesExplPackage{synaptic-fonts}{2026-09-04}{5.3.0}
   {Synaptic~Font~System}
 
 \RequirePackage{fontspec}
@@ -853,7 +887,7 @@
 %    \begin{macrocode}
 %<*layout>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-layout}{2026-09-02}{5.2.0}
+\ProvidesExplPackage{synaptic-layout}{2026-09-04}{5.3.0}
   {Synaptic~Page~Layout}
 
 \RequirePackage{hyperref}
@@ -1324,7 +1358,7 @@
 %    \begin{macrocode}
 %<*theorem>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-theorem}{2026-09-02}{5.2.0}
+\ProvidesExplPackage{synaptic-theorem}{2026-09-04}{5.3.0}
   {Synaptic~Theorem~Environments}
 
 \RequirePackage{amsthm}
@@ -1338,25 +1372,30 @@
 % ---------------------------------------------------------------------------
 
 % ---------------------------------------------------------------------------
-% Theorem box presentation (collapsible to plain via theorem-style=plain)
+% Shared card primitive.  Mode modules extend this one quiet surface instead
+% of re-implementing corner radii, border weight, and background behaviour.
+% Theorem box presentation remains collapsible via theorem-style=plain.
 % ---------------------------------------------------------------------------
 \tcbset{
-  synaptic/theorem-box/.style={
+  synaptic/card-base/.style={
     enhanced,
-    breakable,
     frame~hidden,
+    boxrule     = 0pt,
     colback     = syn-surface,
     coltext     = syn-text-dark,
-    boxrule     = 0pt,
+    arc         = 1.25pt,
+    outer~arc   = 1.25pt,
+    borderline~north = {0.35pt}{0pt}{syn-border}
+  },
+  synaptic/theorem-box/.style={
+    synaptic/card-base,
+    breakable,
     left        = 10pt,
     right       = 10pt,
     top         = 8pt,
     bottom      = 8pt,
-    arc         = 1.5pt,
-    outer~arc   = 1.5pt,
     before~skip = 10pt,
-    after~skip  = 10pt,
-    borderline~north = {0.35pt}{0pt}{syn-border!60!white}
+    after~skip  = 10pt
   },
   synaptic/theorem-box-plain/.style={
     synaptic/theorem-box,
@@ -1552,17 +1591,20 @@
         \clist_map_inline:Nn \c__synaptic_theorem_plain_clist
           {
             \tcolorboxenvironment{##1}{synaptic/theorem-box-plain}
-            \AddToHook{env/##1/before}{\Needspace{7\baselineskip}}
+            \AddToHook{env/##1/before}
+              {\__synaptic_if_beamer:TF{}{\Needspace{7\baselineskip}}}
           }
         \clist_map_inline:Nn \c__synaptic_theorem_definition_clist
           {
             \tcolorboxenvironment{##1}{synaptic/theorem-box-definition}
-            \AddToHook{env/##1/before}{\Needspace{6\baselineskip}}
+            \AddToHook{env/##1/before}
+              {\__synaptic_if_beamer:TF{}{\Needspace{6\baselineskip}}}
           }
         \clist_map_inline:Nn \c__synaptic_theorem_remark_clist
           {
             \tcolorboxenvironment{##1}{synaptic/theorem-box-remark}
-            \AddToHook{env/##1/before}{\Needspace{5\baselineskip}}
+            \AddToHook{env/##1/before}
+              {\__synaptic_if_beamer:TF{}{\Needspace{5\baselineskip}}}
           }
       }
   }
@@ -1575,9 +1617,15 @@
         \tcolorboxenvironment{#1}{synaptic/theorem-box-#2}
         \str_case:nn {#2}
           {
-            { plain }      { \AddToHook{env/#1/before}{\Needspace{7\baselineskip}} }
-            { definition } { \AddToHook{env/#1/before}{\Needspace{6\baselineskip}} }
-            { remark }     { \AddToHook{env/#1/before}{\Needspace{5\baselineskip}} }
+            { plain }
+              { \AddToHook{env/#1/before}
+                  {\__synaptic_if_beamer:TF{}{\Needspace{7\baselineskip}}} }
+            { definition }
+              { \AddToHook{env/#1/before}
+                  {\__synaptic_if_beamer:TF{}{\Needspace{6\baselineskip}}} }
+            { remark }
+              { \AddToHook{env/#1/before}
+                  {\__synaptic_if_beamer:TF{}{\Needspace{5\baselineskip}}} }
           }
       }
   }
@@ -1635,7 +1683,7 @@
 % Namespaced proof environment; amsthm's global proof remains untouched.
 % ---------------------------------------------------------------------------
 \cs_new:Npn \__synaptic_theorem_qed_symbol:
-  { \rule[0.05em]{0.5em}{0.5em} }
+  { \textcolor{syn-primary}{\rule[0.05em]{0.5em}{0.5em}} }
 
 \NewDocumentEnvironment{synproof}{ O{\c__synaptic_label_proof_tl} }
   {
@@ -1659,7 +1707,7 @@
 %    \begin{macrocode}
 %<*title>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-title}{2026-09-02}{5.2.0}
+\ProvidesExplPackage{synaptic-title}{2026-09-04}{5.3.0}
   {Synaptic~Title~Page}
 
 % ---------------------------------------------------------------------------
@@ -1937,11 +1985,13 @@
 
 \cs_new_protected:Npn \__synaptic_title_metadata_panel:n #1
   {
-    \group_begin:
-      \setlength{\fboxsep}{10pt}
-      \noindent\colorbox{syn-surface}{%
-        \parbox{\dimexpr\linewidth-2\fboxsep\relax}{#1}}
-    \group_end:
+    \begin{tcolorbox}[
+      synaptic/card-base,
+      left=10pt,right=10pt,top=8pt,bottom=8pt,
+      before~skip=0pt,after~skip=0pt
+    ]
+      #1
+    \end{tcolorbox}
   }
 
 \cs_new_protected:Npn \__synaptic_title_page_signature:
@@ -2452,7 +2502,7 @@
 %    \begin{macrocode}
 %<*journal>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-journal}{2026-09-02}{5.2.0}
+\ProvidesExplPackage{synaptic-journal}{2026-09-04}{5.3.0}
   {Synaptic~Journal~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -2499,7 +2549,7 @@
 %    \begin{macrocode}
 %<*book>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-book}{2026-09-02}{5.2.0}
+\ProvidesExplPackage{synaptic-book}{2026-09-04}{5.3.0}
   {Synaptic~Book~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -2660,7 +2710,7 @@
 %    \begin{macrocode}
 %<*lecture>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-lecture}{2026-09-02}{5.2.0}
+\ProvidesExplPackage{synaptic-lecture}{2026-09-04}{5.3.0}
   {Synaptic~Lecture~Mode}
 
 % ---------------------------------------------------------------------------
@@ -2723,22 +2773,22 @@
 
 \tcbset{
   synaptic/learning-goals/.style={
-    enhanced,breakable,frame~hidden,
+    synaptic/card-base,breakable,
     colback=syn-surface-strong,coltext=syn-text-dark,
     borderline~west={2.6pt}{0pt}{syn-primary},
-    borderline~north={0.35pt}{0pt}{syn-border!60!white},
     fonttitle=\bfseries\sffamily,coltitle=syn-primary,
     attach~title~to~upper={\quad},
     left=10pt,right=9pt,top=8pt,bottom=8pt,
-    arc=1.5pt,outer~arc=1.5pt
+    before~skip=8pt,after~skip=8pt
   },
   synaptic/lecture-summary/.style={
-    enhanced,breakable,colback=syn-primary!7!syn-bg,colframe=syn-primary,
-    boxrule=0.5pt,fonttitle=\bfseries\sffamily,
-    colbacktitle=syn-primary,coltitle=syn-on-primary,
-    borderline~west={2.0pt}{0pt}{syn-accent},
+    synaptic/card-base,breakable,
+    colback=syn-primary!7!syn-bg,
+    fonttitle=\bfseries\sffamily,coltitle=syn-primary,
+    attach~title~to~upper={\quad},
+    borderline~west={2.6pt}{0pt}{syn-accent},
     left=10pt,right=10pt,top=8pt,bottom=8pt,
-    arc=1.5pt,outer~arc=1.5pt
+    before~skip=8pt,after~skip=8pt
   }
 }
 
@@ -2762,7 +2812,7 @@
 %    \begin{macrocode}
 %<*notes>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-notes}{2026-09-02}{5.2.0}
+\ProvidesExplPackage{synaptic-notes}{2026-09-04}{5.3.0}
   {Synaptic~Notes~Mode}
 
 \RequirePackage[singlespacing=true]{scrlayer-scrpage}
@@ -2805,13 +2855,11 @@
 
 \tcbset{
   synaptic/note-base/.style={
-    enhanced,breakable,frame~hidden,
-    arc=1.5pt,outer~arc=1.5pt,
+    synaptic/card-base,breakable,
     colback=syn-surface,coltext=syn-text-dark,
     fonttitle=\bfseries\sffamily,
     left=9pt,right=8pt,top=7pt,bottom=7pt,
-    before~skip=8pt,after~skip=8pt,
-    borderline~north={0.3pt}{0pt}{syn-border!55!white}
+    before~skip=8pt,after~skip=8pt
   },
   synaptic/key-idea/.style={
     synaptic/note-base,coltitle=syn-primary,
@@ -2828,7 +2876,7 @@
   synaptic/note-summary/.style={
     synaptic/note-base,colback=syn-primary!7!syn-bg,coltitle=syn-primary,
     borderline~west={3pt}{0pt}{syn-primary},
-    borderline~south={0.6pt}{0pt}{syn-primary!45!white}
+    borderline~south={0.55pt}{0pt}{syn-border}
   }
 }
 
@@ -2871,13 +2919,15 @@
 %    \begin{macrocode}
 %<*beamer>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic-beamer}{2026-09-02}{5.2.0}
+\ProvidesExplPackage{synaptic-beamer}{2026-09-04}{5.3.0}
   {Synaptic~Beamer~Mode}
 
 % ---------------------------------------------------------------------------
 % Slide measure and typography
 % ---------------------------------------------------------------------------
 \dim_new:N \g__synaptic_beamer_margin_dim
+\dim_new:N \l__synaptic_beamer_inner_width_dim
+\dim_new:N \l__synaptic_beamer_progress_dim
 
 \cs_new_protected:Npn \__synaptic_beamer_apply_measure:
   {
@@ -2892,6 +2942,8 @@
       text~margin~left  = \dim_use:N \g__synaptic_beamer_margin_dim,
       text~margin~right = \dim_use:N \g__synaptic_beamer_margin_dim
     }
+    \dim_set:Nn \l__synaptic_beamer_inner_width_dim
+      { \paperwidth - 2\g__synaptic_beamer_margin_dim }
   }
 \__synaptic_beamer_apply_measure:
 
@@ -2907,6 +2959,9 @@
 \setbeamerfont{caption}{family=\sffamily,size=\small}
 \setbeamerfont{caption~name}{family=\sffamily,series=\bfseries}
 \setbeamerfont{page~number~in~head/foot}{family=\sffamily,size=\scriptsize}
+\setbeamerfont{section~in~toc}{family=\sffamily,series=\bfseries}
+\setbeamerfont{subsection~in~toc}{family=\sffamily,series=\mdseries}
+\setbeamerfont{description~item}{family=\sffamily,series=\bfseries}
 
 % ---------------------------------------------------------------------------
 % Semantic Beamer colours.  Values remain references to Synaptic colour names,
@@ -2922,9 +2977,10 @@
 \setbeamercolor{section~title}{fg=syn-text-dark}
 \setbeamercolor{section~in~toc}{fg=syn-text-dark}
 \setbeamercolor{subsection~in~toc}{fg=syn-muted-text}
+\setbeamercolor{alerted~text}{fg=syn-danger}
 \setbeamercolor{block~title}{fg=syn-on-primary,bg=syn-primary}
 \setbeamercolor{block~body}{fg=syn-text-dark,bg=syn-surface}
-\setbeamercolor{block~title~alerted}{fg=white,bg=syn-danger}
+\setbeamercolor{block~title~alerted}{fg=syn-on-danger,bg=syn-danger}
 \setbeamercolor{block~body~alerted}{fg=syn-text-dark,bg=syn-danger!5!syn-bg}
 \setbeamercolor{block~title~example}{fg=white,bg=syn-accent}
 \setbeamercolor{block~body~example}{fg=syn-text-dark,bg=syn-accent!5!syn-bg}
@@ -2937,16 +2993,121 @@
 % ---------------------------------------------------------------------------
 \setbeamertemplate{navigation~symbols}{}
 \setbeamertemplate{itemize~item}
-  { \raisebox{0.18ex}{\textcolor{syn-primary}{\rule{3.2pt}{3.2pt}}} }
+  { \raisebox{0.20ex}{\textcolor{syn-primary}{\rule{2.8pt}{2.8pt}}} }
 \setbeamertemplate{itemize~subitem}
-  { \raisebox{0.35ex}{\textcolor{syn-accent}{\rule{4.5pt}{0.8pt}}} }
+  { \raisebox{0.38ex}{\textcolor{syn-accent}{\rule{4.2pt}{0.75pt}}} }
 \setbeamertemplate{itemize~subsubitem}
   { \textcolor{syn-decoration-muted}{\raisebox{0.25ex}{\scriptsize\ensuremath{\bullet}}} }
 \setbeamertemplate{enumerate~item}
   { \textcolor{syn-primary}{\bfseries\insertenumlabel.} }
+\setbeamertemplate{enumerate~subitem}
+  { \textcolor{syn-accent}{\bfseries\insertenumlabel.\insertsubenumlabel} }
+\setbeamertemplate{description~item}
+  { \usebeamerfont{description~item}\color{syn-primary}\insertdescriptionitem }
+\setbeamertemplate{qed~symbol}
+  { \textcolor{syn-primary}{\rule[0.05em]{0.52em}{0.52em}} }
+\setbeamertemplate{bibliography~item}
+  { \raisebox{0.20ex}{\textcolor{syn-primary}{\rule{2.8pt}{2.8pt}}} }
 \setbeamertemplate{caption}[numbered]
-\setbeamertemplate{blocks}[default]
 \setbeamercovered{transparent=16}
+
+% Number and title occupy stable columns, so short and long agendas share a
+% clear reading edge.  The marker is typographic rather than badge-shaped and
+% therefore remains quiet in both colour and monochrome output.
+\defbeamertemplate*{section~in~toc}{synaptic}
+  {
+    \par\leavevmode
+    \leftskip=2.55em
+    \llap{\hbox~to~2.05em{%
+      \usebeamerfont{section~in~toc}\color{syn-decoration-muted}%
+      \inserttocsectionnumber\hfil}}
+    {\usebeamerfont{section~in~toc}\usebeamercolor[fg]{section~in~toc}%
+      \inserttocsection\par}
+    \vskip0.62ex
+  }
+\defbeamertemplate*{subsection~in~toc}{synaptic}
+  {
+    \par\leavevmode
+    \leftskip=2.55em
+    \llap{\hbox~to~2.05em{\color{syn-rule}\rule[0.55ex]{1.05em}{0.45pt}\hfil}}
+    {\usebeamerfont{subsection~in~toc}\usebeamercolor[fg]{subsection~in~toc}%
+      \inserttocsubsection\par}
+    \vskip0.28ex
+  }
+\setbeamertemplate{section~in~toc}[synaptic]
+\setbeamertemplate{subsection~in~toc}[synaptic]
+
+% ---------------------------------------------------------------------------
+% Native blocks as single-layer cards.
+%
+% Beamer's default block template pads its contents with `colsep' skips
+% inside a box whose natural width then exceeds \textwidth; beamer's
+% fallback box lets that overhang protrude into the outer margins, so the
+% title strip and the body visibly stick out of the text block (see the
+% measured 3pt overhang on every block page).  The synaptic template wraps
+% the block in one tcolorbox exactly \linewidth wide.  A semantic side rail
+% and inline heading replace the heavy filled strip, so native and namespaced
+% cards now share one visual grammar without crossing the text margins.
+% ---------------------------------------------------------------------------
+\tcbset{
+  synaptic/native-block/.style={
+    synaptic/card-base,
+    colback     = syn-surface,
+    coltext     = syn-text-dark,
+    coltitle    = syn-primary,
+    borderline~west = {2.4pt}{0pt}{syn-primary},
+    attach~title~to~upper = {\par\vspace{0.38ex}},
+    left        = 9pt,
+    right       = 9pt,
+    top         = 5.5pt,
+    bottom      = 6pt,
+    before~skip = 0.35ex,
+    after~skip  = 0.35ex
+  },
+  synaptic/native-block-alerted/.style={
+    synaptic/native-block,
+    coltitle       = syn-danger,
+    colback        = syn-danger!5!syn-bg,
+    borderline~west = {2.4pt}{0pt}{syn-danger}
+  },
+  synaptic/native-block-example/.style={
+    synaptic/native-block,
+    coltitle       = syn-accent,
+    colback        = syn-accent!5!syn-bg,
+    borderline~west = {2.4pt}{0pt}{syn-accent}
+  }
+}
+\defbeamertemplate*{block~begin}{synaptic}
+  {
+    \begin{tcolorbox}[
+      synaptic/native-block,
+      fonttitle = \usebeamerfont{block~title},
+      title     = \insertblocktitle
+    ]
+  }
+\defbeamertemplate*{block~end}{synaptic}
+  { \end{tcolorbox} }
+\defbeamertemplate*{block~alerted~begin}{synaptic}
+  {
+    \begin{tcolorbox}[
+      synaptic/native-block-alerted,
+      fonttitle = \usebeamerfont{block~title~alerted},
+      title     = \insertblocktitle
+    ]
+  }
+\defbeamertemplate*{block~alerted~end}{synaptic}
+  { \end{tcolorbox} }
+\defbeamertemplate*{block~example~begin}{synaptic}
+  {
+    \begin{tcolorbox}[
+      synaptic/native-block-example,
+      fonttitle = \usebeamerfont{block~title~example},
+      title     = \insertblocktitle
+    ]
+  }
+\defbeamertemplate*{block~example~end}{synaptic}
+  { \end{tcolorbox} }
+\setbeamertemplate{blocks}[synaptic]
 
 % ---------------------------------------------------------------------------
 % Single-layer semantic cards.
@@ -2959,7 +3120,7 @@
 % before the template runs, so the card branch typesets only the
 % amsthm-style head line inside the surrounding box; native beamer
 % statement environments (whose styles do not set the flag) keep the
-% default block template untouched.
+% standard block template untouched.
 % ---------------------------------------------------------------------------
 \bool_new:N \g__synaptic_beamer_card_bool
 \bool_new:N \g__synaptic_beamer_card_open_bool
@@ -3021,6 +3182,15 @@
 % ---------------------------------------------------------------------------
 % Frame title and quiet progress navigation
 % ---------------------------------------------------------------------------
+\cs_new_protected:Npn \__synaptic_beamer_signal_rail:
+  {
+    \hbox~to~\textwidth{
+      \textcolor{syn-primary}{\rule[0.56ex]{2.45em}{0.9pt}}
+      \hspace{0.44em}\__synaptic_layout_node:\hspace{0.44em}
+      {\color{syn-rule}\leaders\hbox{\rule[0.56ex]{1pt}{0.38pt}}\hfill}
+    }
+  }
+
 \defbeamertemplate*{frametitle}{synaptic}
   {
     \nointerlineskip
@@ -3029,18 +3199,18 @@
       leftskip=\dim_use:N \g__synaptic_beamer_margin_dim,
       rightskip=\dim_use:N \g__synaptic_beamer_margin_dim
     ]{frametitle}
-      \vskip1.05ex
+      \vskip0.92ex
       \usebeamerfont{frametitle}\insertframetitle\par
       \ifx\insertframesubtitle\@empty
       \else
-        \vskip0.25ex
+        \vskip0.22ex
         {\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}%
           \insertframesubtitle\par}
       \fi
-      \vskip0.85ex
+      \vskip0.62ex
     \end{beamercolorbox}
     \nointerlineskip
-    \hbox{\textcolor{syn-rule}{\rule{\paperwidth}{0.45pt}}}
+    \__synaptic_beamer_signal_rail:
   }
 \setbeamertemplate{frametitle}[synaptic]
 
@@ -3064,12 +3234,19 @@
     \int_set:Nn \l_tmpa_int { \int_max:nn { 1 } { \inserttotalframenumber } }
     \int_set:Nn \l_tmpb_int
       { \int_min:nn { \insertframenumber } { \l_tmpa_int } }
-    \dim_set:Nn \l_tmpa_dim
-      { \paperwidth * \l_tmpb_int / \l_tmpa_int }
-    \hbox to \paperwidth
+    \dim_set:Nn \l__synaptic_beamer_inner_width_dim
+      { \paperwidth - 2\g__synaptic_beamer_margin_dim }
+    \dim_set:Nn \l__synaptic_beamer_progress_dim
+      { \l__synaptic_beamer_inner_width_dim * \l_tmpb_int / \l_tmpa_int }
+    \hbox~to~\paperwidth
       {
-        \textcolor{syn-primary}{\rule{\dim_use:N \l_tmpa_dim}{0.7pt}}
+        \hskip\g__synaptic_beamer_margin_dim
+        \rlap{\textcolor{syn-rule}{%
+          \rule{\dim_use:N \l__synaptic_beamer_inner_width_dim}{0.35pt}}}
+        \textcolor{syn-primary}{%
+          \rule{\dim_use:N \l__synaptic_beamer_progress_dim}{0.75pt}}
         \hfil
+        \hskip\g__synaptic_beamer_margin_dim
       }
   }
 
@@ -3080,14 +3257,14 @@
       \offinterlineskip
       \hbox{
         \begin{beamercolorbox}[
-          wd=0.82\paperwidth,ht=2.8ex,dp=1.15ex,
+          wd=0.82\paperwidth,ht=2.65ex,dp=1.05ex,
           leftskip=\dim_use:N \g__synaptic_beamer_margin_dim
         ]{synaptic~footer}
           \usebeamerfont{page~number~in~head/foot}
           \__synaptic_layout_header_mark:\__synaptic_beamer_footer_label:
         \end{beamercolorbox}
         \begin{beamercolorbox}[
-          wd=0.18\paperwidth,ht=2.8ex,dp=1.15ex,
+          wd=0.18\paperwidth,ht=2.65ex,dp=1.05ex,
           rightskip=\dim_use:N \g__synaptic_beamer_margin_dim
         ]{synaptic~footer}
           \hfill\usebeamerfont{page~number~in~head/foot}
@@ -3102,6 +3279,16 @@
 % ---------------------------------------------------------------------------
 % Title frame
 % ---------------------------------------------------------------------------
+\tcbset{
+  synaptic/beamer-title-meta/.style={
+    synaptic/card-base,
+    colback=syn-surface-strong,
+    borderline~west={2.2pt}{0pt}{syn-primary},
+    left=8pt,right=8pt,top=5.5pt,bottom=5.5pt,
+    before~skip=0pt,after~skip=0pt
+  }
+}
+
 \cs_new:Npn \__synaptic_beamer_presenter:
   {
     \tl_if_empty:NTF \g__synaptic_instructor_tl
@@ -3144,21 +3331,38 @@
 
 \cs_new_protected:Npn \__synaptic_beamer_title_meta:
   {
-    \begin{beamercolorbox}[
-      wd=\linewidth,sep=1.0ex,leftskip=0.4ex,rightskip=0.4ex
-    ]{synaptic~title~meta}
-      {\small\sffamily\bfseries\__synaptic_layout_header_mark:
-        \__synaptic_beamer_presenter:}
-      \tl_if_empty:NF \g__synaptic_date_tl
-        { \hfill{\small\sffamily\color{syn-muted-text}\g__synaptic_date_tl} }
-      \seq_if_empty:NF \g__synaptic_affils_seq
-        {
-          \par\vskip0.35ex
-          {\scriptsize\color{syn-muted-text}
-            \seq_map_inline:Nn \g__synaptic_affils_seq
-              { \__synaptic_beamer_affiliation:nn ##1\par }}
-        }
-    \end{beamercolorbox}
+    \bool_set_false:N \l_tmpa_bool
+    \tl_if_empty:NF \g__synaptic_instructor_tl
+      { \bool_set_true:N \l_tmpa_bool }
+    \seq_if_empty:NF \g__synaptic_authors_seq
+      { \bool_set_true:N \l_tmpa_bool }
+    \tl_if_empty:NF \g__synaptic_date_tl
+      { \bool_set_true:N \l_tmpa_bool }
+    \seq_if_empty:NF \g__synaptic_affils_seq
+      { \bool_set_true:N \l_tmpa_bool }
+    \bool_if:NT \l_tmpa_bool
+      {
+        \begin{tcolorbox}[synaptic/beamer-title-meta]
+          \noindent
+          \tl_if_empty:NTF \g__synaptic_instructor_tl
+            {
+              \seq_if_empty:NF \g__synaptic_authors_seq
+                {{\small\sffamily\bfseries\__synaptic_layout_header_mark:
+                  \__synaptic_beamer_presenter:}}
+            }
+            {{\small\sffamily\bfseries\__synaptic_layout_header_mark:
+              \__synaptic_beamer_presenter:}}
+          \tl_if_empty:NF \g__synaptic_date_tl
+            { \hfill{\small\sffamily\color{syn-muted-text}\g__synaptic_date_tl} }
+          \seq_if_empty:NF \g__synaptic_affils_seq
+            {
+              \par\vskip0.35ex
+              {\scriptsize\color{syn-muted-text}
+                \seq_map_inline:Nn \g__synaptic_affils_seq
+                  { \__synaptic_beamer_affiliation:nn ##1\par }}
+            }
+        \end{tcolorbox}
+      }
   }
 
 \cs_new_protected:Npn \__synaptic_beamer_title_abstract:
@@ -3222,12 +3426,12 @@
       \tl_if_empty:NF \g__synaptic_tags_tl
         {
           \vskip0.7ex
-          {\scriptsize\sffamily\color{syn-decoration-muted}
+          {\noindent\scriptsize\sffamily\color{syn-decoration-muted}
             \g__synaptic_tags_tl\par}
         }
     \else
       \vskip0.7ex
-      {\scriptsize\sffamily\color{syn-decoration-muted}
+      {\noindent\scriptsize\sffamily\color{syn-decoration-muted}
         \g__synaptic_tags_tl\hfill\inserttitlegraphic\par}
     \fi
   }
@@ -3255,9 +3459,14 @@
     \frame[plain,noframenumbering]
       {
         \vfill
-        \__synaptic_title_kicker:n { \c__synaptic_label_contents_tl }
-        \vspace{1.4ex}
-        {\small\tableofcontents}
+        \__synaptic_beamer_title_kicker:
+        \vspace{2.5ex}
+        {\usebeamerfont{section~title}\color{syn-text-dark}%
+          \c__synaptic_label_contents_tl\par}
+        \vspace{0.9ex}
+        \__synaptic_layout_motif:\par
+        \vspace{2.1ex}
+        \tableofcontents
         \vfill
       }
   }
@@ -3277,16 +3486,12 @@
     \vfill
     \__synaptic_title_kicker:n { \__synaptic_title_mode_word: }
     \vspace{3.4ex}
-    % The section number is typeset in the section-title voice so that the
-    % divider reads as one two-line heading pair (muted index, dark title)
-    % instead of a stray small numeral floating above a huge title.
-    {\usebeamerfont{section~title}\color{syn-decoration-muted}
+    {\fontsize{30}{33}\selectfont\sffamily\bfseries
+      \color{syn-decoration-muted}
       \insertsectionnumber\par}
-    \vspace{0.15ex}
+    \vspace{0.35ex}
     {\usebeamerfont{section~title}\usebeamercolor[fg]{section~title}
       \insertsection\par}
-    \vspace{2.0ex}
-    \__synaptic_layout_motif:
     \vfill
   }
 \setbeamertemplate{section~page}[synaptic]
@@ -3298,16 +3503,18 @@
 % Slide-safe teaching cards shared with the lecture vocabulary
 % ---------------------------------------------------------------------------
 \tcbset{
+  synaptic/theorem-box/.append~style={
+    left=8pt,right=8pt,top=6pt,bottom=6pt,
+    before~skip=5pt,after~skip=5pt
+  },
   synaptic/beamer-card/.style={
-    enhanced,frame~hidden,
+    synaptic/card-base,
     colback=syn-surface-strong,coltext=syn-text-dark,
     borderline~west={2.6pt}{0pt}{syn-primary},
-    borderline~north={0.35pt}{0pt}{syn-border!60!white},
     fonttitle=\bfseries\sffamily,coltitle=syn-primary,
     attach~title~to~upper={\quad},
-    left=8pt,right=8pt,top=6pt,bottom=6pt,
-    before~skip=6pt,after~skip=6pt,
-    arc=1.5pt,outer~arc=1.5pt
+    left=8pt,right=8pt,top=5.5pt,bottom=5.5pt,
+    before~skip=5pt,after~skip=5pt
   },
   synaptic/beamer-summary/.style={
     synaptic/beamer-card,
@@ -3435,7 +3642,7 @@
 %    \begin{macrocode}
 %<*package>
 \NeedsTeXFormat{LaTeX2e}[2023/11/01]
-\ProvidesExplPackage{synaptic}{2026-09-02}{5.2.0}
+\ProvidesExplPackage{synaptic}{2026-09-04}{5.3.0}
   {Modern~Academic~Typesetting~Framework}
 
 % Forward all user options to synaptic-base

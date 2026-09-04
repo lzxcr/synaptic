@@ -15,12 +15,12 @@
 \SynapticNewTheorem[remark]{synobservation}{观察}
 \SynapticHeader{synaptic 用户手册}
 \SynapticSubHeader{面向 LuaLaTeX 的稳定学术排版}
-\SynapticPreprint{v5.2.0}
+\SynapticPreprint{v5.3.0}
 \SynapticTitle{synaptic 宏包用户手册}
 \SynapticAuthor{synaptic 项目}
 \SynapticAffiliation{开源 LaTeX 社区}
 \SynapticEmail{synaptic@example.com}
-\SynapticSubject{synaptic 5.2.0 用户手册}
+\SynapticSubject{synaptic 5.3.0 用户手册}
 \SynapticKeywords{synaptic, LaTeX3, LuaLaTeX, 学术排版}
 
 \begin{synabstract}
@@ -163,14 +163,14 @@ l3build ctan        # 生成 TDS/CTAN 压缩包
 \textbf{notes} 渲染紧凑信息条（可选标签行），支持文档类级双栏排版与末页
 栏平衡。
 
-\textbf{beamer} 渲染面向投影的标题帧、语义帧标题、单层语义卡片，以及带页数
-进度的克制页脚。它复用课程元数据与讲义教学卡片词汇。显式调用
+\textbf{beamer} 渲染面向投影的标题帧、信号导轨帧标题、带编号目录项、单层语义卡片，
+以及带轨道的克制进度页脚。它复用课程元数据与讲义教学卡片词汇。显式调用
 \DocCmd{SynapticSectionFrame} 才插入章节过渡帧，不会暗中改变演示节奏。
 标准 \DocCmd{titlegraphic} 在标题帧底行右侧排版图形（与标签行同行）；语义陈述
 环境由 tcolorbox 单独成卡，卡内只排标题行，不再嵌套 Beamer 原生 block，
 从而避免双重卡片带来的额外高度与溢出。原生
-\texttt{theorem}、\texttt{definition}、\texttt{example} 环境保持默认
-block 模板。
+\texttt{theorem}、\texttt{definition}、\texttt{example} 环境保留标准
+block 语义，由带内联标题、浅色底与语义西侧导轨的原生 block 卡片渲染。
 
 \subsection{字体}
 
@@ -201,14 +201,14 @@ synaptic 的默认外观是确定的而非装饰性的。以下设计原则贯�
 
 \begin{verbatim}
 \usepackage[background=blue!10]{synaptic}
-\SynapticSetup{background=midnight!85!black}
+\SynapticSetup{background=blue!70!black}
 \end{verbatim}
 
 所有派生令牌都感知当前背景。卡片、边框、发丝线与标题线会与真实页面颜色
 混合，因此浅色染色文档无需改动主题即可保持整体一致。当背景相对亮度低于
-中点时，正文与弱化文字自动切换为浅色墨，发丝线与边框由加深改为提亮，链接
-使用主色的浅色变体。Beamer 模式的帧背景画布遵循同一设置，深色演示无需
-额外配置。以 \texttt{background=white} 恢复默认。
+中点时，中性文字自动切换为浅色墨；主色、次色、强调色以及危险、警示、成功色也会同步
+提亮以保持可读性。登记的主题基色不被改写，因而切回浅背景时可精确恢复。Beamer 模式的
+帧背景画布遵循同一设置，深色演示无需额外配置。以 \texttt{background=white} 恢复默认。
 
 \subsection{密度与栏宽}
 
@@ -233,8 +233,8 @@ Beamer 仅接受 \texttt{auto}、\texttt{page} 和 \texttt{compact}；最后一�
 所有纸面模式在运行页眉下方绘制一条发丝线。发丝线使用独立的装饰性浅色令牌，
 使导航保持安静。运行页眉与外侧页码重复微型节点标记；书籍模式还为双面强制空白页
 提供克制的页脚锚点。
-Beamer 在帧标题下方复用同一发丝线，并在页脚底部绘制安全钳制的进度线；首轮编译尚未
-得知总帧数时也不会溢出。
+Beamer 在帧标题下方将短主信号、强调节点与横跨可用版心的安静发丝线连接起来；
+页脚则在淡色轨道上叠加安全钳制的活动进度段。首轮编译尚未得知总帧数时也不会溢出。
 
 \subsection{标题、目录与图表标题}
 
@@ -246,8 +246,8 @@ Beamer 在帧标题下方复用同一发丝线，并在页脚底部绘制安全�
 
 \subsection{卡片与规则}
 
-教学与笔记卡片共享同一视觉语言：极小圆角、着语义色（主色、次级、警告或成功色）
-的左侧色条、淡发丝线、浅色表面与可读标题颜色。规则与发丝线由主题主色的低浓度混合
+定理、标题元数据、教学、笔记与 Beamer 卡片共用一个基础视觉原语：极小圆角、
+必要时着语义色的西侧导轨、淡发丝线、浅色表面、克制内边距与可读标题颜色。规则与发丝线由主题主色的低浓度混合
 推导，装饰永不与正文争抢。
 
 \section{标题与 PDF 元数据}
@@ -343,7 +343,7 @@ PDF 元数据。
   \texttt{syn-accent} & 强调色 & 可选强调 \\
   \texttt{syn-text-dark} & 正文墨色 & 可读正文 \\
   \texttt{syn-muted-text} & 可读弱化 & 辅助标签 \\
-  \texttt{syn-surface} & 卡片底色 & 盒子与表面 \\
+  \texttt{syn-surface} & 中档表面 & 默认卡片与面板 \\
   \texttt{syn-border} & 卡片边框 & 盒子边框 \\
   \texttt{syn-rule} & 装饰发丝线 & 分隔线 \\
   \texttt{syn-danger} & 语义危险 & 红色警示 \\
@@ -351,6 +351,9 @@ PDF 元数据。
   \texttt{syn-success} & 语义成功 & 练习与待办 \\
   \bottomrule
 \end{tabularx}}
+
+\texttt{syn-surface-soft} 与 \texttt{syn-surface-strong} 提供相邻的表面阶梯；
+\texttt{syn-on-primary} 与 \texttt{syn-on-danger} 提供实色语义底上的反色墨。
 
 讲义与 Beamer 模式提供教学卡片环境：\texttt{synlearninggoals} 与
 \texttt{synlecturesummary}，以及上文描述的课程元数据命令。笔记模式提供
